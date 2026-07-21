@@ -1,6 +1,6 @@
 import BookingWidget from "@/components/BookingWidget";
 import { trpc } from "@/lib/trpc";
-import { ArrowRight, BedDouble, CalendarDays, CarFront, Coffee, Footprints, Landmark, MapPin, ShieldCheck, Sparkles, TreePine, Trophy, UtensilsCrossed, Wifi } from "lucide-react";
+import { ArrowRight, BedDouble, CalendarDays, CarFront, Coffee, Footprints, Landmark, MapPin, Phone, ShieldCheck, Sparkles, TreePine, Trophy, UtensilsCrossed, Wifi } from "lucide-react";
 import { Link } from "wouter";
 
 const HERO_IMAGE = "/manus-storage/dewenter-room_a9fea36d.jpg";
@@ -41,7 +41,7 @@ export default function Home() {
         <div className="container hero__content">
           <p className="eyebrow eyebrow--light">Indianapolis · Est. 1885</p>
           <h1 id="home-title" className="font-display">A historic stay, made personal.</h1>
-          <p className="hero__copy">Welcome to the Dewenter-Greenen House, a seven-room bed and breakfast in Indianapolis’s Old Northside neighborhood.</p>
+          <p className="hero__copy">Welcome to the Dewenter-Greenen House, now the Old Northside Bed and Breakfast, a seven-room bed and breakfast in Indianapolis’s Old Northside neighborhood.</p>
           <div className="hero__actions">
             <a className="inn-button inn-button--primary" href="#availability">Check availability <ArrowRight size={17} /></a>
             <Link className="inn-button inn-button--ghost" href="/rooms">Explore the rooms</Link>
@@ -50,8 +50,18 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="hero-transition" aria-label="Inn contact and booking details">
+        <div className="container">
+          <div className="hero-transition__card">
+            <div className="hero-transition__item"><MapPin aria-hidden="true" size={18} /><span>Indianapolis</span></div>
+            <div className="hero-transition__item"><CalendarDays aria-hidden="true" size={18} /><span>1340 North Alabama Street</span></div>
+            <a className="hero-transition__item hero-transition__phone" href="tel:+13176359123"><Phone aria-hidden="true" size={18} /><span>(317) 635-9123</span></a>
+            <a className="inn-button inn-button--dark hero-transition__cta" href="#availability">Book Direct <ArrowRight size={16} /></a>
+          </div>
+        </div>
+      </div>
 
-      <section className="section section--ink story-section">
+      <section className="section section--paper story-section">
         <div className="container story-grid">
           <div className="story-grid__copy">
             <p className="eyebrow eyebrow--gold">The house</p>

@@ -62,3 +62,7 @@
 - [x] Replace the ambiguous “ON” parking placeholder with the owner-supplied off-street-parking photograph and accurate accessible alternative text.
 - [x] Install the owner-supplied favicon in the site metadata and browser tab.
 - [x] Validate the approved homepage refinements with type checking, focused regression coverage, and desktop/mobile visual review; the only full-suite failure remains the external Resend sender-domain prerequisite.
+- [x] Replace the overly dark first homepage house section with the lighter accommodations paper palette while preserving readable contrast.
+- [x] Remove the unintended light hero boundary and add a responsive overlapping contact-divider inspired by the supplied reference.
+- [x] Validate the refined hero-to-house transition in desktop and mobile layouts with regression coverage.
+- [x] Update the hero welcome sentence to identify the Dewenter-Greenen House as the current Old Northside Bed and Breakfast.

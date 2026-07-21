@@ -9,6 +9,7 @@ const innPagesPath = fileURLToPath(new URL("../client/src/pages/InnPages.tsx", i
 const emailPath = fileURLToPath(new URL("../server/email.ts", import.meta.url));
 const stripePath = fileURLToPath(new URL("../server/stripe.ts", import.meta.url));
 const bookingWidgetPath = fileURLToPath(new URL("../client/src/components/BookingWidget.tsx", import.meta.url));
+const stylesheetPath = fileURLToPath(new URL("../client/src/index.css", import.meta.url));
 const homepageSource = readFileSync(homepagePath, "utf8");
 const indexSource = readFileSync(indexPath, "utf8");
 const appSource = readFileSync(appPath, "utf8");
@@ -16,6 +17,7 @@ const innPagesSource = readFileSync(innPagesPath, "utf8");
 const emailSource = readFileSync(emailPath, "utf8");
 const stripeSource = readFileSync(stripePath, "utf8");
 const bookingWidgetSource = readFileSync(bookingWidgetPath, "utf8");
+const stylesheetSource = readFileSync(stylesheetPath, "utf8");
 
 describe("homepage guest-facing positioning", () => {
   it("preserves the approved Dewenter-Greenen House history and artistic context", () => {
@@ -35,12 +37,18 @@ describe("homepage guest-facing positioning", () => {
     expect(homepageSource).toContain("Old Northside for tree-lined walks and nearby downtown discoveries");
   });
 
-  it("uses the approved welcoming hero, clear reading rhythm, parking image, and booking hierarchy", () => {
+  it("uses the approved welcoming hero, lighter transition, clear reading rhythm, parking image, and booking hierarchy", () => {
     expect(homepageSource).toContain('const HERO_IMAGE = "/manus-storage/dewenter-room_a9fea36d.jpg"');
+    expect(homepageSource).toContain('Welcome to the Dewenter-Greenen House, now the Old Northside Bed and Breakfast');
+    expect(homepageSource).toContain('className="hero-transition"');
+    expect(homepageSource).toContain('Inn contact and booking details');
     expect(homepageSource).toContain('/manus-storage/OffStreetParking_1c77e0fb.png');
     expect(homepageSource).toContain('alt="Off-street guest parking at Old Northside Bed and Breakfast"');
     expect(homepageSource).not.toContain('neighborhood-grid__monogram">ON');
-    expect(homepageSource.indexOf('className="section section--ink story-section"')).toBeLessThan(homepageSource.indexOf('id="availability"'));
+    expect(homepageSource.indexOf('className="section section--paper story-section"')).toBeLessThan(homepageSource.indexOf('id="availability"'));
+    expect(stylesheetSource).toContain('.hero-transition__card');
+    expect(stylesheetSource).toContain('background: #f4ebdc');
+    expect(stylesheetSource).toContain('clip-path: polygon(0 58%, 100% 0');
     expect(bookingWidgetSource).toContain('numberOfMonths={1}');
     expect(bookingWidgetSource).not.toContain('numberOfMonths={compact ? 1 : 2}');
   });
