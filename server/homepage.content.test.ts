@@ -99,23 +99,38 @@ describe("homepage guest-facing positioning", () => {
 
 
 describe("official room and pet-policy updates", () => {
-  it("uses all seven managed official room images across room listings", () => {
-    const officialRoomImages = [
-      "/manus-storage/bridal-room_3e9601fd.png",
-      "/manus-storage/tiffany-room_8e9dfc95.jpg",
-      "/manus-storage/literary-room_a03a0fed.jpg",
-      "/manus-storage/dewenter-room_c0fd6bf3.jpg",
-      "/manus-storage/hollywood-room_501fda0d.jpg",
-      "/manus-storage/rose-garden-room_62e2d54a.jpg",
-      "/manus-storage/library-wedding-suite_22c3c8f5.jpg",
+  it("uses authorized interior room images as the room-card covers and gallery lead images", () => {
+    const officialInteriorCovers = [
+      "/manus-storage/bridal-room-1_13ca6d81.jpg",
+      "/manus-storage/tiffany-room-1_b1f1fa89.jpg",
+      "/manus-storage/literary-room-1_187fc98d.jpg",
+      "/manus-storage/dewenter-room-1_7072f519.jpg",
+      "/manus-storage/hollywood-room-1_1cf10f56.jpg",
+      "/manus-storage/rose-garden-1_b8433d99.jpg",
+      "/manus-storage/wedding-suite-1_181e4bed.jpg",
     ];
 
-    officialRoomImages.forEach(image => {
+    officialInteriorCovers.forEach(image => {
       expect(homepageSource).toContain(image);
       expect(innPagesSource).toContain(image);
     });
+    expect(homepageSource).not.toContain("/manus-storage/bridal-room_3e9601fd.png");
     expect(roomSourceRecord).toContain("the largest and only main-floor guest room");
     expect(roomSourceRecord).toContain("hand-faux-painted walls");
+  });
+
+  it("provides full source-grounded room descriptions and keyboard-operable multi-image galleries", () => {
+    expect(innPagesSource).toContain("function RoomGallery");
+    expect(innPagesSource).toContain("Use the arrows, thumbnails, or left and right arrow keys");
+    expect(innPagesSource).toContain("A romantic, tranquil retreat with pastel details");
+    expect(innPagesSource).toContain("The inn’s largest and only main-floor guest room");
+    expect(innPagesSource).toContain("Indiana literary history sets the tone");
+    expect(innPagesSource).toContain("hand-faux-painted walls, genuine antiques");
+    expect(innPagesSource).toContain("bridal-room-5_a5d7cc97.jpg");
+    expect(innPagesSource).toContain("wedding-suite-6_e7dcc656.jpg");
+    expect(stylesheetSource).toContain(".room-gallery__control");
+    expect(stylesheetSource).toContain(".room-gallery__thumbnails");
+    expect(stylesheetSource).toContain(".room-gallery:focus-visible");
   });
 
   it("publishes the supplied Pet Policy and requires its acknowledgment in the booking form", () => {

@@ -5,13 +5,13 @@ import { Link } from "wouter";
 
 const HERO_IMAGE = "/manus-storage/dewenter-room_c0fd6bf3.jpg";
 const ROOM_IMAGES: Record<string, string> = {
-  "the-bridal-room": "/manus-storage/bridal-room_3e9601fd.png",
-  "the-tiffany-room": "/manus-storage/tiffany-room_8e9dfc95.jpg",
-  "the-literary-room": "/manus-storage/literary-room_a03a0fed.jpg",
-  "the-dewenter-room": "/manus-storage/dewenter-room_c0fd6bf3.jpg",
-  "the-hollywood-room": "/manus-storage/hollywood-room_501fda0d.jpg",
-  "the-rose-garden-room": "/manus-storage/rose-garden-room_62e2d54a.jpg",
-  "the-library-wedding-suite": "/manus-storage/library-wedding-suite_22c3c8f5.jpg",
+  "bridal-room": "/manus-storage/bridal-room-1_13ca6d81.jpg",
+  "tiffany-room": "/manus-storage/tiffany-room-1_b1f1fa89.jpg",
+  "literary-room": "/manus-storage/literary-room-1_187fc98d.jpg",
+  "dewenter-room": "/manus-storage/dewenter-room-1_7072f519.jpg",
+  "hollywood-room": "/manus-storage/hollywood-room-1_1cf10f56.jpg",
+  "rose-garden-room": "/manus-storage/rose-garden-1_b8433d99.jpg",
+  "library-wedding-suite": "/manus-storage/wedding-suite-1_181e4bed.jpg",
 };
 
 const amenities = [

@@ -1,0 +1,148 @@
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-1.jpg (size: 1145289 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/bridal-room-1_13ca6d81.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-2.jpg (size: 1069886 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/bridal-room-2_978d9fbd.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-3.jpg (size: 1130968 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/bridal-room-3_30fd04ab.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-4.jpg (size: 1063067 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/bridal-room-4_c8967cc9.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-5.jpg (size: 1158393 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/bridal-room-5_a5d7cc97.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/dewenter-room-1.jpg (size: 1232468 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/dewenter-room-1_7072f519.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/dewenter-room-2.jpg (size: 1275944 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/dewenter-room-2_6d25986a.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/dewenter-room-3.jpg (size: 1209106 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/dewenter-room-3_9ba999d3.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/dewenter-room-4.jpg (size: 851003 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/dewenter-room-4_831e397a.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-1.jpg (size: 1074689 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/hollywood-room-1_1cf10f56.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-2.jpg (size: 1153435 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/hollywood-room-2_9cf7603b.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-3.jpg (size: 1209411 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/hollywood-room-3_b429278d.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-4.jpg (size: 989435 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/hollywood-room-4_17c99292.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-5.jpg (size: 1002066 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/hollywood-room-5_703ae921.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-1.jpg (size: 1139388 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/literary-room-1_187fc98d.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-2.jpg (size: 1194608 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/literary-room-2_d971efc1.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-3.jpg (size: 1184164 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/literary-room-3_3d49db7e.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-4.jpg (size: 1327178 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/literary-room-4_f438f0af.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-5.jpg (size: 1101530 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/literary-room-5_65b7a56c.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-1.jpg (size: 1258782 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/rose-garden-1_b8433d99.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-2.jpg (size: 1215072 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/rose-garden-2_3d9dcbaf.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-3.jpg (size: 1128986 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/rose-garden-3_2e325336.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-4.jpg (size: 1046407 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/rose-garden-4_fa14b67f.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-5.jpg (size: 1025212 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/rose-garden-5_70728195.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-6.jpg (size: 963324 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/rose-garden-6_f2dbb84b.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-1.jpg (size: 1148828 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/tiffany-room-1_b1f1fa89.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-2.jpg (size: 1245187 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/tiffany-room-2_0f96cf43.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-3.jpg (size: 1128934 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/tiffany-room-3_3ac334c3.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-4.jpg (size: 1002899 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/tiffany-room-4_66df2b2d.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-5.jpg (size: 1114805 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/tiffany-room-5_56971093.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-1.jpg (size: 1186497 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/wedding-suite-1_181e4bed.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-2.jpg (size: 1420643 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/wedding-suite-2_969b8d1c.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-3.jpg (size: 1197636 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/wedding-suite-3_7c649483.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-4.jpg (size: 1003805 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/wedding-suite-4_084c9e00.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-5.jpg (size: 1098896 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/wedding-suite-5_21f50c26.jpg
+Uploading file (webdev private): /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-6.jpg (size: 1259478 bytes)
+File uploaded successfully!
+Storage Path: /manus-storage/wedding-suite-6_e7dcc656.jpg
+
+========== Upload Summary ==========
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-1.jpg -> /manus-storage/bridal-room-1_13ca6d81.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-2.jpg -> /manus-storage/bridal-room-2_978d9fbd.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-3.jpg -> /manus-storage/bridal-room-3_30fd04ab.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-4.jpg -> /manus-storage/bridal-room-4_c8967cc9.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/bridal-room-5.jpg -> /manus-storage/bridal-room-5_a5d7cc97.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/dewenter-room-1.jpg -> /manus-storage/dewenter-room-1_7072f519.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/dewenter-room-2.jpg -> /manus-storage/dewenter-room-2_6d25986a.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/dewenter-room-3.jpg -> /manus-storage/dewenter-room-3_9ba999d3.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/dewenter-room-4.jpg -> /manus-storage/dewenter-room-4_831e397a.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-1.jpg -> /manus-storage/hollywood-room-1_1cf10f56.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-2.jpg -> /manus-storage/hollywood-room-2_9cf7603b.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-3.jpg -> /manus-storage/hollywood-room-3_b429278d.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-4.jpg -> /manus-storage/hollywood-room-4_17c99292.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/hollywood-room-5.jpg -> /manus-storage/hollywood-room-5_703ae921.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-1.jpg -> /manus-storage/literary-room-1_187fc98d.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-2.jpg -> /manus-storage/literary-room-2_d971efc1.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-3.jpg -> /manus-storage/literary-room-3_3d49db7e.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-4.jpg -> /manus-storage/literary-room-4_f438f0af.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/literary-room-5.jpg -> /manus-storage/literary-room-5_65b7a56c.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-1.jpg -> /manus-storage/rose-garden-1_b8433d99.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-2.jpg -> /manus-storage/rose-garden-2_3d9dcbaf.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-3.jpg -> /manus-storage/rose-garden-3_2e325336.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-4.jpg -> /manus-storage/rose-garden-4_fa14b67f.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-5.jpg -> /manus-storage/rose-garden-5_70728195.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/rose-garden-6.jpg -> /manus-storage/rose-garden-6_f2dbb84b.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-1.jpg -> /manus-storage/tiffany-room-1_b1f1fa89.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-2.jpg -> /manus-storage/tiffany-room-2_0f96cf43.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-3.jpg -> /manus-storage/tiffany-room-3_3ac334c3.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-4.jpg -> /manus-storage/tiffany-room-4_66df2b2d.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/tiffany-room-5.jpg -> /manus-storage/tiffany-room-5_56971093.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-1.jpg -> /manus-storage/wedding-suite-1_181e4bed.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-2.jpg -> /manus-storage/wedding-suite-2_969b8d1c.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-3.jpg -> /manus-storage/wedding-suite-3_7c649483.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-4.jpg -> /manus-storage/wedding-suite-4_084c9e00.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-5.jpg -> /manus-storage/wedding-suite-5_21f50c26.jpg
+[SUCCESS] /home/ubuntu/webdev-static-assets/old-northside-room-galleries/wedding-suite-6.jpg -> /manus-storage/wedding-suite-6_e7dcc656.jpg
+=====================================
+Total: 36, Success: 36, Failed: 0

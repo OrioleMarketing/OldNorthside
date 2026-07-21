@@ -2,18 +2,67 @@ import BookingWidget from "@/components/BookingWidget";
 import { trpc } from "@/lib/trpc";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ArrowRight, Bath, BedDouble, CalendarCheck2, CalendarDays, CheckCircle2, Clock3, Coffee, Flame, Landmark, Loader2, MapPin, ShieldCheck, TreePine, Trophy, UtensilsCrossed } from "lucide-react";
+import { ArrowRight, Bath, BedDouble, CalendarCheck2, CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Coffee, Flame, Landmark, Loader2, MapPin, ShieldCheck, TreePine, Trophy, UtensilsCrossed } from "lucide-react";
 import { Link } from "wouter";
 
-const ROOM_IMAGES: Record<string, string> = {
-  "the-bridal-room": "/manus-storage/bridal-room_3e9601fd.png",
-  "the-tiffany-room": "/manus-storage/tiffany-room_8e9dfc95.jpg",
-  "the-literary-room": "/manus-storage/literary-room_a03a0fed.jpg",
-  "the-dewenter-room": "/manus-storage/dewenter-room_c0fd6bf3.jpg",
-  "the-hollywood-room": "/manus-storage/hollywood-room_501fda0d.jpg",
-  "the-rose-garden-room": "/manus-storage/rose-garden-room_62e2d54a.jpg",
-  "the-library-wedding-suite": "/manus-storage/library-wedding-suite_22c3c8f5.jpg",
+type RoomDetail = {
+  description: string;
+  gallery: string[];
 };
+
+const ROOM_DETAILS: Record<string, RoomDetail> = {
+  "bridal-room": {
+    description: "A romantic, tranquil retreat with pastel details, a canopy queen bed, and a custom-made fireplace. The private bath pairs a double Jacuzzi with a glass shower, creating an especially restful setting for a special occasion or an unhurried stay.",
+    gallery: ["/manus-storage/bridal-room-1_13ca6d81.jpg", "/manus-storage/bridal-room-2_978d9fbd.jpg", "/manus-storage/bridal-room-3_30fd04ab.jpg", "/manus-storage/bridal-room-4_c8967cc9.jpg", "/manus-storage/bridal-room-5_a5d7cc97.jpg"],
+  },
+  "tiffany-room": {
+    description: "The inn’s largest and only main-floor guest room combines a king bed with stained glass, Art Deco artwork, and a fireplace. A generous closet, double Jacuzzi, and separate glass shower make this an easy, spacious choice for a longer Indianapolis stay.",
+    gallery: ["/manus-storage/tiffany-room-1_b1f1fa89.jpg", "/manus-storage/tiffany-room-2_0f96cf43.jpg", "/manus-storage/tiffany-room-3_3ac334c3.jpg", "/manus-storage/tiffany-room-4_66df2b2d.jpg", "/manus-storage/tiffany-room-5_56971093.jpg"],
+  },
+  "literary-room": {
+    description: "Indiana literary history sets the tone in this king room, where books by local authors share space with board games, puzzles, and soft evening light. A restored antique slate fireplace, large Jacuzzi, and separate glass shower add comfort to its thoughtful, bookish character.",
+    gallery: ["/manus-storage/literary-room-1_187fc98d.jpg", "/manus-storage/literary-room-2_d971efc1.jpg", "/manus-storage/literary-room-3_3d49db7e.jpg", "/manus-storage/literary-room-4_f438f0af.jpg", "/manus-storage/literary-room-5_65b7a56c.jpg"],
+  },
+  "dewenter-room": {
+    description: "Named for Herman Dewenter, the original owner of the house, this queen room keeps the home’s history close through preserved woodwork, a distinctive brick wall, and century-old photographs of the Dewenter family and residence. A private bath and fireplace complete its warm historic setting.",
+    gallery: ["/manus-storage/dewenter-room-1_7072f519.jpg", "/manus-storage/dewenter-room-2_6d25986a.jpg", "/manus-storage/dewenter-room-3_9ba999d3.jpg", "/manus-storage/dewenter-room-4_831e397a.jpg"],
+  },
+  "hollywood-room": {
+    description: "Classic-film portraiture, a queen canopy bed staged behind lace, and an arts library give this room a theatrical personality. The private bath continues the theme with film memorabilia, sheet music, dressing-table lights, a Jacuzzi, and a separate glass shower.",
+    gallery: ["/manus-storage/hollywood-room-1_1cf10f56.jpg", "/manus-storage/hollywood-room-2_9cf7603b.jpg", "/manus-storage/hollywood-room-3_b429278d.jpg", "/manus-storage/hollywood-room-4_17c99292.jpg", "/manus-storage/hollywood-room-5_703ae921.jpg"],
+  },
+  "rose-garden-room": {
+    description: "A spacious, secluded third-floor escape with a king bed, skylight, and private bath with a tub and shower. The Rose Garden Room is a quieter perch in the house for guests who want a little more separation at the end of the day.",
+    gallery: ["/manus-storage/rose-garden-1_b8433d99.jpg", "/manus-storage/rose-garden-2_3d9dcbaf.jpg", "/manus-storage/rose-garden-3_2e325336.jpg", "/manus-storage/rose-garden-4_fa14b67f.jpg", "/manus-storage/rose-garden-5_70728195.jpg", "/manus-storage/rose-garden-6_f2dbb84b.jpg"],
+  },
+  "library-wedding-suite": {
+    description: "A distinctive suite with hand-faux-painted walls, genuine antiques, a curated library, and a working gas fireplace. A separate bedroom and private bath with gold sinks, a glass shower, and double Jacuzzi create an especially generous setting for celebrating or settling in.",
+    gallery: ["/manus-storage/wedding-suite-1_181e4bed.jpg", "/manus-storage/wedding-suite-2_969b8d1c.jpg", "/manus-storage/wedding-suite-3_7c649483.jpg", "/manus-storage/wedding-suite-4_084c9e00.jpg", "/manus-storage/wedding-suite-5_21f50c26.jpg", "/manus-storage/wedding-suite-6_e7dcc656.jpg"],
+  },
+};
+
+function RoomGallery({ roomName, images }: { roomName: string; images: string[] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const imageCount = images.length;
+  const activeImage = images[activeIndex] ?? images[0];
+  const selectImage = (nextIndex: number) => setActiveIndex((nextIndex + imageCount) % imageCount);
+
+  return <div className="room-gallery" aria-label={`${roomName} photo gallery`} aria-roledescription="carousel" onKeyDown={event => {
+    if (event.key === "ArrowLeft") { event.preventDefault(); selectImage(activeIndex - 1); }
+    if (event.key === "ArrowRight") { event.preventDefault(); selectImage(activeIndex + 1); }
+  }} tabIndex={0}>
+    <div className="room-gallery__stage">
+      <img src={activeImage} alt={`${roomName}, photo ${activeIndex + 1} of ${imageCount}`} />
+      <span className="room-gallery__count" aria-live="polite">{activeIndex + 1} / {imageCount}</span>
+      <button className="room-gallery__control room-gallery__control--previous" type="button" aria-label={`Show previous ${roomName} photo`} onClick={() => selectImage(activeIndex - 1)}><ChevronLeft size={22} /></button>
+      <button className="room-gallery__control room-gallery__control--next" type="button" aria-label={`Show next ${roomName} photo`} onClick={() => selectImage(activeIndex + 1)}><ChevronRight size={22} /></button>
+    </div>
+    <div className="room-gallery__thumbnails" role="tablist" aria-label={`${roomName} photo selection`}>
+      {images.map((image, index) => <button className={`room-gallery__thumbnail ${index === activeIndex ? "is-active" : ""}`} type="button" key={image} role="tab" aria-selected={index === activeIndex} aria-label={`Show photo ${index + 1} of ${roomName}`} onClick={() => selectImage(index)}><img src={image} alt="" /></button>)}
+    </div>
+    <p className="room-gallery__hint">Use the arrows, thumbnails, or left and right arrow keys to view all {imageCount} photos.</p>
+  </div>;
+}
 
 function PageHero({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
   return <section className="page-hero"><div className="container"><p className="eyebrow eyebrow--gold">{eyebrow}</p><h1 className="font-display">{title}</h1><p>{copy}</p></div></section>;
@@ -25,10 +74,14 @@ export function RoomsPage() {
   return <main>
     <PageHero eyebrow="Seven private-bath accommodations" title="Distinct rooms. One unforgettable house." copy="Each room has its own character, period details, and private bath. Select dates to see live availability before reserving." />
     <section className="section section--paper"><div className="container rooms-list">
-      {roomsQuery.isLoading ? <p className="room-loading">Gathering the rooms…</p> : rooms.map((room, index) => <article className={`room-feature ${index % 2 ? "room-feature--reverse" : ""}`} key={room.id}>
-        <img src={ROOM_IMAGES[room.slug] ?? room.imageUrl ?? "/manus-storage/exterior_3b0e8c31.jpg"} alt={room.name} />
-        <div className="room-feature__copy"><p className="eyebrow eyebrow--gold">From ${Math.round(room.weekdayRateCents / 100)} weekday · ${Math.round(room.weekendRateCents / 100)} weekend</p><h2 className="font-display">{room.name}</h2><p>{room.summary}</p><div className="room-feature__details"><span><BedDouble size={17} /> {room.bed}</span><span><Bath size={17} /> Private {room.bath.toLowerCase()}</span>{room.hasFireplace ? <span><Flame size={17} /> Fireplace</span> : null}</div><Link href="/booking" className="inn-button inn-button--dark">Check this room’s dates <ArrowRight size={17} /></Link></div>
-      </article>)}
+      {roomsQuery.isLoading ? <p className="room-loading">Gathering the rooms…</p> : rooms.map((room, index) => {
+        const detail = ROOM_DETAILS[room.slug];
+        const gallery = detail?.gallery ?? [room.imageUrl ?? "/manus-storage/exterior_3b0e8c31.jpg"];
+        return <article className={`room-feature ${index % 2 ? "room-feature--reverse" : ""}`} key={room.id}>
+          <RoomGallery roomName={room.name} images={gallery} />
+          <div className="room-feature__copy"><p className="eyebrow eyebrow--gold">From ${Math.round(room.weekdayRateCents / 100)} weekday · ${Math.round(room.weekendRateCents / 100)} weekend</p><h2 className="font-display">{room.name}</h2><p>{detail?.description ?? room.summary}</p><div className="room-feature__details"><span><BedDouble size={17} /> {room.bed}</span><span><Bath size={17} /> Private {room.bath.toLowerCase()}</span>{room.hasFireplace ? <span><Flame size={17} /> Fireplace</span> : null}</div><Link href="/booking" className="inn-button inn-button--dark">Check this room’s dates <ArrowRight size={17} /></Link></div>
+        </article>;
+      })}
     </div></section>
   </main>;
 }

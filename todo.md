@@ -91,10 +91,17 @@
 - [x] Restore a clearly visible keyboard-focus indicator for generic non-calendar action buttons, including the unauthenticated owner Sign in control, without changing the approved 15px radius.
 - [ ] Review authenticated owner-only action and resend controls in a real owner session, then record computed-style and visual evidence for their 15px radius and focus/hover states.
 - [ ] Perform and record explicit mobile interaction checks for representative buttons, including focus and press behavior where applicable.
-- [ ] Correct the button-review record to distinguish visually captured owner-calendar layout evidence from live owner-button interaction evidence.
+- [x] Correct the button-review record to distinguish visually captured owner-calendar layout evidence from live owner-button interaction evidence.
 - [x] Add the supplied official Pet Policy as a clear public policy page and link it from relevant guest-facing navigation and booking content.
 - [x] Add booking-form pet disclosure, dog-count and weight eligibility inputs, and a required Pet Policy acknowledgment whenever a guest brings a pet.
 - [x] Persist only the pet-related reservation information needed for eligibility and policy acknowledgment, while enforcing a maximum of two dogs under 25 pounds each.
 - [x] Refresh all room images and descriptions from the owner-authorized Old Northside Bed and Breakfast rooms source.
 - [x] Add automated coverage for pet-policy booking validation and updated room content, then complete responsive visual and functional verification.
 - [x] Prevent the booking availability query from running until both a valid check-in and a later check-out date are selected, so a single-date selection does not surface a false error.
+- [x] Replace the Bridal Room exterior image with an authorized interior room image in all guest-facing room presentations.
+- [x] Expand every guest-room description with fuller, source-grounded detail from the authorized rooms page.
+- [x] Add an accessible per-room image gallery so guests can step through each room’s authorized photos from the room presentation.
+- [x] Collect, upload, and map multiple authorized images for each room through managed project storage.
+- [x] Add automated coverage and complete desktop/mobile interaction and visual validation for the expanded room galleries.
+- [x] Verify the Bridal Room lead image on all guest-facing surfaces, including homepage cards and room-linked booking summaries, and record direct evidence that no exterior image remains.
+- [x] Perform and record explicit mobile gallery interaction checks, including stepping through photos via controls and confirming the active-photo label behavior.
