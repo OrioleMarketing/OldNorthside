@@ -6,13 +6,13 @@ import { ArrowRight, Bath, BedDouble, CalendarCheck2, CalendarDays, CheckCircle2
 import { Link } from "wouter";
 
 const ROOM_IMAGES: Record<string, string> = {
-  "the-bridal-room": "/manus-storage/library-suite_b24b3222.jpg",
-  "the-tiffany-room": "/manus-storage/tiffany-room_0dbdd78d.jpg",
-  "the-literary-room": "/manus-storage/literary-room_69da343c.jpg",
-  "the-dewenter-room": "/manus-storage/dewenter-room_a9fea36d.jpg",
-  "the-hollywood-room": "/manus-storage/hollywood-room_74a677e5.jpg",
-  "the-rose-garden-room": "/manus-storage/rose-garden-room_b1faa21a.jpg",
-  "the-library-wedding-suite": "/manus-storage/library-suite_b24b3222.jpg",
+  "the-bridal-room": "/manus-storage/bridal-room_3e9601fd.png",
+  "the-tiffany-room": "/manus-storage/tiffany-room_8e9dfc95.jpg",
+  "the-literary-room": "/manus-storage/literary-room_a03a0fed.jpg",
+  "the-dewenter-room": "/manus-storage/dewenter-room_c0fd6bf3.jpg",
+  "the-hollywood-room": "/manus-storage/hollywood-room_501fda0d.jpg",
+  "the-rose-garden-room": "/manus-storage/rose-garden-room_62e2d54a.jpg",
+  "the-library-wedding-suite": "/manus-storage/library-wedding-suite_22c3c8f5.jpg",
 };
 
 function PageHero({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
@@ -116,6 +116,27 @@ export function PoliciesPage({ kind }: { kind: "privacy" | "terms" }) {
     </> : <>
       <p className="policy-date">Effective July 20, 2026</p><h2 className="font-display">Booking and house terms</h2><p>Guests must be 18 or older to make a reservation. A reservation is confirmed after availability is verified and the required payment shown at checkout has been successfully processed. Rates, taxes, and the total payment due are shown before checkout.</p><h3>Payment, balance, and tax</h3><p>Depending on the active booking policy, either a first-night deposit—including applicable tax—or the full stay amount is collected at booking. When a balance remains, it is requested seven days before arrival. For stays of fewer than 30 consecutive nights, the quoted total includes 7% Indiana state tax and 3% Marion County Innkeeper’s Tax. Any cancellation, refund, no-show, or third-party booking rules shown during checkout are part of the applicable reservation.</p><h3>Arrival and house expectations</h3><p>Check-in, check-out, occupancy, children, pets and service animals, smoking/vaping, alcohol, and guest conduct are governed by the reservation terms and house rules communicated by the inn. The property is smoke-free; a smokers’ patio is available. Guests are responsible for following the rules provided for their stay.</p><h3>Questions</h3><p>For clarification about an existing reservation or any house policy, please contact Old Northside Bed and Breakfast before arrival.</p>
     </>}</article></section></main>;
+}
+
+export function PetPolicyPage() {
+  return <main><PageHero eyebrow="Old Northside Bed and Breakfast" title="Pet Policy" copy="A comfortable stay for every guest, including eligible dogs." />
+    <section className="section section--paper"><article className="container policy-content">
+      <p className="policy-date">Official Pet Policy</p>
+      <h2 className="font-display">Traveling with your dog</h2>
+      <p>A maximum of two dogs, each under 25 pounds, may stay at Old Northside Bed and Breakfast. Guests bringing a dog must review and acknowledge this policy as part of their reservation.</p>
+      <h3>Guest responsibilities</h3>
+      <ol>
+        <li>Dogs must be completely housebroken.</li>
+        <li>No barkers who could disturb other guests.</li>
+        <li>Please bring your own coverings if you allow your dog on the bed.</li>
+        <li>Dogs cannot be left at the inn when you leave the premises.</li>
+      </ol>
+      <h3>Cleaning and repair</h3>
+      <p>If a dog soils or damages carpet or furniture, a cleaning or repair fee will be assessed.</p>
+      <h3>Before you reserve</h3>
+      <p>When booking with a dog, please confirm the number of dogs, confirm that each dog weighs under 25 pounds, and check the required acknowledgment that you have reviewed this policy.</p>
+      <Link href="/booking" className="inn-button inn-button--dark">Reserve with your dog <ArrowRight size={17} /></Link>
+    </article></section></main>;
 }
 
 export function ConfirmationPage() {

@@ -45,6 +45,10 @@ export type BookingInput = {
   guestEmail: string;
   guestPhone: string;
   guestCount: number;
+  hasPet?: boolean;
+  dogCount?: number;
+  dogsUnder25Lbs?: boolean;
+  petPolicyAcknowledged?: boolean;
 };
 
 const defaultSettings: PublicBookingSettings = {
@@ -263,8 +267,29 @@ function generateBookingReference() {
   return `ONB-${nanoid(8).toUpperCase()}`;
 }
 
+export function getValidatedPetDetails(input: BookingInput) {
+  const hasPet = input.hasPet ?? false;
+  if (!hasPet) {
+    return { hasPet: 0, dogCount: 0, dogsUnder25Lbs: 0, petPolicyAcknowledged: 0 };
+  }
+
+  const dogCount = input.dogCount ?? 0;
+  if (!Number.isInteger(dogCount) || dogCount < 1 || dogCount > 2) {
+    throw new Error("A maximum of two dogs may stay with you.");
+  }
+  if (!input.dogsUnder25Lbs) {
+    throw new Error("Each dog must weigh under 25 pounds to stay at the inn.");
+  }
+  if (!input.petPolicyAcknowledged) {
+    throw new Error("Please review and acknowledge the Pet Policy before continuing.");
+  }
+
+  return { hasPet: 1, dogCount, dogsUnder25Lbs: 1, petPolicyAcknowledged: 1 };
+}
+
 export async function createReservationHold(input: BookingInput) {
   getNights(input.checkIn, input.checkOut);
+  const petDetails = getValidatedPetDetails(input);
   const db = await getDb();
   if (!db) throw new Error("Reservations are temporarily unavailable. Please try again shortly.");
 
@@ -326,6 +351,7 @@ export async function createReservationHold(input: BookingInput) {
       guestEmail: input.guestEmail,
       guestPhone: input.guestPhone,
       guestCount: input.guestCount,
+      ...petDetails,
       checkIn: input.checkIn,
       checkOut: input.checkOut,
       status: "pending_deposit",

@@ -8,6 +8,7 @@ import { CalendarDays, Check, CircleAlert, Loader2, LockKeyhole, RotateCcw, Spar
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { toast } from "sonner";
+import { Link } from "wouter";
 
 type BookingWidgetProps = {
   compact?: boolean;
@@ -42,6 +43,10 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [guestCount, setGuestCount] = useState("1");
+  const [hasPet, setHasPet] = useState(false);
+  const [dogCount, setDogCount] = useState("1");
+  const [dogsUnder25Lbs, setDogsUnder25Lbs] = useState(false);
+  const [petPolicyAcknowledged, setPetPolicyAcknowledged] = useState(false);
 
   const checkIn = stay?.from ? toDateKey(stay.from) : "";
   const checkOut = stay?.to ? toDateKey(stay.to) : "";
@@ -49,7 +54,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     () => ({ checkIn: checkIn || toDateKey(today), checkOut: checkOut || toDateKey(tomorrow) }),
     [checkIn, checkOut, today, tomorrow],
   );
-  const canCheckAvailability = Boolean(checkIn && checkOut);
+  const canCheckAvailability = Boolean(checkIn && checkOut && checkOut > checkIn);
   const { data: settings } = trpc.booking.settings.useQuery();
   const availabilityQuery = trpc.booking.availability.useQuery(queryInput, { enabled: canCheckAvailability });
   const checkout = trpc.booking.createDepositCheckout.useMutation({
@@ -61,7 +66,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     onError: error => toast.error(error.message),
   });
 
-  const availableRooms = availabilityQuery.data ?? [];
+  const availableRooms = canCheckAvailability ? (availabilityQuery.data ?? []) : [];
   const selected = availableRooms.find(item => item.room.id === selectedRoomId) ?? null;
 
   useEffect(() => {
@@ -78,6 +83,10 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     setGuestEmail("");
     setGuestPhone("");
     setGuestCount("1");
+    setHasPet(false);
+    setDogCount("1");
+    setDogsUnder25Lbs(false);
+    setPetPolicyAcknowledged(false);
     toast.message("Your booking selection has been cleared. Start with your stay dates.");
   }
 
@@ -85,6 +94,14 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     event.preventDefault();
     if (!selected || !checkIn || !checkOut) {
       toast.error("Select dates and an available room before continuing.");
+      return;
+    }
+    if (hasPet && !dogsUnder25Lbs) {
+      toast.error("Each dog must weigh under 25 pounds to stay at the inn.");
+      return;
+    }
+    if (hasPet && !petPolicyAcknowledged) {
+      toast.error("Please review and acknowledge the Pet Policy before continuing.");
       return;
     }
     checkout.mutate({
@@ -95,6 +112,10 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
       guestEmail,
       guestPhone,
       guestCount: Number(guestCount),
+      hasPet,
+      dogCount: hasPet ? Number(dogCount) : 0,
+      dogsUnder25Lbs: hasPet && dogsUnder25Lbs,
+      petPolicyAcknowledged: hasPet && petPolicyAcknowledged,
     });
   }
 
@@ -102,7 +123,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   const paymentCollectionMode = settings?.paymentCollectionMode ?? "first_night_deposit";
   const reminderDays = settings?.balanceReminderDays ?? 7;
   const availabilityStatus = !canCheckAvailability
-    ? "Select a check-in and check-out date to view live availability."
+    ? "Select a check-in and a later check-out date to view live availability."
     : availabilityQuery.isLoading
       ? "Checking each room for your stay."
       : availabilityQuery.isError
@@ -155,7 +176,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
           <div className="booking-step__number">02</div>
           <p className="booking-step__label">Available rooms</p>
           {!canCheckAvailability ? (
-            <div className="booking-empty-state"><CalendarDays size={20} /><span>Select a check-in and check-out date to view live availability.</span></div>
+            <div className="booking-empty-state"><CalendarDays size={20} /><span>Select a check-in and a later check-out date to view live availability.</span></div>
           ) : availabilityQuery.isLoading ? (
             <div className="booking-empty-state"><Loader2 className="animate-spin" size={20} /><span>Checking each room for your stay…</span></div>
           ) : availabilityQuery.isError ? (
@@ -208,6 +229,20 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             <label><span>Mobile number</span><Input required type="tel" value={guestPhone} onChange={event => setGuestPhone(event.target.value)} placeholder="(317) 555-0123" /></label>
             <label><span>Guests</span><select value={guestCount} onChange={event => setGuestCount(event.target.value)}><option value="1">1 guest</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option></select></label>
           </div>
+
+          <fieldset className="booking-pet-disclosure">
+            <legend>Will a dog stay with you?</legend>
+            <p>Dog stays are limited to a maximum of two dogs, with each dog under 25 pounds.</p>
+            <div className="booking-pet-disclosure__choices">
+              <label><input type="radio" name="has-pet" checked={!hasPet} onChange={() => { setHasPet(false); setDogsUnder25Lbs(false); setPetPolicyAcknowledged(false); }} /> No, we will not bring a dog</label>
+              <label><input type="radio" name="has-pet" checked={hasPet} onChange={() => setHasPet(true)} /> Yes, we will bring a dog</label>
+            </div>
+            {hasPet ? <div className="booking-pet-disclosure__details">
+              <label><span>Number of dogs</span><select value={dogCount} onChange={event => setDogCount(event.target.value)}><option value="1">1 dog</option><option value="2">2 dogs</option></select></label>
+              <label className="booking-pet-confirmation"><input type="checkbox" checked={dogsUnder25Lbs} onChange={event => setDogsUnder25Lbs(event.target.checked)} required /><span>Each dog traveling with us is under 25 pounds.</span></label>
+              <label className="booking-pet-confirmation booking-pet-confirmation--policy"><input type="checkbox" checked={petPolicyAcknowledged} onChange={event => setPetPolicyAcknowledged(event.target.checked)} required /><span>I have reviewed the <Link href="/pet-policy">Pet Policy</Link>. Our dog(s) will be housebroken, will not disturb other guests, will be covered if allowed on a bed, and will never be left at the inn unattended. I understand that a cleaning or repair fee may be assessed for carpet or furniture damage.</span></label>
+            </div> : null}
+          </fieldset>
 
           <div className="quote-card" aria-live="polite">
             <div><span>{selected.quote.nights} night{selected.quote.nights === 1 ? "" : "s"} · room subtotal</span><strong>{money.format(selected.quote.subtotalCents / 100)}</strong></div>

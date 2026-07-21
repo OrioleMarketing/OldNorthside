@@ -30,6 +30,13 @@ describe("booking widget accessibility affordances", () => {
     expect(bookingWidgetSource).toContain("Start over");
   });
 
+  it("waits for a valid overnight date range before loading availability", () => {
+    expect(bookingWidgetSource).toContain("Boolean(checkIn && checkOut && checkOut > checkIn)");
+    expect(bookingWidgetSource).toContain("availability.useQuery(queryInput, { enabled: canCheckAvailability })");
+    expect(bookingWidgetSource).toContain("const availableRooms = canCheckAvailability ? (availabilityQuery.data ?? []) : []");
+    expect(bookingWidgetSource).toContain("Select a check-in and a later check-out date to view live availability.");
+  });
+
   it("communicates checkout progress and the secure-payment notice", () => {
     expect(bookingWidgetSource).toContain("aria-busy={checkout.isPending}");
     expect(bookingWidgetSource).toContain('id="secure-payment-notice"');

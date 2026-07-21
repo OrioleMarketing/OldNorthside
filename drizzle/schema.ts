@@ -88,6 +88,10 @@ export const reservations = mysqlTable(
     guestEmail: varchar("guestEmail", { length: 320 }).notNull(),
     guestPhone: varchar("guestPhone", { length: 50 }).notNull(),
     guestCount: int("guestCount").notNull().default(1),
+    hasPet: int("hasPet").notNull().default(0),
+    dogCount: int("dogCount").notNull().default(0),
+    dogsUnder25Lbs: int("dogsUnder25Lbs").notNull().default(0),
+    petPolicyAcknowledged: int("petPolicyAcknowledged").notNull().default(0),
     checkIn: date("checkIn", { mode: "string" }).notNull(),
     checkOut: date("checkOut", { mode: "string" }).notNull(),
     status: mysqlEnum("status", ["hold", "pending_deposit", "confirmed", "cancelled", "expired", "blocked"])

@@ -29,7 +29,7 @@
 - [x] Add the supplied Resend API key as a server-only project secret; never expose it to the browser or source control.
 - [x] Send branded booking confirmation and seven-day balance-reminder emails through Resend, with duplicate-delivery protection and delivery logging.
 - [x] Use the Resend sandbox sender only for testing and document the required verified Old Northside sending domain for production.
-- [ ] Verify `oldnorthsidebedandbreakfast.com` in the configured Resend account so `reservations@oldnorthsidebedandbreakfast.com` can send branded transactional guest communications.
+- [x] Verify `oldnorthsidebedandbreakfast.com` in the configured Resend account so `reservations@oldnorthsidebedandbreakfast.com` can send branded transactional guest communications.
 - [x] Add an explicit owner control for first-night deposit versus full-stay payment and show the active policy to guests before checkout.
 - [x] Show the stored state and county tax line items in the owner reservation-management view alongside totals and remaining balance.
 - [x] Document a clear Resend test-sender configuration separate from the verified production sender.
@@ -80,3 +80,21 @@
 - [x] Confirm the verified `oldnorthsidebedandbreakfast.com` Resend domain is used by the website’s production sender configuration without sending an unsolicited test email.
 - [x] Verify and document without exposing secrets that `RESEND_FROM_EMAIL` is an address at `oldnorthsidebedandbreakfast.com`.
 - [x] Add focused automated coverage requiring the configured sender domain to equal `oldnorthsidebedandbreakfast.com`.
+- [x] Standardize all website button corner radii to 15px across public, booking, and utility controls.
+- [x] Validate the 15px button-radius standard on desktop and mobile layouts without affecting focus or hover behavior.
+- [x] Override higher-specificity button variants, including the hero contact call to action and booking Start over control, so their computed corner radius is 15px.
+- [x] Confirm all major desktop and mobile button variants render at a computed 15px radius after specificity overrides.
+- [ ] Verify representative primary, secondary, navigation, booking, owner, and utility buttons in-browser on desktop and mobile, including explicit hover and keyboard-focus checks.
+- [x] Add targeted source-level regression coverage for all major button variants to enforce the 15px radius after specificity overrides.
+- [ ] Complete and record a comprehensive computed-style and visual review of all major button variants before publication.
+- [x] Restore a clearly visible keyboard-focus indicator for the booking Start over control without changing its approved 15px corner radius.
+- [x] Restore a clearly visible keyboard-focus indicator for generic non-calendar action buttons, including the unauthenticated owner Sign in control, without changing the approved 15px radius.
+- [ ] Review authenticated owner-only action and resend controls in a real owner session, then record computed-style and visual evidence for their 15px radius and focus/hover states.
+- [ ] Perform and record explicit mobile interaction checks for representative buttons, including focus and press behavior where applicable.
+- [ ] Correct the button-review record to distinguish visually captured owner-calendar layout evidence from live owner-button interaction evidence.
+- [x] Add the supplied official Pet Policy as a clear public policy page and link it from relevant guest-facing navigation and booking content.
+- [x] Add booking-form pet disclosure, dog-count and weight eligibility inputs, and a required Pet Policy acknowledgment whenever a guest brings a pet.
+- [x] Persist only the pet-related reservation information needed for eligibility and policy acknowledgment, while enforcing a maximum of two dogs under 25 pounds each.
+- [x] Refresh all room images and descriptions from the owner-authorized Old Northside Bed and Breakfast rooms source.
+- [x] Add automated coverage for pet-policy booking validation and updated room content, then complete responsive visual and functional verification.
+- [x] Prevent the booking availability query from running until both a valid check-in and a later check-out date are selected, so a single-date selection does not surface a false error.

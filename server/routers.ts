@@ -76,6 +76,10 @@ export const appRouter = router({
           guestEmail: z.string().trim().email().max(320),
           guestPhone: z.string().trim().min(7).max(50),
           guestCount: z.number().int().min(1).max(4),
+          hasPet: z.boolean().default(false),
+          dogCount: z.number().int().min(0).max(2).default(0),
+          dogsUnder25Lbs: z.boolean().default(false),
+          petPolicyAcknowledged: z.boolean().default(false),
         }),
       )
       .mutation(async ({ input, ctx }) => {

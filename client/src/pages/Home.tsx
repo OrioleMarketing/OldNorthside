@@ -3,15 +3,15 @@ import { trpc } from "@/lib/trpc";
 import { ArrowRight, BedDouble, CalendarDays, CarFront, Coffee, ExternalLink, Footprints, MapPin, Phone, ShieldCheck, Sparkles, TreePine, Trophy, UtensilsCrossed, Wifi } from "lucide-react";
 import { Link } from "wouter";
 
-const HERO_IMAGE = "/manus-storage/dewenter-room_a9fea36d.jpg";
+const HERO_IMAGE = "/manus-storage/dewenter-room_c0fd6bf3.jpg";
 const ROOM_IMAGES: Record<string, string> = {
-  "the-bridal-room": "/manus-storage/library-suite_b24b3222.jpg",
-  "the-tiffany-room": "/manus-storage/tiffany-room_0dbdd78d.jpg",
-  "the-literary-room": "/manus-storage/literary-room_69da343c.jpg",
-  "the-dewenter-room": "/manus-storage/dewenter-room_a9fea36d.jpg",
-  "the-hollywood-room": "/manus-storage/hollywood-room_74a677e5.jpg",
-  "the-rose-garden-room": "/manus-storage/rose-garden-room_b1faa21a.jpg",
-  "the-library-wedding-suite": "/manus-storage/library-suite_b24b3222.jpg",
+  "the-bridal-room": "/manus-storage/bridal-room_3e9601fd.png",
+  "the-tiffany-room": "/manus-storage/tiffany-room_8e9dfc95.jpg",
+  "the-literary-room": "/manus-storage/literary-room_a03a0fed.jpg",
+  "the-dewenter-room": "/manus-storage/dewenter-room_c0fd6bf3.jpg",
+  "the-hollywood-room": "/manus-storage/hollywood-room_501fda0d.jpg",
+  "the-rose-garden-room": "/manus-storage/rose-garden-room_62e2d54a.jpg",
+  "the-library-wedding-suite": "/manus-storage/library-wedding-suite_22c3c8f5.jpg",
 };
 
 const amenities = [
@@ -76,7 +76,7 @@ export default function Home() {
             <Link href="/about" className="text-link">Discover the house <ArrowRight size={16} /></Link>
           </div>
           <div className="story-grid__image-wrap">
-            <img src="/manus-storage/literary-room_69da343c.jpg" alt="The warm, historic interior of a guest room at Old Northside Bed and Breakfast" className="story-grid__image" />
+            <img src="/manus-storage/literary-room_a03a0fed.jpg" alt="The warm, historic interior of a guest room at Old Northside Bed and Breakfast" className="story-grid__image" />
             <div className="story-grid__note"><Sparkles size={17} /> Seven private-bath rooms</div>
           </div>
         </div>

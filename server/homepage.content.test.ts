@@ -10,6 +10,7 @@ const emailPath = fileURLToPath(new URL("../server/email.ts", import.meta.url));
 const stripePath = fileURLToPath(new URL("../server/stripe.ts", import.meta.url));
 const bookingWidgetPath = fileURLToPath(new URL("../client/src/components/BookingWidget.tsx", import.meta.url));
 const stylesheetPath = fileURLToPath(new URL("../client/src/index.css", import.meta.url));
+const roomSourceRecordPath = fileURLToPath(new URL("../official-room-source.md", import.meta.url));
 const homepageSource = readFileSync(homepagePath, "utf8");
 const indexSource = readFileSync(indexPath, "utf8");
 const appSource = readFileSync(appPath, "utf8");
@@ -18,6 +19,7 @@ const emailSource = readFileSync(emailPath, "utf8");
 const stripeSource = readFileSync(stripePath, "utf8");
 const bookingWidgetSource = readFileSync(bookingWidgetPath, "utf8");
 const stylesheetSource = readFileSync(stylesheetPath, "utf8");
+const roomSourceRecord = readFileSync(roomSourceRecordPath, "utf8");
 
 describe("homepage guest-facing positioning", () => {
   it("preserves the approved Dewenter-Greenen House history and artistic context", () => {
@@ -38,7 +40,7 @@ describe("homepage guest-facing positioning", () => {
   });
 
   it("uses the approved welcoming hero, lighter transition, clear reading rhythm, parking image, and booking hierarchy", () => {
-    expect(homepageSource).toContain('const HERO_IMAGE = "/manus-storage/dewenter-room_a9fea36d.jpg"');
+    expect(homepageSource).toContain('const HERO_IMAGE = "/manus-storage/dewenter-room_c0fd6bf3.jpg"');
     expect(homepageSource).toContain('Welcome to the Dewenter-Greenen House, now the Old Northside Bed and Breakfast');
     expect(homepageSource).toContain('className="hero-transition"');
     expect(homepageSource).toContain('Inn contact and booking details');
@@ -92,5 +94,62 @@ describe("homepage guest-facing positioning", () => {
     expect(innPagesSource).not.toContain("Old Northside Bed & Breakfast");
     expect(emailSource).not.toContain("Old Northside Bed &amp; Breakfast");
     expect(stripeSource).not.toContain("Old Northside Bed & Breakfast");
+  });
+});
+
+
+describe("official room and pet-policy updates", () => {
+  it("uses all seven managed official room images across room listings", () => {
+    const officialRoomImages = [
+      "/manus-storage/bridal-room_3e9601fd.png",
+      "/manus-storage/tiffany-room_8e9dfc95.jpg",
+      "/manus-storage/literary-room_a03a0fed.jpg",
+      "/manus-storage/dewenter-room_c0fd6bf3.jpg",
+      "/manus-storage/hollywood-room_501fda0d.jpg",
+      "/manus-storage/rose-garden-room_62e2d54a.jpg",
+      "/manus-storage/library-wedding-suite_22c3c8f5.jpg",
+    ];
+
+    officialRoomImages.forEach(image => {
+      expect(homepageSource).toContain(image);
+      expect(innPagesSource).toContain(image);
+    });
+    expect(roomSourceRecord).toContain("the largest and only main-floor guest room");
+    expect(roomSourceRecord).toContain("hand-faux-painted walls");
+  });
+
+  it("publishes the supplied Pet Policy and requires its acknowledgment in the booking form", () => {
+    expect(appSource).toContain('path="/pet-policy"');
+    expect(appSource).toContain('href="/pet-policy"');
+    expect(innPagesSource).toContain("A maximum of two dogs, each under 25 pounds");
+    expect(innPagesSource).toContain("Dogs must be completely housebroken.");
+    expect(innPagesSource).toContain("No barkers who could disturb other guests.");
+    expect(innPagesSource).toContain("Dogs cannot be left at the inn when you leave the premises.");
+    expect(innPagesSource).toContain("a cleaning or repair fee will be assessed");
+    expect(bookingWidgetSource).toContain("Will a dog stay with you?");
+    expect(bookingWidgetSource).toContain("petPolicyAcknowledged");
+    expect(bookingWidgetSource).toContain('href="/pet-policy"');
+  });
+});
+
+describe("global interactive control styling", () => {
+  it("applies the approved 15px corner radius to native and site-specific button controls", () => {
+    expect(stylesheetSource).toContain("/* Global button-radius standard */");
+    expect(stylesheetSource).toMatch(
+      /button:not\(\.rdp-day_button\):not\(\.button-radius-exempt\),[\s\S]*?\.inn-button,[\s\S]*?\.site-nav__book,[\s\S]*?\.hero-transition__cta,[\s\S]*?\.booking-reset,[\s\S]*?\.owner-button,[\s\S]*?\.owner-resend-button\s*\{\s*border-radius:\s*15px;\s*\}/,
+    );
+    expect(stylesheetSource).toContain("button:not(.rdp-day_button):not(.button-radius-exempt)");
+    expect(stylesheetSource).toContain("/* Global keyboard-focus standard for actionable controls */");
+    expect(stylesheetSource).toContain(
+      "button:not(.rdp-day_button):not(.button-radius-exempt):focus-visible",
+    );
+    expect(stylesheetSource).toContain("outline: 3px solid #2f493f;");
+    expect(stylesheetSource).toContain("outline-offset: 3px;");
+
+    const globalRadiusRule = stylesheetSource.indexOf("/* Global button-radius standard */");
+    expect(globalRadiusRule).toBeGreaterThan(stylesheetSource.indexOf(".hero-transition__cta {"));
+    expect(globalRadiusRule).toBeGreaterThan(stylesheetSource.indexOf(".booking-reset {"));
+    expect(globalRadiusRule).toBeGreaterThan(stylesheetSource.indexOf(".owner-button {"));
+    expect(globalRadiusRule).toBeGreaterThan(stylesheetSource.indexOf(".owner-resend-button {"));
   });
 });
