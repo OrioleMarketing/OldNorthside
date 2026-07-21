@@ -120,7 +120,7 @@ export default function Home() {
               <p className="eyebrow eyebrow--light">A few nearby favorites</p>
               <p>Explore the President Benjamin Harrison Home, take in Monument Circle, or catch the atmosphere at Lucas Oil Stadium, the Indiana Convention Center, Gainbridge Fieldhouse, the Indianapolis Zoo, and Victory Field.</p>
             </div>
-            <a className="inn-button indy-guide__button" href="mailto:reservations@oldnorthsidebedandbreakfast.com?subject=Indianapolis%20Visitor%20Guide">Request the Visitor Guide <Landmark size={17} /></a>
+            <Link className="inn-button indy-guide__button" href="/visitor-guide">Open the Visitor Guide <Landmark size={17} /></Link>
           </div>
         </div>
       </section>

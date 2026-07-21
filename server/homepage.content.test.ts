@@ -33,7 +33,7 @@ describe("homepage guest-facing positioning", () => {
     expect(homepageSource).toContain("Old Northside for tree-lined walks and nearby downtown discoveries");
   });
 
-  it("presents the owner-approved Indianapolis visitor experience and guide request", () => {
+  it("presents the owner-approved Indianapolis visitor experience and links to an internal Visitor Guide", () => {
     expect(homepageSource).toContain("Explore Indianapolis");
     expect(homepageSource).toContain("Historic Old Northside");
     expect(homepageSource).toContain("Dining & local flavor");
@@ -43,8 +43,14 @@ describe("homepage guest-facing positioning", () => {
     expect(homepageSource).toContain("Monument Circle");
     expect(homepageSource).toContain("Lucas Oil Stadium");
     expect(homepageSource).toContain("Indianapolis Zoo");
-    expect(homepageSource).toContain("Request the Visitor Guide");
-    expect(homepageSource).toContain("reservations@oldnorthsidebedandbreakfast.com?subject=Indianapolis%20Visitor%20Guide");
+    expect(homepageSource).toContain('href="/visitor-guide"');
+    expect(homepageSource).toContain("Open the Visitor Guide");
+    expect(homepageSource).not.toContain("Indianapolis%20Visitor%20Guide");
+    expect(appSource).toContain('path="/visitor-guide"');
+    expect(innPagesSource).toContain("Indianapolis Visitor Guide");
+    expect(innPagesSource).toContain("Dine your way through the city");
+    expect(innPagesSource).toContain("President Benjamin Harrison Home");
+    expect(innPagesSource).toContain("Gainbridge Fieldhouse");
   });
 
   it("preserves the owner welcome, portrait asset, direct contact, and approved browser title", () => {

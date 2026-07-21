@@ -2,7 +2,7 @@ import BookingWidget from "@/components/BookingWidget";
 import { trpc } from "@/lib/trpc";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ArrowRight, Bath, BedDouble, CalendarCheck2, CheckCircle2, Clock3, Coffee, Flame, Loader2, MapPin, ShieldCheck } from "lucide-react";
+import { ArrowRight, Bath, BedDouble, CalendarCheck2, CalendarDays, CheckCircle2, Clock3, Coffee, Flame, Landmark, Loader2, MapPin, ShieldCheck, TreePine, Trophy, UtensilsCrossed } from "lucide-react";
 import { Link } from "wouter";
 
 const ROOM_IMAGES: Record<string, string> = {
@@ -87,6 +87,25 @@ export function BalancePaymentPage() {
 
 export function AboutPage() {
   return <main><PageHero eyebrow="The Dewenter-Greenen House" title="A Victorian home with a living Indianapolis story." copy="Old Northside Bed and Breakfast sits in the heart of one of the city’s most distinctive historic neighborhoods." /><section className="section section--paper"><div className="container editorial-grid"><div><p className="eyebrow eyebrow--gold">Since 1885</p><h2 className="font-display">An old house with a generous welcome.</h2><p>Built for industrialist Herman Dewenter in 1885, the house is an enduring part of Indianapolis’s Old Northside. The home later became a small, personal inn—one where original architecture, art, and hospitality all share the same address.</p><p>Today, seven private-bath rooms make room for a measured, more thoughtful kind of stay. The innkeeper’s local perspective, breakfast on your schedule, and small comforts help make arrival easy.</p><Link className="inn-button inn-button--dark" href="/booking">Plan a stay <ArrowRight size={17}/></Link></div><img src="/manus-storage/exterior_3b0e8c31.jpg" alt="Old Northside Bed and Breakfast historic red-brick exterior" /></div></section><section className="section section--ink"><div className="container mini-facts"><div><MapPin/><span><strong>Old Northside</strong>Indianapolis, Indiana</span></div><div><Coffee/><span><strong>Breakfast</strong>Served at your chosen time</span></div><div><CheckCircle2/><span><strong>Seven rooms</strong>Each with a private bath</span></div></div></section></main>;
+}
+
+const VISITOR_GUIDE_HIGHLIGHTS = [
+  { icon: UtensilsCrossed, title: "Dine your way through the city", body: "Start with popular local eateries and downtown dining, then return to the calm of Old Northside after an evening out." },
+  { icon: TreePine, title: "Make room for green space", body: "Pair historic streets with parks and green spaces for an easy, restorative way to explore Indianapolis." },
+  { icon: CalendarDays, title: "Follow the city’s calendar", body: "Festivals, cultural events, entertainment, breweries, and distilleries give every season its own rhythm." },
+  { icon: Trophy, title: "Find a memorable game night", body: "Cheer at Lucas Oil Stadium, Gainbridge Fieldhouse, or an Indianapolis Indians game at Victory Field." },
+];
+
+export function VisitorGuidePage() {
+  return <main>
+    <PageHero eyebrow="Indianapolis Visitor Guide" title="Make the most of your Indianapolis stay." copy="Set on the edge of downtown in Historic Old Northside, Old Northside Bed and Breakfast is a welcoming home base for dining, culture, city events, and memorable discoveries." />
+    <section className="section section--paper"><div className="container visitor-guide">
+      <header className="visitor-guide__intro"><p className="eyebrow eyebrow--gold">Circle City, close at hand</p><h2 className="font-display">A historic neighborhood, with the city within easy reach.</h2><p>Begin in the tree-lined character of Old Northside, then move easily toward the dining, shopping, attractions, and entertainment that make Indianapolis such a vibrant destination. At the end of the day, return to a more personal kind of stay.</p></header>
+      <div className="visitor-guide__cards">{VISITOR_GUIDE_HIGHLIGHTS.map(({ icon: Icon, title, body }) => <article className="visitor-guide__card" key={title}><Icon aria-hidden="true" size={24}/><h3>{title}</h3><p>{body}</p></article>)}</div>
+    </div></section>
+    <section className="section visitor-guide__landmarks"><div className="container visitor-guide__landmarks-grid"><div><p className="eyebrow eyebrow--light">A few nearby favorites</p><h2 className="font-display">Let curiosity set the itinerary.</h2><p>Explore the rich history of the President Benjamin Harrison Home, take in the energy of Monument Circle, or plan an outing around the Indiana Convention Center. The Indianapolis Zoo and downtown restaurants offer more reasons to make a day of it.</p></div><div className="visitor-guide__landmark-list" aria-label="Visitor Guide landmarks"><div><Landmark aria-hidden="true" size={20}/><span><strong>Indianapolis landmarks</strong>President Benjamin Harrison Home · Monument Circle · Indiana Convention Center</span></div><div><Trophy aria-hidden="true" size={20}/><span><strong>Sports and live events</strong>Lucas Oil Stadium · Gainbridge Fieldhouse · Victory Field</span></div><div><MapPin aria-hidden="true" size={20}/><span><strong>Start and finish well</strong>Free off-street parking at the inn, then a cozy evening back in Old Northside.</span></div></div></div></section>
+    <section className="section section--gold cta-section"><div className="container cta-section__inner"><div><p className="eyebrow">Your home base</p><h2 className="font-display">Plan the stay around the discoveries.</h2><p className="cta-section__copy">Reserve directly with Old Northside Bed and Breakfast, then let Indianapolis unfold at your own pace.</p></div><Link href="/booking" className="inn-button inn-button--dark">Check availability <ArrowRight size={18}/></Link></div></section>
+  </main>;
 }
 
 export function PoliciesPage({ kind }: { kind: "privacy" | "terms" }) {
