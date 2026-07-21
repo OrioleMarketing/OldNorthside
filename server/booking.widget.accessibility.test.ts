@@ -21,6 +21,15 @@ describe("booking widget accessibility affordances", () => {
     expect(bookingWidgetSource).toContain('<Input required type="tel"');
   });
 
+  it("provides an accessible Start over control that resets booking inputs", () => {
+    expect(bookingWidgetSource).toContain("function resetBooking()");
+    expect(bookingWidgetSource).toContain("setStay(undefined)");
+    expect(bookingWidgetSource).toContain("setCalendarMonth(today)");
+    expect(bookingWidgetSource).toContain("setSelectedRoomId(null)");
+    expect(bookingWidgetSource).toContain('aria-label="Start over and clear your booking selections"');
+    expect(bookingWidgetSource).toContain("Start over");
+  });
+
   it("communicates checkout progress and the secure-payment notice", () => {
     expect(bookingWidgetSource).toContain("aria-busy={checkout.isPending}");
     expect(bookingWidgetSource).toContain('id="secure-payment-notice"');

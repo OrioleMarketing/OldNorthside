@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
 import { format } from "date-fns";
-import { CalendarDays, Check, CircleAlert, Loader2, LockKeyhole, Sparkles } from "lucide-react";
+import { CalendarDays, Check, CircleAlert, Loader2, LockKeyhole, RotateCcw, Sparkles } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { toast } from "sonner";
@@ -36,6 +36,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     return date;
   }, [today]);
   const [stay, setStay] = useState<DateRange | undefined>();
+  const [calendarMonth, setCalendarMonth] = useState(today);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
@@ -68,6 +69,17 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
       setSelectedRoomId(null);
     }
   }, [availableRooms, selectedRoomId]);
+
+  function resetBooking() {
+    setStay(undefined);
+    setCalendarMonth(today);
+    setSelectedRoomId(null);
+    setGuestName("");
+    setGuestEmail("");
+    setGuestPhone("");
+    setGuestCount("1");
+    toast.message("Your booking selection has been cleared. Start with your stay dates.");
+  }
 
   function submitReservation(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -108,9 +120,14 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             Find your room
           </h2>
         </div>
-        <p className="max-w-sm text-sm leading-6 text-stone-600">
-          Choose your dates first. We will show only rooms that are available for your entire stay.
-        </p>
+        <div className="booking-panel__actions">
+          <p className="booking-panel__description">
+            Choose your dates first. We will show only rooms that are available for your entire stay.
+          </p>
+          <Button type="button" variant="ghost" className="booking-reset" onClick={resetBooking} aria-label="Start over and clear your booking selections">
+            <RotateCcw aria-hidden="true" size={15} /> Start over
+          </Button>
+        </div>
       </div>
 
       <div className="booking-step-grid">
@@ -122,8 +139,9 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             selected={stay}
             onSelect={setStay}
             disabled={{ before: today }}
+            month={calendarMonth}
+            onMonthChange={setCalendarMonth}
             numberOfMonths={1}
-            defaultMonth={today}
             className="booking-calendar"
           />
           <div className="date-pills" aria-live="polite">

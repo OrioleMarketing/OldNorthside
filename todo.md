@@ -68,3 +68,9 @@
 - [x] Update the hero welcome sentence to identify the Dewenter-Greenen House as the current Old Northside Bed and Breakfast.
 - [x] Replace the homepage Visitor Guide destination with the owner-approved Visit Indy website and ensure it opens securely in a new browser tab.
 - [x] Validate the external Visit Indy call to action with focused regression coverage and a visual review.
+- [x] Scroll every route to the top on initial load and client-side navigation.
+- [x] Add an accessible Start over control that clears booking-calendar selections and restores the initial booking state.
+- [x] Validate route-scroll restoration and the booking Start over control with regression coverage and responsive visual review.
+- [x] Confirm page-top restoration during actual in-browser navigation between representative routes after scrolling down, then record the result before publication.
+- [x] Validate page-top restoration by scrolling down on a representative public route, then using a site navigation link to another route and confirming the destination loads at the top.
+- [x] Record the exact runtime scroll-restoration route sequence and observed top-of-page result before publication.
