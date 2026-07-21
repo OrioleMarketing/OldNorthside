@@ -14,7 +14,7 @@ function SiteHeader() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   return <header className="site-header"><div className="container site-header__inner">
-    <Link href="/" className="wordmark" onClick={close}><span>Old Northside</span><small>Bed & Breakfast · Indianapolis</small></Link>
+    <Link href="/" className="wordmark" onClick={close}><span>Old Northside</span><small>Bed and Breakfast · Indianapolis</small></Link>
     <button className="menu-toggle" type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-controls="site-navigation" aria-label={open ? "Close navigation" : "Open navigation"}>{open ? <X /> : <Menu />}</button>
     <nav id="site-navigation" className={`site-nav ${open ? "site-nav--open" : ""}`}>
       <Link href="/about" onClick={close}>The House</Link><Link href="/rooms" onClick={close}>Rooms</Link><Link href="/booking" onClick={close}>Reservations</Link><a href="tel:+13176359123" onClick={close}><Phone size={15} /> (317) 635‑9123</a><Link href="/booking" onClick={close} className="site-nav__book">Book Direct</Link>
@@ -23,7 +23,7 @@ function SiteHeader() {
 }
 
 function SiteFooter() {
-  return <footer className="site-footer"><div className="container site-footer__grid"><div><p className="wordmark"><span>Old Northside</span><small>Bed & Breakfast · Indianapolis</small></p><p className="site-footer__copy">A personal stay in the historic Dewenter-Greenen House.</p></div><div><h3>Visit</h3><p>1340 North Alabama Street<br/>Indianapolis, IN 46202</p><p><a href="tel:+13176359123">(317) 635‑9123</a><br/><a href="mailto:reservations@oldnorthsidebedandbreakfast.com">reservations@oldnorthsidebedandbreakfast.com</a></p></div><div><h3>Plan</h3><Link href="/rooms">Rooms</Link><Link href="/booking">Reservations</Link><Link href="/about">The House</Link></div><div><h3>Information</h3><Link href="/privacy">Privacy</Link><Link href="/terms">Terms & Conditions</Link><a href="/owner">Innkeeper sign in</a></div></div><div className="container site-footer__legal">© {new Date().getFullYear()} Old Northside Bed & Breakfast. All rights reserved.</div></footer>;
+  return <footer className="site-footer"><div className="container site-footer__grid"><div><p className="wordmark"><span>Old Northside</span><small>Bed and Breakfast · Indianapolis</small></p><p className="site-footer__copy">A personal stay in the historic Dewenter-Greenen House.</p></div><div><h3>Visit</h3><p>1340 North Alabama Street<br/>Indianapolis, IN 46202</p><p><a href="tel:+13176359123">(317) 635‑9123</a><br/><a href="mailto:reservations@oldnorthsidebedandbreakfast.com">reservations@oldnorthsidebedandbreakfast.com</a></p></div><div><h3>Plan</h3><Link href="/rooms">Rooms</Link><Link href="/booking">Reservations</Link><Link href="/about">The House</Link></div><div><h3>Information</h3><Link href="/privacy">Privacy</Link><Link href="/terms">Terms & Conditions</Link><a href="/owner">Innkeeper sign in</a></div></div><div className="container site-footer__legal">© {new Date().getFullYear()} Old Northside Bed and Breakfast. All rights reserved.</div></footer>;
 }
 
 function Router() {

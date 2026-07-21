@@ -40,3 +40,12 @@
 - [x] Expand the homepage heritage section with the Dewenter-Greenen House’s 1885 origin, Herman Dewenter, Gary Hofmeister’s 1994 restoration vision, international artwork, and hand-painted Ukrainian murals.
 - [x] Add a guest-comfort section that clearly presents complimentary amenities, private-bath and jacuzzi highlights, complete breakfast timing, smoke-free policy, and the designated smoker’s patio.
 - [x] Promote free off-street parking and walkable access to downtown Indianapolis destinations as key convenience benefits on the homepage.
+- [x] Replace the browser/tab title and public site name with “Old Northside Bed and Breakfast.”
+- [x] Refine the Dewenter-Greenen House story with the supplied Romanesque Revival, European turn-of-the-century restoration, maple flooring, hand-carved woodwork, and restored mural details.
+- [x] Add the supplied Indianapolis welcome sentiment to the guest-facing property narrative without using generic placeholder language.
+- [x] Add a respectful “Gary Hofmeister, Renaissance Man” owner-welcome feature with his supplied hospitality message and direct-contact invitation.
+- [x] Upload and integrate the owner-supplied Gary Hofmeister portrait as a properly hosted, accessible website asset.
+- [x] Normalize all public-facing brand text to the approved spelling “Old Northside Bed and Breakfast” across public pages, confirmation copy, and transactional email templates.
+- [x] Rewrite the Indianapolis welcome line as property-specific copy tied to the historic house, Old Northside, and nearby walkable experiences, with regression coverage for the approved wording.
+- [x] Normalize any remaining Home.tsx property-name strings to “Old Northside Bed and Breakfast.”
+- [x] Update booking confirmation page copy to use the approved full property name and extend regression coverage to reject legacy Home and confirmation branding.

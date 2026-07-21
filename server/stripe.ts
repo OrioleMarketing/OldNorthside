@@ -66,7 +66,7 @@ export async function createReservationCheckoutSession(input: {
           unit_amount: amountCents,
           product_data: {
             name: `${label} — ${input.roomName}`,
-            description: `${input.reservation.checkIn} to ${input.reservation.checkOut} · Old Northside Bed & Breakfast`,
+            description: `${input.reservation.checkIn} to ${input.reservation.checkOut} · Old Northside Bed and Breakfast`,
           },
         },
       },

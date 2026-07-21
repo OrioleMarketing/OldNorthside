@@ -44,14 +44,14 @@ export function renderEmailLayout(input: { preheader: string; title: string; bod
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#fffaf0;border:1px solid #decba5;">
       <tr><td style="padding:25px 32px 20px;background:#251d18;color:#fff5e5;">
         <div style="font-family:Georgia,serif;font-size:25px;line-height:1.05;font-weight:bold;letter-spacing:-.4px;">Old Northside</div>
-        <div style="margin-top:5px;color:#d5b273;font-size:10px;font-weight:bold;letter-spacing:1.7px;text-transform:uppercase;">Bed &amp; Breakfast · Indianapolis</div>
+        <div style="margin-top:5px;color:#d5b273;font-size:10px;font-weight:bold;letter-spacing:1.7px;text-transform:uppercase;">Bed and Breakfast · Indianapolis</div>
       </td></tr>
       <tr><td style="padding:34px 32px 26px;">
         <h1 style="margin:0 0 15px;color:#28201a;font-family:Georgia,serif;font-size:30px;line-height:1.16;font-weight:normal;">${input.title}</h1>
         <div style="color:#584a40;font-size:15px;line-height:1.7;">${input.body}</div>
       </td></tr>
       <tr><td style="padding:20px 32px;background:#eee0c6;border-top:1px solid #decba5;color:#5e4d3e;font-size:12px;line-height:1.55;">
-        Old Northside Bed &amp; Breakfast · 1340 North Alabama Street · Indianapolis, IN 46202<br/>Questions? Call (317) 635-9123.
+        Old Northside Bed and Breakfast · 1340 North Alabama Street · Indianapolis, IN 46202<br/>Questions? Call (317) 635-9123.
       </td></tr>
     </table>
   </td></tr></table>
@@ -171,7 +171,7 @@ export async function sendBookingConfirmation(reservationId: number): Promise<De
     ? `We received your first-night deposit of <strong>${formatCurrency(reservation.depositDueCents)}</strong>. The remaining balance is <strong>${formatCurrency(reservation.balanceDueCents)}</strong>. If a balance remains, we will send a secure payment reminder before arrival.`
     : `We received your full stay payment of <strong>${formatCurrency(reservation.depositDueCents)}</strong>, including all applicable taxes. There is no remaining balance.`;
   const body = `<p>Dear ${escapeHtml(reservation.guestName)},</p>
-    <p>Your reservation at Old Northside Bed &amp; Breakfast is confirmed. We look forward to welcoming you.</p>
+    <p>Your reservation at Old Northside Bed and Breakfast is confirmed. We look forward to welcoming you.</p>
     <div style="padding:14px 16px;background:#f4ead8;border-left:3px solid #a7782a;"><strong>Booking reference:</strong> ${escapeHtml(reservation.bookingReference)}<br/><strong>${escapeHtml(context.room.name)}</strong><br/>${formatLocalDate(reservation.checkIn)} to ${formatLocalDate(reservation.checkOut)}</div>
     ${bookingCharges(context)}
     <p style="margin-top:18px;">${paymentMessage}</p>`;
@@ -180,7 +180,7 @@ export async function sendBookingConfirmation(reservationId: number): Promise<De
     reservationId,
     kind: "booking_confirmation",
     to: reservation.guestEmail,
-    subject: `Your Old Northside reservation is confirmed — ${reservation.bookingReference}`,
+    subject: `Your Old Northside Bed and Breakfast reservation is confirmed — ${reservation.bookingReference}`,
     html: renderEmailLayout({ preheader: `Reservation confirmed — ${reservation.bookingReference}`, title: "Your stay is confirmed.", body }),
   });
 }
