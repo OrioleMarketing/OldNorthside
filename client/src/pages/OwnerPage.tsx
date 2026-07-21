@@ -51,12 +51,15 @@ function OwnerCalendar() {
   const [sendDepositPaymentLink, setSendDepositPaymentLink] = useState(true);
   const [pendingCancellation, setPendingCancellation] = useState<{ id: number; reference: string } | null>(null);
   const [cancellationReason, setCancellationReason] = useState("");
+  const [pendingBlockCancellation, setPendingBlockCancellation] = useState<{ id: number; roomName: string; dates: string } | null>(null);
+  const [blockCancellationReason, setBlockCancellationReason] = useState("");
   const [pendingCharge, setPendingCharge] = useState<{ id: number; reference: string; amountCents: number } | null>(null);
 
   const range = useMemo(() => ({ checkIn: isoDate(anchorDate), checkOut: isoDate(addDays(anchorDate, 14)) }), [anchorDate]);
+  const activeBlockQuery = useMemo(() => ({}), []);
   const rooms = trpc.booking.rooms.useQuery(undefined, { enabled: isAdmin });
   const reservations = trpc.owner.reservations.useQuery(range, { enabled: isAdmin });
-  const blocks = trpc.owner.blocks.useQuery(range, { enabled: isAdmin });
+  const blocks = trpc.owner.blocks.useQuery(activeBlockQuery, { enabled: isAdmin });
   const settings = trpc.owner.settings.useQuery(undefined, { enabled: isAdmin });
   const channelSyncReadiness = trpc.owner.channelSyncReadiness.useQuery(undefined, { enabled: isAdmin });
   const reminderSchedule = trpc.owner.reminderSchedule.useQuery(undefined, { enabled: isAdmin });
@@ -86,6 +89,15 @@ function OwnerCalendar() {
       setPhoneGuestCount("1");
       setPhoneDepositCollected(false);
       setSendDepositPaymentLink(true);
+      await invalidateOperationalData();
+    },
+    onError: error => toast.error(error.message),
+  });
+  const cancelBlock = trpc.owner.cancelBlock.useMutation({
+    onSuccess: async () => {
+      toast.success("Room block removed and inventory released.");
+      setPendingBlockCancellation(null);
+      setBlockCancellationReason("");
       await invalidateOperationalData();
     },
     onError: error => toast.error(error.message),
@@ -216,6 +228,10 @@ function OwnerCalendar() {
           <label>Reason<input value={blockReason} onChange={event => setBlockReason(event.target.value)} maxLength={240} required /></label>
           <button className="owner-button" type="submit" disabled={createBlock.isPending || !blockRoomId}>{createBlock.isPending ? "Saving hold…" : "Block dates"}</button>
         </form>
+        <div className="owner-active-blocks" aria-live="polite">
+          <h3>Active room blocks</h3>
+          {blocks.isLoading ? <p>Loading active room blocks…</p> : blocks.data?.length ? <div className="owner-active-blocks__list">{blocks.data.map(({ block, room }) => <article key={block.id} className="owner-active-block"><div><strong>{room.name}</strong><span>{block.checkIn}–{block.checkOut}</span><small>{block.reason}</small></div><button className="owner-cancel-button" type="button" onClick={() => { setPendingBlockCancellation({ id: block.id, roomName: room.name, dates: `${block.checkIn}–${block.checkOut}` }); setBlockCancellationReason(""); }} disabled={cancelBlock.isPending}><XCircle size={14} /> Unblock room</button></article>)}</div> : <p className="owner-empty">No active owner blocks are currently in place.</p>}
+        </div>
       </section>
 
       <section className="owner-panel">
@@ -260,6 +276,14 @@ function OwnerCalendar() {
         <AlertDialogHeader><AlertDialogTitle>Cancel reservation {pendingCancellation?.reference}?</AlertDialogTitle><AlertDialogDescription>This immediately releases the room inventory and cancels unsent payment reminders. It does not automatically refund a payment already collected.</AlertDialogDescription></AlertDialogHeader>
         <label className="owner-dialog-label">Cancellation reason<textarea value={cancellationReason} onChange={event => setCancellationReason(event.target.value)} maxLength={240} placeholder="Reason shown in the staff audit trail" /></label>
         <AlertDialogFooter><AlertDialogCancel>Keep reservation</AlertDialogCancel><AlertDialogAction className="bg-red-800 hover:bg-red-900" disabled={!pendingCancellation || cancellationReason.trim().length < 2 || cancelReservation.isPending} onClick={() => pendingCancellation && cancelReservation.mutate({ reservationId: pendingCancellation.id, reason: cancellationReason.trim() })}>{cancelReservation.isPending ? "Cancelling…" : "Cancel reservation"}</AlertDialogAction></AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog open={Boolean(pendingBlockCancellation)} onOpenChange={open => { if (!open) { setPendingBlockCancellation(null); setBlockCancellationReason(""); } }}>
+      <AlertDialogContent>
+        <AlertDialogHeader><AlertDialogTitle>Unblock {pendingBlockCancellation?.roomName}?</AlertDialogTitle><AlertDialogDescription>This will immediately make {pendingBlockCancellation?.dates} available for new reservations, unless another reservation or channel block applies.</AlertDialogDescription></AlertDialogHeader>
+        <label className="owner-dialog-label">Reason for unblocking<textarea value={blockCancellationReason} onChange={event => setBlockCancellationReason(event.target.value)} maxLength={240} placeholder="Reason shown in the staff audit trail" /></label>
+        <AlertDialogFooter><AlertDialogCancel>Keep room blocked</AlertDialogCancel><AlertDialogAction className="bg-red-800 hover:bg-red-900" disabled={!pendingBlockCancellation || blockCancellationReason.trim().length < 2 || cancelBlock.isPending} onClick={() => pendingBlockCancellation && cancelBlock.mutate({ reservationBlockId: pendingBlockCancellation.id, reason: blockCancellationReason.trim() })}>{cancelBlock.isPending ? "Unblocking…" : "Unblock room"}</AlertDialogAction></AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
 

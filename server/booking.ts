@@ -33,6 +33,7 @@ export type ReservationQuote = {
   stateTaxCents: number;
   countyTaxCents: number;
   totalCents: number;
+  firstNightDepositDueCents: number;
   depositDueCents: number;
   balanceDueCents: number;
   isShortTermTaxable: boolean;
@@ -46,6 +47,8 @@ export type BookingInput = {
   guestEmail: string;
   guestPhone: string;
   guestCount: number;
+  childCount?: number;
+  paymentSelection?: "deposit" | "full_stay";
   hasPet?: boolean;
   dogCount?: number;
   dogsUnder25Lbs?: boolean;
@@ -133,9 +136,10 @@ export function calculateQuote(
           10_000,
       )
     : 0;
+  const firstNightDepositDueCents = depositRoomCents + depositTaxCents;
   const depositDueCents = normalizedSettings.paymentCollectionMode === "full_stay"
     ? totalCents
-    : depositRoomCents + depositTaxCents;
+    : firstNightDepositDueCents;
 
   return {
     nights,
@@ -144,6 +148,7 @@ export function calculateQuote(
     stateTaxCents,
     countyTaxCents,
     totalCents,
+    firstNightDepositDueCents,
     depositDueCents,
     balanceDueCents: totalCents - depositDueCents,
     isShortTermTaxable,
@@ -295,6 +300,13 @@ export async function createReservationHold(
   options?: { source?: "direct" | "owner"; holdDurationMinutes?: number },
 ) {
   getNights(input.checkIn, input.checkOut);
+  if (!Number.isInteger(input.guestCount) || input.guestCount < 1 || input.guestCount > 4) {
+    throw new Error("Select between one and four total guests.");
+  }
+  const childCount = input.childCount ?? 0;
+  if (!Number.isInteger(childCount) || childCount < 0 || childCount > input.guestCount) {
+    throw new Error("Children must be between zero and the total number of guests.");
+  }
   const petDetails = getValidatedPetDetails(input);
   const db = await getDb();
   if (!db) throw new Error("Reservations are temporarily unavailable. Please try again shortly.");
@@ -346,7 +358,10 @@ export async function createReservationHold(
 
     const settingsResult = await tx.select().from(bookingSettings).limit(1);
     const settings = settingsResult[0];
-    const quote = calculateQuote(room, input.checkIn, input.checkOut, settings ?? defaultSettings);
+    const quote = calculateQuote(room, input.checkIn, input.checkOut, {
+      ...(settings ?? defaultSettings),
+      ...(input.paymentSelection === "full_stay" ? { paymentCollectionMode: "full_stay" as const } : input.paymentSelection === "deposit" ? { paymentCollectionMode: "first_night_deposit" as const } : {}),
+    });
     const holdDurationMinutes = options?.holdDurationMinutes ?? HOLD_DURATION_MINUTES;
     const holdExpiresAt = new Date(now.getTime() + holdDurationMinutes * 60_000);
     const bookingReference = generateBookingReference();
@@ -358,6 +373,7 @@ export async function createReservationHold(
       guestEmail: input.guestEmail,
       guestPhone: input.guestPhone,
       guestCount: input.guestCount,
+      childCount,
       ...petDetails,
       checkIn: input.checkIn,
       checkOut: input.checkOut,

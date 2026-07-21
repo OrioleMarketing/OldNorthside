@@ -90,7 +90,7 @@
 - [x] Restore a clearly visible keyboard-focus indicator for the booking Start over control without changing its approved 15px corner radius.
 - [x] Restore a clearly visible keyboard-focus indicator for generic non-calendar action buttons, including the unauthenticated owner Sign in control, without changing the approved 15px radius.
 - [ ] Review authenticated owner-only action and resend controls in a real owner session, then record computed-style and visual evidence for their 15px radius and focus/hover states.
-- [ ] Perform and record explicit mobile interaction checks for representative buttons, including focus and press behavior where applicable.
+- [x] Perform and record explicit mobile interaction checks for representative buttons, including focus and press behavior where applicable.
 - [x] Correct the button-review record to distinguish visually captured owner-calendar layout evidence from live owner-button interaction evidence.
 - [x] Add the supplied official Pet Policy as a clear public policy page and link it from relevant guest-facing navigation and booking content.
 - [x] Add booking-form pet disclosure, dog-count and weight eligibility inputs, and a required Pet Policy acknowledgment whenever a guest brings a pet.
@@ -111,3 +111,8 @@
 - [x] Add and run direct regression coverage for the owner payment-link workflow, including successful sending and a common failure case.
 - [x] Add and run direct regression coverage for consent-gated saved-card balance collection, including consent-required rejection and successful off-session charge behavior.
 - [x] Review the restored owner payment procedures and Stripe helper directly before the production checkpoint.
+- [x] Add a Children (under age 18) registration dropdown that defaults to 0 and persist the selected count with each reservation.
+- [x] Add a guest-selected full-stay-payment option to booking checkout while retaining the existing deposit option and accurate balance handling.
+- [x] Upload the supplied footer logo to managed project storage and place it as a homepage-linked image at the bottom of the footer’s first column.
+- [x] Diagnose and fix cancellation of owner-created room blocks so the owner can unblock a previously blocked room and inventory becomes available again.
+- [x] Add regression coverage and browser verification for child count, full-stay payment selection, linked footer logo, and owner room-unblocking.

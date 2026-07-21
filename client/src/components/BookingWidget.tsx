@@ -43,6 +43,9 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [guestCount, setGuestCount] = useState("1");
+  const [childCount, setChildCount] = useState("0");
+  const [paymentSelection, setPaymentSelection] = useState<"deposit" | "full_stay">("deposit");
+  const [paymentSelectionTouched, setPaymentSelectionTouched] = useState(false);
   const [hasPet, setHasPet] = useState(false);
   const [dogCount, setDogCount] = useState("1");
   const [dogsUnder25Lbs, setDogsUnder25Lbs] = useState(false);
@@ -58,6 +61,12 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   const canCheckAvailability = Boolean(checkIn && checkOut && checkOut > checkIn);
   const { data: settings } = trpc.booking.settings.useQuery();
   const availabilityQuery = trpc.booking.availability.useQuery(queryInput, { enabled: canCheckAvailability });
+
+  useEffect(() => {
+    if (!paymentSelectionTouched && settings) {
+      setPaymentSelection(settings.paymentCollectionMode === "full_stay" ? "full_stay" : "deposit");
+    }
+  }, [paymentSelectionTouched, settings]);
   const checkout = trpc.booking.createDepositCheckout.useMutation({
     onSuccess: result => {
       toast.success(`Your ${result.bookingReference} hold is ready for secure payment.`);
@@ -84,6 +93,9 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     setGuestEmail("");
     setGuestPhone("");
     setGuestCount("1");
+    setChildCount("0");
+    setPaymentSelection(settings?.paymentCollectionMode === "full_stay" ? "full_stay" : "deposit");
+    setPaymentSelectionTouched(false);
     setHasPet(false);
     setDogCount("1");
     setDogsUnder25Lbs(false);
@@ -114,6 +126,8 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
       guestEmail,
       guestPhone,
       guestCount: Number(guestCount),
+      childCount: Number(childCount),
+      paymentSelection,
       hasPet,
       dogCount: hasPet ? Number(dogCount) : 0,
       dogsUnder25Lbs: hasPet && dogsUnder25Lbs,
@@ -123,8 +137,15 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   }
 
   const depositNights = settings?.depositNights ?? 1;
-  const paymentCollectionMode = settings?.paymentCollectionMode ?? "first_night_deposit";
   const reminderDays = settings?.balanceReminderDays ?? 7;
+  const amountDueToday = selected
+    ? paymentSelection === "full_stay"
+      ? selected.quote.totalCents
+      : selected.quote.firstNightDepositDueCents
+    : 0;
+  const balanceDueAfterPayment = selected && paymentSelection === "deposit"
+    ? selected.quote.totalCents - selected.quote.firstNightDepositDueCents
+    : 0;
   const availabilityStatus = !canCheckAvailability
     ? "Select a check-in and a later check-out date to view live availability."
     : availabilityQuery.isLoading
@@ -221,8 +242,8 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
               <p className="booking-step__label">Reserve {selected.room.name}</p>
             </div>
             <div className="booking-total">
-              <span>{paymentCollectionMode === "full_stay" ? "Full stay due today" : "Deposit due today"}</span>
-              <strong>{money.format(selected.quote.depositDueCents / 100)}</strong>
+              <span>{paymentSelection === "full_stay" ? "Full stay due today" : "Deposit due today"}</span>
+              <strong>{money.format(amountDueToday / 100)}</strong>
             </div>
           </div>
 
@@ -230,8 +251,18 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             <label><span>Full name</span><Input required value={guestName} onChange={event => setGuestName(event.target.value)} placeholder="Your full name" /></label>
             <label><span>Email address</span><Input required type="email" value={guestEmail} onChange={event => setGuestEmail(event.target.value)} placeholder="you@example.com" /></label>
             <label><span>Mobile number</span><Input required type="tel" value={guestPhone} onChange={event => setGuestPhone(event.target.value)} placeholder="(317) 555-0123" /></label>
-            <label><span>Guests</span><select value={guestCount} onChange={event => setGuestCount(event.target.value)}><option value="1">1 guest</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option></select></label>
+            <label><span>Total guests</span><select value={guestCount} onChange={event => { const nextGuestCount = event.target.value; setGuestCount(nextGuestCount); if (Number(childCount) > Number(nextGuestCount)) setChildCount(nextGuestCount); }}><option value="1">1 guest</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option></select></label>
+            <label><span>Children (under age 18)</span><select value={childCount} onChange={event => setChildCount(event.target.value)}><option value="0">0 children</option>{Array.from({ length: Number(guestCount) }, (_, index) => <option key={index + 1} value={String(index + 1)}>{index + 1} {index === 0 ? "child" : "children"}</option>)}</select><small>Included in the total guest count.</small></label>
           </div>
+
+          <fieldset className="booking-payment-choice">
+            <legend>Payment today</legend>
+            <p>Choose the option that works best for your stay. You may pay the deposit now or pay the entire stay total today.</p>
+            <div className="booking-pet-disclosure__choices">
+              <label><input type="radio" name="payment-selection" checked={paymentSelection === "deposit"} onChange={() => { setPaymentSelection("deposit"); setPaymentSelectionTouched(true); }} /> Pay the first-night deposit — {money.format(selected.quote.firstNightDepositDueCents / 100)}</label>
+              <label><input type="radio" name="payment-selection" checked={paymentSelection === "full_stay"} onChange={() => { setPaymentSelection("full_stay"); setPaymentSelectionTouched(true); setSavePaymentMethodForBalance(false); }} /> Pay the full stay today — {money.format(selected.quote.totalCents / 100)}</label>
+            </div>
+          </fieldset>
 
           <fieldset className="booking-pet-disclosure">
             <legend>Will a dog stay with you?</legend>
@@ -247,7 +278,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             </div> : null}
           </fieldset>
 
-          {paymentCollectionMode === "first_night_deposit" && selected.quote.balanceDueCents > 0 ? <label className="booking-pet-confirmation booking-payment-consent"><input type="checkbox" checked={savePaymentMethodForBalance} onChange={event => setSavePaymentMethodForBalance(event.target.checked)} /><span><strong>Optional: save this payment method for your remaining balance.</strong> By selecting this box, you authorize Old Northside Bed and Breakfast to securely store the payment method used for today’s deposit and charge the remaining <strong>{money.format(selected.quote.balanceDueCents / 100)}</strong> before your arrival. We will send a payment reminder first. You may decline and pay through a secure link instead.</span></label> : null}
+          {paymentSelection === "deposit" && balanceDueAfterPayment > 0 ? <label className="booking-pet-confirmation booking-payment-consent"><input type="checkbox" checked={savePaymentMethodForBalance} onChange={event => setSavePaymentMethodForBalance(event.target.checked)} /><span><strong>Optional: save this payment method for your remaining balance.</strong> By selecting this box, you authorize Old Northside Bed and Breakfast to securely store the payment method used for today’s deposit and charge the remaining <strong>{money.format(balanceDueAfterPayment / 100)}</strong> before your arrival. We will send a payment reminder first. You may decline and pay through a secure link instead.</span></label> : null}
 
           <div className="quote-card" aria-live="polite">
             <div><span>{selected.quote.nights} night{selected.quote.nights === 1 ? "" : "s"} · room subtotal</span><strong>{money.format(selected.quote.subtotalCents / 100)}</strong></div>
@@ -257,16 +288,16 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             </> : <div><span>Long-stay lodging tax treatment</span><strong>Taxes not applied</strong></div>}
             <div className="quote-card__total"><span>Total stay</span><strong>{money.format(selected.quote.totalCents / 100)}</strong></div>
             <p>
-              {paymentCollectionMode === "full_stay"
-                ? <>The full stay amount of {money.format(selected.quote.depositDueCents / 100)}, including applicable taxes, is due today. There is no remaining balance.</>
-                : <>Today’s {depositNights === 1 ? "first-night" : `${depositNights}-night`} deposit is {money.format(selected.quote.depositDueCents / 100)}. The remaining {money.format(selected.quote.balanceDueCents / 100)} will be requested {reminderDays} days before arrival.</>}
+              {paymentSelection === "full_stay"
+                ? <>The full stay amount of {money.format(selected.quote.totalCents / 100)}, including applicable taxes, is due today. There is no remaining balance.</>
+                : <>Today’s {depositNights === 1 ? "first-night" : `${depositNights}-night`} deposit is {money.format(selected.quote.firstNightDepositDueCents / 100)}. The remaining {money.format(balanceDueAfterPayment / 100)} will be requested {reminderDays} days before arrival.</>}
             </p>
           </div>
 
           <div className="booking-checkout__actions">
             <p id="secure-payment-notice"><LockKeyhole size={15} /> Payment is securely processed by Stripe. Old Northside does not store card details.</p>
             <Button type="submit" className="inn-button inn-button--primary" disabled={checkout.isPending} aria-describedby="secure-payment-notice">
-              {checkout.isPending ? <><Loader2 className="animate-spin" /> Preparing secure checkout…</> : <><LockKeyhole /> {paymentCollectionMode === "full_stay" ? "Continue to secure payment" : "Continue to secure deposit"}</>}
+              {checkout.isPending ? <><Loader2 className="animate-spin" /> Preparing secure checkout…</> : <><LockKeyhole /> {paymentSelection === "full_stay" ? "Continue to secure full payment" : "Continue to secure deposit"}</>}
             </Button>
           </div>
         </form>

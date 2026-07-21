@@ -1,0 +1,1 @@
+ALTER TABLE `reservations` ADD `childCount` int DEFAULT 0 NOT NULL;

@@ -1,8 +1,8 @@
 import { eq, inArray } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { describe, expect, it } from "vitest";
-import { bookingEmailEvents, channelSyncEvents, reservationAuditEvents, reservations, rooms } from "../drizzle/schema";
-import { cancelReservationForOwner, createOwnerReservation, getAvailableRooms, recordStripePayment } from "./booking";
+import { bookingEmailEvents, channelSyncEvents, reservationAuditEvents, reservationBlocks, reservations, rooms } from "../drizzle/schema";
+import { cancelOwnerBlock, cancelReservationForOwner, createOwnerBlock, createOwnerReservation, getAvailableRooms, recordStripePayment } from "./booking";
 import { getDb } from "./db";
 
 async function databaseOrThrow() {
@@ -15,6 +15,12 @@ async function removeFixture(roomId: number) {
   const db = await databaseOrThrow();
   const roomReservations = await db.select({ id: reservations.id }).from(reservations).where(eq(reservations.roomId, roomId));
   const reservationIds = roomReservations.map(reservation => reservation.id);
+  const roomBlocks = await db.select({ id: reservationBlocks.id }).from(reservationBlocks).where(eq(reservationBlocks.roomId, roomId));
+  const blockIds = roomBlocks.map(block => block.id);
+  if (blockIds.length > 0) {
+    await db.delete(reservationAuditEvents).where(inArray(reservationAuditEvents.reservationBlockId, blockIds));
+    await db.delete(reservationBlocks).where(inArray(reservationBlocks.id, blockIds));
+  }
   if (reservationIds.length > 0) {
     await db.delete(reservationAuditEvents).where(inArray(reservationAuditEvents.reservationId, reservationIds));
     await db.delete(bookingEmailEvents).where(inArray(bookingEmailEvents.reservationId, reservationIds));
@@ -90,6 +96,78 @@ describe.sequential("owner reservation and cancellation workflow", () => {
       expect(audit.some(event => event.action === "reservation_cancelled" && event.actorUserId === 42)).toBe(true);
       const reminder = await db.select().from(bookingEmailEvents).where(eq(bookingEmailEvents.reservationId, created.reservation.id)).limit(1);
       expect(reminder[0]?.status).toBe("cancelled");
+    } finally {
+      await removeFixture(room.id);
+    }
+  });
+
+  it("persists children, honors a full-stay selection, and releases an owner block when unblocked", async () => {
+    const db = await databaseOrThrow();
+    const key = nanoid(12).toLowerCase();
+    const slug = `owner-unblock-${key}`;
+    await db.insert(rooms).values({
+      slug,
+      name: `Owner unblock room ${key}`,
+      summary: "Temporary room for owner block validation.",
+      bed: "Validation bed",
+      bath: "Validation bath",
+      weekdayRateCents: 12_500,
+      weekendRateCents: 15_000,
+      sortOrder: 99_996,
+      isActive: 1,
+    });
+    const [room] = await db.select().from(rooms).where(eq(rooms.slug, slug)).limit(1);
+    if (!room) throw new Error("Unable to create owner-unblock test room.");
+
+    try {
+      const fullStay = await createOwnerReservation({
+        roomId: room.id,
+        checkIn: "2032-05-11",
+        checkOut: "2032-05-13",
+        guestName: "Child Count Validation",
+        guestEmail: "child-count@example.test",
+        guestPhone: "317-555-0116",
+        guestCount: 3,
+        childCount: 1,
+        paymentSelection: "full_stay",
+        markDepositCollected: false,
+      });
+      expect(fullStay.reservation.childCount).toBe(1);
+      expect(fullStay.reservation.balanceDueCents).toBe(0);
+      expect(fullStay.reservation.depositDueCents).toBe(fullStay.reservation.totalCents);
+
+      await cancelReservationForOwner({
+        reservationId: fullStay.reservation.id,
+        actorUserId: 42,
+        reason: "Freeing dates for the owner-block validation.",
+      });
+
+      await createOwnerBlock({
+        roomId: room.id,
+        checkIn: "2032-05-11",
+        checkOut: "2032-05-13",
+        reason: "Maintenance validation block",
+        createdByUserId: 42,
+      });
+      const [block] = await db.select().from(reservationBlocks).where(eq(reservationBlocks.roomId, room.id)).limit(1);
+      if (!block) throw new Error("Unable to create owner block for validation.");
+
+      const blockedAvailability = await getAvailableRooms("2032-05-11", "2032-05-13");
+      expect(blockedAvailability.some(item => item.room.id === room.id)).toBe(false);
+
+      const cancelled = await cancelOwnerBlock({
+        reservationBlockId: block.id,
+        actorUserId: 42,
+        reason: "Maintenance block cleared.",
+      });
+      expect(cancelled.status).toBe("cancelled");
+      expect(cancelled.cancellationReason).toBe("Maintenance block cleared.");
+
+      const releasedAvailability = await getAvailableRooms("2032-05-11", "2032-05-13");
+      expect(releasedAvailability.some(item => item.room.id === room.id)).toBe(true);
+
+      const blockAudit = await db.select().from(reservationAuditEvents).where(eq(reservationAuditEvents.reservationBlockId, block.id));
+      expect(blockAudit.some(event => event.action === "block_cancelled" && event.actorUserId === 42)).toBe(true);
     } finally {
       await removeFixture(room.id);
     }

@@ -43,4 +43,13 @@ describe("booking widget accessibility affordances", () => {
     expect(bookingWidgetSource).toContain('aria-describedby="secure-payment-notice"');
     expect(bookingWidgetSource).toContain("Preparing secure checkout");
   });
+
+  it("defaults children to zero and lets guests choose a deposit or the full stay", () => {
+    expect(bookingWidgetSource).toContain('const [childCount, setChildCount] = useState("0")');
+    expect(bookingWidgetSource).toContain("Children (under age 18)");
+    expect(bookingWidgetSource).toContain("Payment today");
+    expect(bookingWidgetSource).toContain("Pay the first-night deposit");
+    expect(bookingWidgetSource).toContain("Pay the full stay today");
+    expect(bookingWidgetSource).toContain("paymentSelection");
+  });
 });

@@ -35,6 +35,7 @@ describe("booking pricing", () => {
     });
 
     expect(quote.totalCents).toBe(33_000);
+    expect(quote.firstNightDepositDueCents).toBe(16_500);
     expect(quote.depositDueCents).toBe(33_000);
     expect(quote.balanceDueCents).toBe(0);
   });

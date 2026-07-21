@@ -86,6 +86,9 @@ describe("homepage guest-facing positioning", () => {
     expect(indexSource).toContain('/manus-storage/favicon_design_1_5841d8ac.webp');
     expect(appSource).toContain("Bed and Breakfast · Indianapolis");
     expect(appSource).toContain("Old Northside Bed and Breakfast. All rights reserved.");
+    expect(appSource).toContain('href="/" className="site-footer__logo-link"');
+    expect(appSource).toContain('/manus-storage/old-northside-footer-logo_9f8b55b3.png');
+    expect(appSource).toContain('alt="Old Northside Bed and Breakfast"');
     expect(innPagesSource).toContain("Old Northside Bed and Breakfast");
     expect(innPagesSource).toContain("Thank you for choosing Old Northside Bed and Breakfast.");
     expect(emailSource).toContain("Old Northside Bed and Breakfast");

@@ -88,13 +88,9 @@ export function RoomsPage() {
 
 export function BookingPage() {
   const settings = trpc.booking.settings.useQuery();
-  const isFullStay = settings.data?.paymentCollectionMode === "full_stay";
-  const paymentCopy = isFullStay
-    ? "Choose dates, select an available room, and complete the full stay payment through secure checkout. We show the stay total and taxes before you pay."
-    : "Choose dates, select an available room, and complete the first-night deposit through secure checkout. We show the stay total and taxes before you pay.";
-  const paymentPlanCopy = isFullStay
-    ? "The full stay, including applicable taxes, is collected through secure checkout."
-    : "A first-night deposit secures your stay; the balance is requested seven days before arrival.";
+  const depositNights = settings.data?.depositNights ?? 1;
+  const paymentCopy = "Choose dates, select an available room, and decide whether to pay the deposit or the full stay through secure checkout. We show the stay total and taxes before you pay.";
+  const paymentPlanCopy = `Pay a ${depositNights === 1 ? "first-night" : `${depositNights}-night`} deposit to secure your stay, or pay the full stay total today. Any remaining balance is requested before arrival.`;
   return <main><PageHero eyebrow="Direct booking" title="Your room, confirmed in three clear steps." copy={paymentCopy} /><section className="section section--paper"><div className="container"><BookingWidget /></div></section><section className="section policy-strip"><div className="container policy-strip__grid"><div><ShieldCheck size={23}/><p><strong>Secure payment</strong><br/>Card details are processed by Stripe, not stored by the inn.</p></div><div><CalendarCheck2 size={23}/><p><strong>Live availability</strong><br/>Rooms shown are available for the entire selected stay.</p></div><div><Clock3 size={23}/><p><strong>Simple payment plan</strong><br/>{paymentPlanCopy}</p></div></div></section></main>;
 }
 

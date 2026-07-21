@@ -40,6 +40,7 @@ const reservationInput = stayInput.extend({
   guestEmail: z.string().trim().email().max(320),
   guestPhone: z.string().trim().min(7).max(50),
   guestCount: z.number().int().min(1).max(4),
+  childCount: z.number().int().min(0).max(4).default(0),
   hasPet: z.boolean().default(false),
   dogCount: z.number().int().min(0).max(2).default(0),
   dogsUnder25Lbs: z.boolean().default(false),
@@ -87,7 +88,7 @@ export const appRouter = router({
       }
     }),
     createDepositCheckout: publicProcedure
-      .input(reservationInput.extend({ savePaymentMethodForBalance: z.boolean().default(false) }))
+      .input(reservationInput.extend({ paymentSelection: z.enum(["deposit", "full_stay"]).default("deposit"), savePaymentMethodForBalance: z.boolean().default(false) }))
       .mutation(async ({ input, ctx }) => {
         try {
           const created = await createReservationHold(input);

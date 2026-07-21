@@ -46,7 +46,11 @@ export async function createReservationCheckoutSession(input: {
   }
 
   const savePaymentMethodForBalance = input.paymentKind === "deposit" && Boolean(input.savePaymentMethodForBalance);
-  const label = input.paymentKind === "deposit" ? "First-night deposit" : "Remaining stay balance";
+  const label = input.paymentKind === "deposit"
+    ? input.reservation.balanceDueCents === 0
+      ? "Full stay payment"
+      : "First-night deposit"
+    : "Remaining stay balance";
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     customer_email: input.reservation.guestEmail,
