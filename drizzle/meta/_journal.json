@@ -92,6 +92,13 @@
       "when": 1784667001349,
       "tag": "0012_heavy_lightspeed",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1784668547546,
+      "tag": "0013_naive_raider",
+      "breakpoints": true
     }
   ]
 }

@@ -22,6 +22,7 @@ import {
   updateBookingSettings,
 } from "./booking";
 import { getSessionCookieOptions } from "./_core/cookies";
+import { authenticateWebsiteAdmin, clearLoginAttempts, clearWebsiteAdminSession, ensureLoginAllowed, recordFailedLogin, setWebsiteAdminSession } from "./websiteAdminAuth";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { chargeSavedBalanceOffSession, createReservationCheckoutSession } from "./stripe";
@@ -70,8 +71,26 @@ export const appRouter = router({
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    innkeeperLogin: publicProcedure
+      .input(z.object({ email: z.string().trim().email().max(320), password: z.string().min(1).max(256) }))
+      .mutation(async ({ ctx, input }) => {
+        try {
+          ensureLoginAllowed(ctx.req, input.email);
+        } catch (error) {
+          throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: error instanceof Error ? error.message : "Please wait before trying again." });
+        }
+        const user = await authenticateWebsiteAdmin(input.email, input.password);
+        if (!user) {
+          recordFailedLogin(ctx.req, input.email);
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password." });
+        }
+        clearLoginAttempts(ctx.req, input.email);
+        setWebsiteAdminSession(ctx.res, ctx.req, user);
+        return user;
+      }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
+      clearWebsiteAdminSession(ctx.res, ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),

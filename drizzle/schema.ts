@@ -28,6 +28,26 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
+/** Website-managed innkeeper identities. Passwords are stored as Argon2id-compatible hashes only. */
+export const websiteAdmins = mysqlTable(
+  "website_admins",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    email: varchar("email", { length: 320 }).notNull(),
+    name: varchar("name", { length: 180 }).notNull(),
+    passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+    role: mysqlEnum("role", ["admin"]).notNull().default("admin"),
+    isActive: int("isActive").notNull().default(1),
+    lastSignedIn: timestamp("lastSignedIn"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [uniqueIndex("website_admins_email_unique").on(table.email)],
+);
+
+export type WebsiteAdmin = typeof websiteAdmins.$inferSelect;
+export type InsertWebsiteAdmin = typeof websiteAdmins.$inferInsert;
+
 /** Individual guest rooms at Old Northside Bed & Breakfast. */
 export const rooms = mysqlTable(
   "rooms",

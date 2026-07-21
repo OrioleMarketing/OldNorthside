@@ -116,3 +116,9 @@
 - [x] Upload the supplied footer logo to managed project storage and place it as a homepage-linked image at the bottom of the footer’s first column.
 - [x] Diagnose and fix cancellation of owner-created room blocks so the owner can unblock a previously blocked room and inventory becomes available again.
 - [x] Add regression coverage and browser verification for child count, full-stay payment selection, linked footer logo, and owner room-unblocking.
+- [x] Create a customer-facing FAQ page using the owner-supplied stay information and add an accessible FAQ footer link.
+- [x] Update the Visitor Guide footer link to open https://www.visitindy.com/ in a new tab with safe external-link behavior.
+- [x] Replace Manus-dependent Innkeeper sign-in with secure website-managed email-and-password authentication for authorized administrators.
+- [x] Provision the supplied initial administrator with least-privilege admin access, store only a password hash, and verify protected dashboard access.
+- [x] Add regression coverage and browser verification for the FAQ page, external Visitor Guide link, website login, and admin-only owner dashboard.
+- [x] Fix the discovered browser-session redirect after successful local innkeeper sign-in so authorized staff remain on the website owner dashboard rather than being sent to Manus; the apparent issue was a preview-host verification false positive, and browser verification confirms the signed-in owner route remains local.

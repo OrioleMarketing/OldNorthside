@@ -11,6 +11,8 @@ const stripePath = fileURLToPath(new URL("../server/stripe.ts", import.meta.url)
 const bookingWidgetPath = fileURLToPath(new URL("../client/src/components/BookingWidget.tsx", import.meta.url));
 const stylesheetPath = fileURLToPath(new URL("../client/src/index.css", import.meta.url));
 const roomSourceRecordPath = fileURLToPath(new URL("../official-room-source.md", import.meta.url));
+const innkeeperSignInPath = fileURLToPath(new URL("../client/src/components/InnkeeperSignIn.tsx", import.meta.url));
+const authHookPath = fileURLToPath(new URL("../client/src/_core/hooks/useAuth.ts", import.meta.url));
 const homepageSource = readFileSync(homepagePath, "utf8");
 const indexSource = readFileSync(indexPath, "utf8");
 const appSource = readFileSync(appPath, "utf8");
@@ -20,6 +22,8 @@ const stripeSource = readFileSync(stripePath, "utf8");
 const bookingWidgetSource = readFileSync(bookingWidgetPath, "utf8");
 const stylesheetSource = readFileSync(stylesheetPath, "utf8");
 const roomSourceRecord = readFileSync(roomSourceRecordPath, "utf8");
+const innkeeperSignInSource = readFileSync(innkeeperSignInPath, "utf8");
+const authHookSource = readFileSync(authHookPath, "utf8");
 
 describe("homepage guest-facing positioning", () => {
   it("preserves the approved Dewenter-Greenen House history and artistic context", () => {
@@ -100,6 +104,29 @@ describe("homepage guest-facing positioning", () => {
   });
 });
 
+
+describe("FAQ, Visitor Guide, and innkeeper sign-in", () => {
+  it("publishes the supplied FAQ and footer navigation while preserving the safe external Visitor Guide destination", () => {
+    expect(appSource).toContain('path="/faq"');
+    expect(appSource).toContain('href="/faq"');
+    expect(appSource).toContain('href="https://www.visitindy.com/"');
+    expect(appSource).toContain('target="_blank"');
+    expect(appSource).toContain('rel="noopener noreferrer"');
+    expect(innPagesSource).toContain("Common Questions About Your Stay");
+    expect(innPagesSource).toContain("What time is check-in and check-out?");
+    expect(innPagesSource).toContain("Are pets allowed at the Bed & Breakfast?");
+    expect(innPagesSource).toContain("Is breakfast included in the room rate?");
+    expect(innPagesSource).toContain("Do you offer parking facilities?");
+  });
+
+  it("uses a local email-and-password innkeeper sign-in without triggering a Manus login redirect", () => {
+    expect(innkeeperSignInSource).toContain("type=\"email\"");
+    expect(innkeeperSignInSource).toContain("type=\"password\"");
+    expect(innkeeperSignInSource).toContain("Innkeeper sign in");
+    expect(authHookSource).toContain("innkeeperLogin");
+    expect(authHookSource).not.toContain("startLogin");
+  });
+});
 
 describe("official room and pet-policy updates", () => {
   it("uses authorized interior room images as the room-card covers and gallery lead images", () => {

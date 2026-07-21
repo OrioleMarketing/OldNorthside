@@ -157,6 +157,26 @@ export function VisitorGuidePage() {
   </main>;
 }
 
+const FAQ_ITEMS = [
+  { question: "What time is check-in and check-out?", answer: "Check-in is available from 3 PM, and we kindly ask guests to check out by 11 AM. Early check-in or late check-out may be arranged upon request, subject to availability." },
+  { question: "Are pets allowed at the Bed & Breakfast?", answer: "While we love animals, we are unable to accommodate pets to ensure the comfort of all our guests." },
+  { question: "Is breakfast included in the room rate?", answer: "Yes, a full breakfast is included with your stay. You can enjoy a delicious meal at a time that suits you best, with no additional charges." },
+  { question: "What amenities are available in the rooms?", answer: "Each room is equipped with cable TV, free WiFi, and access to hundreds of movies. We also offer a 24/7 snack bar with complimentary soft drinks and bottled water." },
+  { question: "Do you offer parking facilities?", answer: "We provide complimentary private parking for all our guests, ensuring your vehicle is safe and secure during your stay." },
+  { question: "How can I make a reservation?", answer: "Reservations can be made directly through our website or by calling us. We recommend booking in advance to secure your preferred dates." },
+];
+
+export function FAQPage() {
+  return <main>
+    <PageHero eyebrow="Plan with confidence" title="Common Questions About Your Stay" copy="Explore answers to some of the most frequently asked questions about staying at the Old Northside Bed and Breakfast, ensuring a comfortable and informed visit." />
+    <section className="section section--paper"><div className="container faq-page">
+      <div className="faq-page__intro"><p className="eyebrow eyebrow--gold">Helpful details</p><h2 className="font-display">Everything you need for an easy arrival.</h2><p>From breakfast and parking to room comforts and reservations, these answers cover the details guests ask most often.</p></div>
+      <div className="faq-list">{FAQ_ITEMS.map((item, index) => <details className="faq-item" key={item.question} open={index === 0}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      <div className="faq-page__cta"><p>Still have a question? We are happy to help you plan your stay.</p><Link href="/booking" className="inn-button inn-button--dark">Check availability <ArrowRight size={17} /></Link></div>
+    </div></section>
+  </main>;
+}
+
 export function PoliciesPage({ kind }: { kind: "privacy" | "terms" }) {
   const isPrivacy = kind === "privacy";
   return <main><PageHero eyebrow={isPrivacy ? "Privacy policy" : "Terms & conditions"} title={isPrivacy ? "Your information, handled thoughtfully." : "A clear agreement for a comfortable stay."} copy={isPrivacy ? "This policy explains how Old Northside Bed and Breakfast uses information connected with reservations, payments, and guest service." : "Please review these terms before booking. They set out reservation, payment, arrival, and house expectations."} />

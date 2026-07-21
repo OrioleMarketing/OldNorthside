@@ -287,3 +287,39 @@ input[type="reset"]:not(.button-radius-exempt):focus-visible,
 .owner-cancel-button:hover { background: #9c3f31; color: #fffaf5; }
 .owner-cancel-button:disabled { cursor: not-allowed; opacity: .55; }
 @media (max-width: 720px) { .site-footer__logo-link { width: min(100%, 12.5rem); }.owner-active-block { align-items: stretch; flex-direction: column; }.owner-cancel-button { width: 100%; }.guest-fields { grid-template-columns: 1fr; } }
+
+/* Frequently asked questions */
+.faq-page { max-width: 980px; }
+.faq-page__intro { max-width: 680px; margin-bottom: 2rem; }
+.faq-page__intro h2 { margin: .35rem 0 .85rem; }
+.faq-list { display: grid; gap: .85rem; }
+.faq-item { overflow: clip; border: 1px solid rgb(75 57 35 / .18); border-radius: 1rem; background: rgb(255 255 255 / .72); box-shadow: 0 9px 24px rgb(60 41 18 / .05); }
+.faq-item summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.25rem; color: var(--ink); cursor: pointer; font-family: 'Fraunces', Georgia, serif; font-size: 1.08rem; font-weight: 600; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { color: #8c6522; content: "+"; font-family: 'DM Sans', Arial, sans-serif; font-size: 1.4rem; line-height: 1; transition: transform 180ms var(--ease-out); }
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item p { margin: 0; padding: 0 1.25rem 1.15rem; color: #665548; line-height: 1.7; }
+.faq-page__cta { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; margin-top: 2.5rem; padding: 1.35rem 1.5rem; border-radius: 1rem; background: var(--ink); color: #fff8ea; }
+.faq-page__cta p { margin: 0; }
+@media (max-width: 640px) { .faq-item summary { padding: 1rem; font-size: 1rem; } .faq-item p { padding: 0 1rem 1rem; } .faq-page__cta { flex-direction: column; align-items: flex-start; padding: 1.25rem; } }
+
+/* Website-managed innkeeper access */
+.innkeeper-login { min-height: 100svh; display: grid; place-items: center; padding: clamp(1.5rem, 5vw, 4rem); background: radial-gradient(circle at 82% 12%, rgb(197 155 83 / .18), transparent 30rem), linear-gradient(135deg, #192723 0%, #29453d 56%, #16231f 100%); }
+.innkeeper-login__panel { width: min(100%, 30rem); border-radius: 1.25rem; padding: clamp(1.75rem, 5vw, 3rem); background: rgb(255 253 247 / .98); box-shadow: 0 1.5rem 4.5rem rgb(12 27 23 / .28); color: #26372f; }
+.innkeeper-login__back, .innkeeper-login__mark { display: inline-flex; align-items: center; gap: .5rem; }
+.innkeeper-login__back { color: #56665e; font-size: .83rem; text-decoration: none; transition: color 160ms var(--ease-out, ease-out), transform 160ms var(--ease-out, ease-out); }
+.innkeeper-login__back:hover { color: #1f4a3d; transform: translateX(-.15rem); }
+.innkeeper-login__mark { margin: 2rem 0 1.25rem; color: #a8741d; font-size: .92rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.innkeeper-login h1 { margin: .25rem 0 .8rem; color: #1c342c; font-size: clamp(2rem, 6vw, 2.75rem); }
+.innkeeper-login__copy { margin: 0; color: #647168; line-height: 1.65; }
+.innkeeper-login__form { display: grid; gap: 1rem; margin-top: 1.75rem; }
+.innkeeper-login__form label { display: grid; gap: .45rem; color: #30463c; font-size: .87rem; font-weight: 700; }
+.innkeeper-login__form input { width: 100%; min-height: 2.85rem; border: 1px solid rgb(48 70 60 / .26); border-radius: .55rem; padding: .68rem .8rem; background: #fff; color: #21342c; font: inherit; }
+.innkeeper-login__form input:focus { border-color: #a8741d; outline: 3px solid rgb(168 116 29 / .2); }
+.innkeeper-login__field { position: relative; display: block; }
+.innkeeper-login__field svg { position: absolute; top: 50%; left: .8rem; color: #8b988e; transform: translateY(-50%); pointer-events: none; }
+.innkeeper-login__field input { padding-left: 2.5rem; }
+.innkeeper-login__form .inn-button { width: 100%; justify-content: center; margin-top: .25rem; }
+.innkeeper-login__error { margin: 0; border-left: 3px solid #a72b28; padding: .65rem .8rem; background: #f9e8e5; color: #8e2624; font-size: .86rem; line-height: 1.45; }
+.innkeeper-login__help { margin: 1.5rem 0 0; color: #738177; font-size: .78rem; line-height: 1.55; }
+@media (max-width: 34rem) { .innkeeper-login { padding: 1rem; } .innkeeper-login__panel { border-radius: 1rem; padding: 1.5rem; } }
