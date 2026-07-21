@@ -36,4 +36,7 @@
 - [ ] Complete end-to-end sandbox checks for reservation conflicts, Stripe deposit checkout, payment webhook confirmation, and scheduled reminder delivery before launch.
 - [x] Implement an authenticated inbound channel-sync endpoint or provider adapter that records, atomically claims, processes, and finalizes inbound events.
 - [x] Add origin and version metadata so inbound channel updates do not re-emit equivalent outbound availability changes.
-- [ ] Add database-backed channel-sync tests covering duplicate idempotency-key insertion, single-winner atomic claim behavior, terminal-state transitions, and replay/duplicate inbound-outbound event handling.
+- [x] Add database-backed channel-sync tests covering duplicate idempotency-key insertion, single-winner atomic claim behavior, terminal-state transitions, and replay/duplicate inbound-outbound event handling.
+- [x] Expand the homepage heritage section with the Dewenter-Greenen House’s 1885 origin, Herman Dewenter, Gary Hofmeister’s 1994 restoration vision, international artwork, and hand-painted Ukrainian murals.
+- [x] Add a guest-comfort section that clearly presents complimentary amenities, private-bath and jacuzzi highlights, complete breakfast timing, smoke-free policy, and the designated smoker’s patio.
+- [x] Promote free off-street parking and walkable access to downtown Indianapolis destinations as key convenience benefits on the homepage.
