@@ -51,3 +51,5 @@
 - [x] Update booking confirmation page copy to use the approved full property name and extend regression coverage to reject legacy Home and confirmation branding.
 - [x] Add database-backed validation for availability exclusion, overlapping reservation rejection, deposit confirmation, balance-reminder scheduling, and paid-balance reminder cancellation.
 - [x] Improve and test booking-widget accessibility for dynamic availability status, room selection state, required guest fields, and pending checkout feedback.
+- [x] Add an “Explore Indianapolis” guest section that presents the Historic Old Northside setting, downtown proximity, dining, green spaces, events, breweries, sports, and named nearby landmarks using the owner-supplied visitor content.
+- [ ] Replace the live visitor-guide request action with a downloadable Visitor Guide link when the owner supplies the final guide URL or file.

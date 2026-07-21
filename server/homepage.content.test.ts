@@ -33,6 +33,20 @@ describe("homepage guest-facing positioning", () => {
     expect(homepageSource).toContain("Old Northside for tree-lined walks and nearby downtown discoveries");
   });
 
+  it("presents the owner-approved Indianapolis visitor experience and guide request", () => {
+    expect(homepageSource).toContain("Explore Indianapolis");
+    expect(homepageSource).toContain("Historic Old Northside");
+    expect(homepageSource).toContain("Dining & local flavor");
+    expect(homepageSource).toContain("Parks & green spaces");
+    expect(homepageSource).toContain("Festivals & city energy");
+    expect(homepageSource).toContain("President Benjamin Harrison Home");
+    expect(homepageSource).toContain("Monument Circle");
+    expect(homepageSource).toContain("Lucas Oil Stadium");
+    expect(homepageSource).toContain("Indianapolis Zoo");
+    expect(homepageSource).toContain("Request the Visitor Guide");
+    expect(homepageSource).toContain("reservations@oldnorthsidebedandbreakfast.com?subject=Indianapolis%20Visitor%20Guide");
+  });
+
   it("preserves the owner welcome, portrait asset, direct contact, and approved browser title", () => {
     expect(homepageSource).toContain("Gary Hofmeister, Renaissance Man.");
     expect(homepageSource).toContain("/manus-storage/gary-hofmeister-portrait_bf2246de.jpg");
