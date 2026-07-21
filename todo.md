@@ -105,3 +105,9 @@
 - [x] Add automated coverage and complete desktop/mobile interaction and visual validation for the expanded room galleries.
 - [x] Verify the Bridal Room lead image on all guest-facing surfaces, including homepage cards and room-linked booking summaries, and record direct evidence that no exterior image remains.
 - [x] Perform and record explicit mobile gallery interaction checks, including stepping through photos via controls and confirming the active-photo label behavior.
+- [x] Assess iPOS Pays’ current product capabilities, API or integration model, and suitability for the inn’s booking, payment-link, cancellation, and card-on-file workflow before changing payment providers; documented the HPP/Transact recommendation and required account verification.
+- [x] Audit the restored project for the owner’s phone-reservation creation, reservation cancellation, payment-link, and authorized balance-charge workflows; restore any work lost after checkpoint 51b9e29a.
+- [x] Run and record regression coverage for restored owner reservation, cancellation, and payment actions before saving a new production checkpoint.
+- [x] Add and run direct regression coverage for the owner payment-link workflow, including successful sending and a common failure case.
+- [x] Add and run direct regression coverage for consent-gated saved-card balance collection, including consent-required rejection and successful off-session charge behavior.
+- [x] Review the restored owner payment procedures and Stripe helper directly before the production checkpoint.

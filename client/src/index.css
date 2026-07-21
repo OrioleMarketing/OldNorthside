@@ -252,3 +252,17 @@ input[type="reset"]:not(.button-radius-exempt):focus-visible,
   outline: 3px solid #2f493f;
   outline-offset: 3px;
 }
+
+/* Restored owner reservation and payment controls */
+.owner-checkbox { grid-template-columns: auto 1fr; align-items: start; gap: .55rem !important; padding: .7rem .75rem; border: 1px solid #dfc9a0; background: #f9f0df; color: #634f3e !important; font-size: .66rem !important; font-weight: 600 !important; letter-spacing: .015em !important; line-height: 1.5; text-transform: none !important; }
+.owner-checkbox input { width: 1rem; min-height: 1rem; margin-top: .1rem; accent-color: #2f493f; }
+.owner-reservations-list small { display: inline-flex; align-items: center; gap: .3rem; color: #806757; font-size: .65rem; }
+.owner-reservation--inactive { opacity: .7; }
+.owner-reservation-charges button { display: inline-flex; align-items: center; gap: .35rem; justify-content: center; }
+.owner-cancel-button { margin-top: .25rem; border: 1px solid #9e5046; background: transparent; color: #8a342d; padding: .38rem .55rem; font: 700 .62rem 'DM Sans', sans-serif; letter-spacing: .04em; text-transform: uppercase; transition: background .16s var(--ease-out), color .16s var(--ease-out), transform .16s var(--ease-out); }
+.owner-cancel-button:hover:not(:disabled) { background: #f1d8d2; color: #5d211c; }
+.owner-cancel-button:active:not(:disabled) { transform: scale(.97); }
+.owner-dialog-label { display: grid; gap: .45rem; color: #5f4c3c; font: 700 .72rem 'DM Sans', sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.owner-dialog-label textarea { min-height: 5.25rem; resize: vertical; border: 1px solid #d8c29e; background: #fffdf8; padding: .65rem; color: #2d241d; font: 500 .84rem 'DM Sans', sans-serif; letter-spacing: normal; text-transform: none; }
+.booking-payment-consent { margin-top: .95rem; background: #f7efe1; }
+@media (max-width: 640px) { .owner-reservation-charges button { width: 100%; } }

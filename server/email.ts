@@ -269,3 +269,34 @@ export async function sendDueBalanceReminders(limit = 25) {
   }
   return { sent, skipped, considered: due.length };
 }
+
+export async function sendOwnerPaymentLink(input: {
+  reservationId: number;
+  checkoutUrl: string;
+  paymentKind: "deposit" | "balance";
+}): Promise<DeliveryResult> {
+  const context = await loadReservationEmailContext(input.reservationId);
+  if (!context) throw new Error("Reservation not found while preparing the secure payment link.");
+
+  const reservation = context.reservation;
+  const amountCents = input.paymentKind === "deposit" ? reservation.depositDueCents : reservation.balanceDueCents;
+  const label = input.paymentKind === "deposit" ? "first-night deposit" : "remaining balance";
+  const body = `<p>Dear ${escapeHtml(reservation.guestName)},</p>
+    <p>Old Northside Bed and Breakfast has prepared a secure link for your ${label} of <strong>${formatCurrency(amountCents)}</strong>.</p>
+    <div style="padding:14px 16px;background:#f4ead8;border-left:3px solid #a7782a;"><strong>Booking reference:</strong> ${escapeHtml(reservation.bookingReference)}<br/><strong>${escapeHtml(context.room.name)}</strong><br/>${formatLocalDate(reservation.checkIn)} to ${formatLocalDate(reservation.checkOut)}</div>
+    <p style="margin:24px 0 0;"><a href="${input.checkoutUrl}" style="display:inline-block;padding:12px 17px;background:#2f493f;color:#fff9ed;text-decoration:none;font-weight:bold;">Open secure payment page</a></p>
+    <p style="font-size:13px;color:#6a5a4b;">For your security, card details are entered only on our payment provider’s secure page.</p>`;
+  const resend = getResendClient();
+  const result = await resend.emails.send({
+    from: getFromAddress(),
+    to: reservation.guestEmail,
+    subject: `Secure ${label} link — ${reservation.bookingReference}`,
+    html: renderEmailLayout({ preheader: `Secure payment link for ${reservation.bookingReference}`, title: "Your secure payment link is ready.", body }),
+    headers: { "Idempotency-Key": `old-northside-payment-link-${reservation.id}-${input.paymentKind}` },
+  });
+  if (result.error) {
+    const reason = [result.error.name, result.error.message].filter(Boolean).join(": ");
+    throw new Error(`The transactional email provider rejected the payment-link message${reason ? ` (${reason})` : ""}.`);
+  }
+  return "sent";
+}

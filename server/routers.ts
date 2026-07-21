@@ -3,29 +3,47 @@ import { z } from "zod";
 import { parse as parseCookie } from "cookie";
 import { COOKIE_NAME } from "@shared/const";
 import {
+  appendReservationAuditEvent,
+  cancelOwnerBlock,
+  cancelReservationForOwner,
   createOwnerBlock,
+  createOwnerReservation,
   createReservationHold,
   getActiveRooms,
   getAvailableRooms,
   getBalanceReminderScheduleTaskUid,
-  setBalanceReminderScheduleTaskUid,
+  getOwnerReservationById,
   getPublicSettings,
   getReservationByReference,
   listOwnerBlocks,
   listOwnerReservations,
+  recordStripePayment,
+  setBalanceReminderScheduleTaskUid,
   updateBookingSettings,
 } from "./booking";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
-import { createReservationCheckoutSession } from "./stripe";
-import { resendBalanceReminderForOwner } from "./email";
+import { chargeSavedBalanceOffSession, createReservationCheckoutSession } from "./stripe";
+import { resendBalanceReminderForOwner, sendBookingConfirmation, sendOwnerPaymentLink } from "./email";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
 import { getChannelSyncReadiness, listChannelSyncEvents } from "./channelSync";
 
 const stayInput = z.object({
   checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a YYYY-MM-DD check-in date."),
   checkOut: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a YYYY-MM-DD check-out date."),
+});
+
+const reservationInput = stayInput.extend({
+  roomId: z.number().int().positive(),
+  guestName: z.string().trim().min(2).max(180),
+  guestEmail: z.string().trim().email().max(320),
+  guestPhone: z.string().trim().min(7).max(50),
+  guestCount: z.number().int().min(1).max(4),
+  hasPet: z.boolean().default(false),
+  dogCount: z.number().int().min(0).max(2).default(0),
+  dogsUnder25Lbs: z.boolean().default(false),
+  petPolicyAcknowledged: z.boolean().default(false),
 });
 
 function requestOrigin(req: { protocol?: string; get?: (name: string) => string | undefined; headers: Record<string, unknown> }) {
@@ -69,19 +87,7 @@ export const appRouter = router({
       }
     }),
     createDepositCheckout: publicProcedure
-      .input(
-        stayInput.extend({
-          roomId: z.number().int().positive(),
-          guestName: z.string().trim().min(2).max(180),
-          guestEmail: z.string().trim().email().max(320),
-          guestPhone: z.string().trim().min(7).max(50),
-          guestCount: z.number().int().min(1).max(4),
-          hasPet: z.boolean().default(false),
-          dogCount: z.number().int().min(0).max(2).default(0),
-          dogsUnder25Lbs: z.boolean().default(false),
-          petPolicyAcknowledged: z.boolean().default(false),
-        }),
-      )
+      .input(reservationInput.extend({ savePaymentMethodForBalance: z.boolean().default(false) }))
       .mutation(async ({ input, ctx }) => {
         try {
           const created = await createReservationHold(input);
@@ -90,6 +96,7 @@ export const appRouter = router({
             roomName: created.room.name,
             origin: requestOrigin(ctx.req),
             paymentKind: "deposit",
+            savePaymentMethodForBalance: input.savePaymentMethodForBalance,
           });
           return {
             bookingReference: created.reservation.bookingReference,
@@ -151,6 +158,130 @@ export const appRouter = router({
           return bookingError(error);
         }
       }),
+    cancelBlock: adminProcedure
+      .input(z.object({ reservationBlockId: z.number().int().positive(), reason: z.string().trim().min(2).max(240) }))
+      .mutation(async ({ input, ctx }) => {
+        try {
+          return await cancelOwnerBlock({ ...input, actorUserId: ctx.user.id });
+        } catch (error) {
+          return bookingError(error);
+        }
+      }),
+    createPhoneReservation: adminProcedure
+      .input(reservationInput.extend({ markDepositCollected: z.boolean().default(false), sendDepositPaymentLink: z.boolean().default(true) }))
+      .mutation(async ({ input, ctx }) => {
+        try {
+          const created = await createOwnerReservation(input);
+          let paymentLinkSent = false;
+          if (!input.markDepositCollected && input.sendDepositPaymentLink) {
+            const checkout = await createReservationCheckoutSession({
+              reservation: created.reservation,
+              roomName: created.room.name,
+              origin: requestOrigin(ctx.req),
+              paymentKind: "deposit",
+            });
+            await sendOwnerPaymentLink({ reservationId: created.reservation.id, checkoutUrl: checkout.url, paymentKind: "deposit" });
+            await appendReservationAuditEvent({
+              reservationId: created.reservation.id,
+              action: "payment_link_created",
+              actorUserId: ctx.user.id,
+              detail: "Deposit payment link emailed after owner-created reservation.",
+            });
+            paymentLinkSent = true;
+          }
+          if (input.markDepositCollected) {
+            try {
+              await sendBookingConfirmation(created.reservation.id);
+            } catch (error) {
+              console.error("[Booking confirmation email]", error);
+            }
+          }
+          return {
+            bookingReference: created.reservation.bookingReference,
+            reservationId: created.reservation.id,
+            paymentLinkSent,
+            status: created.reservation.status,
+          };
+        } catch (error) {
+          return bookingError(error);
+        }
+      }),
+    cancelReservation: adminProcedure
+      .input(z.object({ reservationId: z.number().int().positive(), reason: z.string().trim().min(2).max(240) }))
+      .mutation(async ({ input, ctx }) => {
+        try {
+          return await cancelReservationForOwner({ ...input, actorUserId: ctx.user.id });
+        } catch (error) {
+          return bookingError(error);
+        }
+      }),
+    sendPaymentLink: adminProcedure
+      .input(z.object({ reservationId: z.number().int().positive() }))
+      .mutation(async ({ input, ctx }) => {
+        try {
+          const result = await getOwnerReservationById(input.reservationId);
+          if (!result) throw new Error("Reservation not found.");
+          const { reservation, room } = result;
+          const paymentKind = reservation.status === "pending_deposit"
+            ? "deposit"
+            : reservation.status === "confirmed" && reservation.balanceDueCents > 0 && !reservation.balancePaidAt
+              ? "balance"
+              : null;
+          if (!paymentKind) throw new Error("This reservation does not have an eligible payment amount to request.");
+          const checkout = await createReservationCheckoutSession({
+            reservation,
+            roomName: room.name,
+            origin: requestOrigin(ctx.req),
+            paymentKind,
+          });
+          await sendOwnerPaymentLink({ reservationId: reservation.id, checkoutUrl: checkout.url, paymentKind });
+          await appendReservationAuditEvent({
+            reservationId: reservation.id,
+            action: "payment_link_created",
+            actorUserId: ctx.user.id,
+            detail: `${paymentKind === "deposit" ? "Deposit" : "Balance"} payment link emailed by owner.`,
+          });
+          return { sent: true as const, paymentKind };
+        } catch (error) {
+          return bookingError(error);
+        }
+      }),
+    chargeSavedBalance: adminProcedure
+      .input(z.object({ reservationId: z.number().int().positive() }))
+      .mutation(async ({ input, ctx }) => {
+        const result = await getOwnerReservationById(input.reservationId);
+        if (!result) throw new TRPCError({ code: "NOT_FOUND", message: "Reservation not found." });
+        const { reservation, room } = result;
+        if (reservation.status !== "confirmed" || reservation.balancePaidAt || reservation.balanceDueCents <= 0) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "This reservation does not have an unpaid balance eligible for collection." });
+        }
+        try {
+          await appendReservationAuditEvent({
+            reservationId: reservation.id,
+            action: "off_session_charge_attempted",
+            actorUserId: ctx.user.id,
+            detail: "Owner initiated an authorized saved-card balance charge.",
+          });
+          const charge = await chargeSavedBalanceOffSession({ reservation, roomName: room.name });
+          await recordStripePayment({ reservationId: reservation.id, paymentKind: "balance", paymentIntentId: charge.paymentIntentId });
+          await appendReservationAuditEvent({
+            reservationId: reservation.id,
+            action: "off_session_charge_succeeded",
+            actorUserId: ctx.user.id,
+            stripePaymentIntentId: charge.paymentIntentId,
+            detail: "Authorized saved-card balance charge completed.",
+          });
+          return { charged: true as const, paymentIntentId: charge.paymentIntentId };
+        } catch (error) {
+          await appendReservationAuditEvent({
+            reservationId: reservation.id,
+            action: "off_session_charge_failed",
+            actorUserId: ctx.user.id,
+            detail: error instanceof Error ? error.message : "Off-session balance charge did not complete.",
+          });
+          return bookingError(error);
+        }
+      }),
     settings: adminProcedure.query(() => getPublicSettings()),
     channelSyncReadiness: adminProcedure.query(() => getChannelSyncReadiness()),
     channelSyncEvents: adminProcedure
@@ -182,7 +313,7 @@ export const appRouter = router({
       if (!taskUid) return { paused: false, taskUid: null } as const;
       if (!sessionToken) throw new TRPCError({ code: "UNAUTHORIZED", message: "Sign in again to pause scheduled reminders." });
       await updateHeartbeatJob(taskUid, { enable: false }, sessionToken);
-      return { paused: true, taskUid } as const;
+      return { paused: true, taskUid };
     }),
     resendBalanceReminder: adminProcedure
       .input(z.object({ reservationId: z.number().int().positive() }))

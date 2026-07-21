@@ -118,6 +118,12 @@ export const reservations = mysqlTable(
     balanceReminderTaskUid: varchar("balanceReminderTaskUid", { length: 65 }),
     holdExpiresAt: timestamp("holdExpiresAt"),
     channelReservationId: varchar("channelReservationId", { length: 160 }),
+    stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
+    stripePaymentMethodId: varchar("stripePaymentMethodId", { length: 255 }),
+    paymentMethodConsentAt: timestamp("paymentMethodConsentAt"),
+    cancelledAt: timestamp("cancelledAt"),
+    cancelledByUserId: int("cancelledByUserId"),
+    cancellationReason: varchar("cancellationReason", { length: 240 }),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   },
@@ -141,12 +147,44 @@ export const reservationBlocks = mysqlTable(
     checkOut: date("checkOut", { mode: "string" }).notNull(),
     reason: varchar("reason", { length: 240 }).notNull(),
     createdByUserId: int("createdByUserId"),
+    status: mysqlEnum("status", ["active", "cancelled"]).notNull().default("active"),
+    cancelledAt: timestamp("cancelledAt"),
+    cancelledByUserId: int("cancelledByUserId"),
+    cancellationReason: varchar("cancellationReason", { length: 240 }),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   table => [index("reservation_blocks_room_dates_idx").on(table.roomId, table.checkIn, table.checkOut)],
 );
 
 export type ReservationBlock = typeof reservationBlocks.$inferSelect;
+
+/** Minimal staff audit record for cancellation and owner-initiated payment actions. */
+export const reservationAuditEvents = mysqlTable(
+  "reservation_audit_events",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    reservationId: int("reservationId"),
+    reservationBlockId: int("reservationBlockId"),
+    action: mysqlEnum("action", [
+      "reservation_cancelled",
+      "block_cancelled",
+      "payment_link_created",
+      "off_session_charge_attempted",
+      "off_session_charge_succeeded",
+      "off_session_charge_failed",
+    ]).notNull(),
+    actorUserId: int("actorUserId"),
+    stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }),
+    detail: varchar("detail", { length: 500 }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    index("reservation_audit_reservation_idx").on(table.reservationId, table.createdAt),
+    index("reservation_audit_block_idx").on(table.reservationBlockId, table.createdAt),
+  ],
+);
+
+export type ReservationAuditEvent = typeof reservationAuditEvents.$inferSelect;
 
 /** Mapping metadata for a future authorized channel-manager connection. */
 export const channelMappings = mysqlTable(

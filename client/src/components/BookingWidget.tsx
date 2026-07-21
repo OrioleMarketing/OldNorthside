@@ -47,6 +47,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   const [dogCount, setDogCount] = useState("1");
   const [dogsUnder25Lbs, setDogsUnder25Lbs] = useState(false);
   const [petPolicyAcknowledged, setPetPolicyAcknowledged] = useState(false);
+  const [savePaymentMethodForBalance, setSavePaymentMethodForBalance] = useState(false);
 
   const checkIn = stay?.from ? toDateKey(stay.from) : "";
   const checkOut = stay?.to ? toDateKey(stay.to) : "";
@@ -87,6 +88,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     setDogCount("1");
     setDogsUnder25Lbs(false);
     setPetPolicyAcknowledged(false);
+    setSavePaymentMethodForBalance(false);
     toast.message("Your booking selection has been cleared. Start with your stay dates.");
   }
 
@@ -116,6 +118,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
       dogCount: hasPet ? Number(dogCount) : 0,
       dogsUnder25Lbs: hasPet && dogsUnder25Lbs,
       petPolicyAcknowledged: hasPet && petPolicyAcknowledged,
+      savePaymentMethodForBalance,
     });
   }
 
@@ -243,6 +246,8 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
               <label className="booking-pet-confirmation booking-pet-confirmation--policy"><input type="checkbox" checked={petPolicyAcknowledged} onChange={event => setPetPolicyAcknowledged(event.target.checked)} required /><span>I have reviewed the <Link href="/pet-policy">Pet Policy</Link>. Our dog(s) will be housebroken, will not disturb other guests, will be covered if allowed on a bed, and will never be left at the inn unattended. I understand that a cleaning or repair fee may be assessed for carpet or furniture damage.</span></label>
             </div> : null}
           </fieldset>
+
+          {paymentCollectionMode === "first_night_deposit" && selected.quote.balanceDueCents > 0 ? <label className="booking-pet-confirmation booking-payment-consent"><input type="checkbox" checked={savePaymentMethodForBalance} onChange={event => setSavePaymentMethodForBalance(event.target.checked)} /><span><strong>Optional: save this payment method for your remaining balance.</strong> By selecting this box, you authorize Old Northside Bed and Breakfast to securely store the payment method used for today’s deposit and charge the remaining <strong>{money.format(selected.quote.balanceDueCents / 100)}</strong> before your arrival. We will send a payment reminder first. You may decline and pay through a secure link instead.</span></label> : null}
 
           <div className="quote-card" aria-live="polite">
             <div><span>{selected.quote.nights} night{selected.quote.nights === 1 ? "" : "s"} · room subtotal</span><strong>{money.format(selected.quote.subtotalCents / 100)}</strong></div>

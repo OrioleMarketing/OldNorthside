@@ -71,6 +71,20 @@
       "when": 1784658218674,
       "tag": "0009_wide_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1784665500552,
+      "tag": "0010_stale_baron_zemo",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1784665631365,
+      "tag": "0011_parched_hercules",
+      "breakpoints": true
     }
   ]
 }

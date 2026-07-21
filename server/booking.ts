@@ -4,6 +4,7 @@ import {
   bookingEmailEvents,
   bookingSettings,
   channelInventoryBlocks,
+  reservationAuditEvents,
   reservationBlocks,
   reservations,
   rooms,
@@ -49,6 +50,7 @@ export type BookingInput = {
   dogCount?: number;
   dogsUnder25Lbs?: boolean;
   petPolicyAcknowledged?: boolean;
+  savePaymentMethodForBalance?: boolean;
 };
 
 const defaultSettings: PublicBookingSettings = {
@@ -232,6 +234,7 @@ async function getUnavailableRoomIds(checkIn: string, checkOut: string) {
       and(
         lt(reservationBlocks.checkIn, checkOut),
         gt(reservationBlocks.checkOut, checkIn),
+        eq(reservationBlocks.status, "active"),
       ),
     );
   const channelBlocksInRange = await db
@@ -287,7 +290,10 @@ export function getValidatedPetDetails(input: BookingInput) {
   return { hasPet: 1, dogCount, dogsUnder25Lbs: 1, petPolicyAcknowledged: 1 };
 }
 
-export async function createReservationHold(input: BookingInput) {
+export async function createReservationHold(
+  input: BookingInput,
+  options?: { source?: "direct" | "owner"; holdDurationMinutes?: number },
+) {
   getNights(input.checkIn, input.checkOut);
   const petDetails = getValidatedPetDetails(input);
   const db = await getDb();
@@ -341,7 +347,8 @@ export async function createReservationHold(input: BookingInput) {
     const settingsResult = await tx.select().from(bookingSettings).limit(1);
     const settings = settingsResult[0];
     const quote = calculateQuote(room, input.checkIn, input.checkOut, settings ?? defaultSettings);
-    const holdExpiresAt = new Date(now.getTime() + HOLD_DURATION_MINUTES * 60_000);
+    const holdDurationMinutes = options?.holdDurationMinutes ?? HOLD_DURATION_MINUTES;
+    const holdExpiresAt = new Date(now.getTime() + holdDurationMinutes * 60_000);
     const bookingReference = generateBookingReference();
 
     await tx.insert(reservations).values({
@@ -355,7 +362,7 @@ export async function createReservationHold(input: BookingInput) {
       checkIn: input.checkIn,
       checkOut: input.checkOut,
       status: "pending_deposit",
-      source: "direct",
+      source: options?.source ?? "direct",
       nightlyRateCents: quote.nightlyBreakdown[0]?.rateCents ?? room.weekdayRateCents,
       subtotalCents: quote.subtotalCents,
       stateTaxCents: quote.stateTaxCents,
@@ -418,6 +425,9 @@ export async function recordStripePayment(input: {
   reservationId: number;
   paymentKind: "deposit" | "balance";
   paymentIntentId?: string | null;
+  stripeCustomerId?: string | null;
+  stripePaymentMethodId?: string | null;
+  savePaymentMethodForBalance?: boolean;
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database unavailable while recording payment.");
@@ -437,7 +447,11 @@ export async function recordStripePayment(input: {
       .set({
         status: "confirmed",
         depositPaidAt: now,
+        holdExpiresAt: null,
         stripeDepositPaymentIntentId: input.paymentIntentId ?? reservation.stripeDepositPaymentIntentId,
+        stripeCustomerId: input.stripeCustomerId ?? reservation.stripeCustomerId,
+        stripePaymentMethodId: input.stripePaymentMethodId ?? reservation.stripePaymentMethodId,
+        paymentMethodConsentAt: input.savePaymentMethodForBalance ? now : reservation.paymentMethodConsentAt,
       })
       .where(eq(reservations.id, reservation.id));
 
@@ -490,6 +504,135 @@ export async function recordStripePayment(input: {
 
   const updated = await db.select().from(reservations).where(eq(reservations.id, reservation.id)).limit(1);
   return updated[0] ?? reservation;
+}
+
+export async function appendReservationAuditEvent(input: {
+  action:
+    | "reservation_cancelled"
+    | "block_cancelled"
+    | "payment_link_created"
+    | "off_session_charge_attempted"
+    | "off_session_charge_succeeded"
+    | "off_session_charge_failed";
+  actorUserId: number;
+  reservationId?: number;
+  reservationBlockId?: number;
+  stripePaymentIntentId?: string | null;
+  detail?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable while recording the owner action.");
+  await db.insert(reservationAuditEvents).values({
+    action: input.action,
+    actorUserId: input.actorUserId,
+    reservationId: input.reservationId ?? null,
+    reservationBlockId: input.reservationBlockId ?? null,
+    stripePaymentIntentId: input.stripePaymentIntentId ?? null,
+    detail: input.detail?.slice(0, 500) ?? null,
+  });
+}
+
+export async function getOwnerReservationById(reservationId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable.");
+  const result = await db
+    .select({ reservation: reservations, room: rooms })
+    .from(reservations)
+    .innerJoin(rooms, eq(reservations.roomId, rooms.id))
+    .where(eq(reservations.id, reservationId))
+    .limit(1);
+  return result[0];
+}
+
+export async function createOwnerReservation(input: BookingInput & { markDepositCollected: boolean }) {
+  const created = await createReservationHold(input, { source: "owner", holdDurationMinutes: 48 * 60 });
+  if (!input.markDepositCollected) return created;
+
+  const confirmed = await recordStripePayment({ reservationId: created.reservation.id, paymentKind: "deposit" });
+  return { ...created, reservation: confirmed };
+}
+
+export async function cancelReservationForOwner(input: { reservationId: number; actorUserId: number; reason: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable.");
+  const reservation = await getOwnerReservationById(input.reservationId);
+  if (!reservation) throw new Error("Reservation not found.");
+  if (reservation.reservation.status === "cancelled" || reservation.reservation.status === "expired") {
+    throw new Error("This reservation is already inactive.");
+  }
+
+  const now = new Date();
+  await db.transaction(async tx => {
+    await tx.update(reservations).set({
+      status: "cancelled",
+      cancelledAt: now,
+      cancelledByUserId: input.actorUserId,
+      cancellationReason: input.reason.trim(),
+      holdExpiresAt: null,
+    }).where(eq(reservations.id, input.reservationId));
+    await tx.update(bookingEmailEvents).set({ status: "cancelled" }).where(
+      and(
+        eq(bookingEmailEvents.reservationId, input.reservationId),
+        inArray(bookingEmailEvents.status, ["scheduled", "failed"]),
+      ),
+    );
+    await tx.insert(reservationAuditEvents).values({
+      reservationId: input.reservationId,
+      action: "reservation_cancelled",
+      actorUserId: input.actorUserId,
+      detail: input.reason.trim().slice(0, 500),
+    });
+  });
+
+  try {
+    await queueOutboundAvailabilityUpdate({
+      roomId: reservation.reservation.roomId,
+      checkIn: reservation.reservation.checkIn,
+      checkOut: reservation.reservation.checkOut,
+      reservationId: reservation.reservation.id,
+      eventVersion: `owner-cancellation-${reservation.reservation.id}-${now.getTime()}`,
+    });
+  } catch (error) {
+    console.error("[Channel sync] Unable to queue owner reservation cancellation:", error);
+  }
+  return { ...reservation, reservation: { ...reservation.reservation, status: "cancelled" as const, cancelledAt: now, cancelledByUserId: input.actorUserId, cancellationReason: input.reason.trim() } };
+}
+
+export async function cancelOwnerBlock(input: { reservationBlockId: number; actorUserId: number; reason: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable.");
+  const existing = await db.select().from(reservationBlocks).where(eq(reservationBlocks.id, input.reservationBlockId)).limit(1);
+  const block = existing[0];
+  if (!block) throw new Error("Owner block not found.");
+  if (block.status !== "active") throw new Error("This owner block is already inactive.");
+
+  const now = new Date();
+  await db.transaction(async tx => {
+    await tx.update(reservationBlocks).set({
+      status: "cancelled",
+      cancelledAt: now,
+      cancelledByUserId: input.actorUserId,
+      cancellationReason: input.reason.trim(),
+    }).where(eq(reservationBlocks.id, block.id));
+    await tx.insert(reservationAuditEvents).values({
+      reservationBlockId: block.id,
+      action: "block_cancelled",
+      actorUserId: input.actorUserId,
+      detail: input.reason.trim().slice(0, 500),
+    });
+  });
+
+  try {
+    await queueOutboundAvailabilityUpdate({
+      roomId: block.roomId,
+      checkIn: block.checkIn,
+      checkOut: block.checkOut,
+      eventVersion: `owner-block-cancellation-${block.id}-${now.getTime()}`,
+    });
+  } catch (error) {
+    console.error("[Channel sync] Unable to queue owner block cancellation:", error);
+  }
+  return { ...block, status: "cancelled" as const, cancelledAt: now, cancelledByUserId: input.actorUserId, cancellationReason: input.reason.trim() };
 }
 
 export async function getReservationByReference(bookingReference: string, guestEmail: string) {
@@ -548,11 +691,12 @@ export async function listOwnerBlocks(range?: { start?: string; end?: string }) 
   const conditions = [];
   if (range?.start) conditions.push(gt(reservationBlocks.checkOut, range.start));
   if (range?.end) conditions.push(lt(reservationBlocks.checkIn, range.end));
+  conditions.push(eq(reservationBlocks.status, "active"));
   return db
     .select({ block: reservationBlocks, room: rooms })
     .from(reservationBlocks)
     .innerJoin(rooms, eq(reservationBlocks.roomId, rooms.id))
-    .where(conditions.length ? and(...conditions) : undefined)
+    .where(and(...conditions))
     .orderBy(asc(reservationBlocks.checkIn), asc(rooms.sortOrder));
 }
 
