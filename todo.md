@@ -54,3 +54,4 @@
 - [x] Add an “Explore Indianapolis” guest section that presents the Historic Old Northside setting, downtown proximity, dining, green spaces, events, breweries, sports, and named nearby landmarks using the owner-supplied visitor content.
 - [ ] Replace the live visitor-guide request action with a downloadable Visitor Guide link when the owner supplies the final guide URL or file.
 - [x] Create and complete one clearly labeled sandbox reservation using Stripe’s test checkout, then verify the payment webhook confirms the reservation and records only the required payment identifier.
+- [ ] Create a concise public Old Northside Bed and Breakfast Visitor Guide page from the owner-approved Indianapolis content and link the homepage action to it.
