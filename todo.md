@@ -84,9 +84,9 @@
 - [x] Validate the 15px button-radius standard on desktop and mobile layouts without affecting focus or hover behavior.
 - [x] Override higher-specificity button variants, including the hero contact call to action and booking Start over control, so their computed corner radius is 15px.
 - [x] Confirm all major desktop and mobile button variants render at a computed 15px radius after specificity overrides.
-- [ ] Verify representative primary, secondary, navigation, booking, owner, and utility buttons in-browser on desktop and mobile, including explicit hover and keyboard-focus checks.
+- [x] Verify representative primary, secondary, navigation, booking, owner, and utility buttons in-browser on desktop and mobile, including explicit hover and keyboard-focus checks.
 - [x] Add targeted source-level regression coverage for all major button variants to enforce the 15px radius after specificity overrides.
-- [ ] Complete and record a comprehensive computed-style and visual review of all major button variants before publication.
+- [ ] Complete and record a comprehensive computed-style and visual review of all major button variants before publication; authenticated owner-only and resend controls still require a real owner-session review.
 - [x] Restore a clearly visible keyboard-focus indicator for the booking Start over control without changing its approved 15px corner radius.
 - [x] Restore a clearly visible keyboard-focus indicator for generic non-calendar action buttons, including the unauthenticated owner Sign in control, without changing the approved 15px radius.
 - [ ] Review authenticated owner-only action and resend controls in a real owner session, then record computed-style and visual evidence for their 15px radius and focus/hover states.

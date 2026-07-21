@@ -1,0 +1,213 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "label": "desktop: primary hero Check availability",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) auto 1px",
+        "outlineOffset": "1px",
+        "focusVisible": true,
+        "rect": {
+          "x": 32,
+          "y": 491.109375,
+          "width": 171.953125,
+          "height": 46.21875
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "rgb(216, 180, 110)"
+      }
+    },
+    {
+      "label": "desktop: secondary hero Explore the rooms",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) auto 1px",
+        "outlineOffset": "1px",
+        "focusVisible": true,
+        "rect": {
+          "x": 215.953125,
+          "y": 491.109375,
+          "width": 147.734375,
+          "height": 46.21875
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "rgba(0, 0, 0, 0)"
+      }
+    },
+    {
+      "label": "desktop: navigation Book Direct",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) auto 1px",
+        "outlineOffset": "1px",
+        "focusVisible": true,
+        "rect": {
+          "x": 1149.21875,
+          "y": 19.6875,
+          "width": 98.78125,
+          "height": 42.21875
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "rgba(0, 0, 0, 0)"
+      }
+    },
+    {
+      "label": "desktop: booking utility Start over",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) solid 3px",
+        "outlineOffset": "0px",
+        "focusVisible": true,
+        "rect": {
+          "x": 1098.40625,
+          "y": 677.796875,
+          "width": 108,
+          "height": 37.59375
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "rgb(255, 250, 240)"
+      }
+    },
+    {
+      "label": "desktop: Start over keyboard press",
+      "passed": true
+    },
+    {
+      "label": "desktop: owner Sign in",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) solid 3px",
+        "outlineOffset": "0px",
+        "focusVisible": true,
+        "rect": {
+          "x": 448,
+          "y": 486.59375,
+          "width": 384,
+          "height": 40
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "oklab(0.31 0.0294929 0.028481)"
+      }
+    },
+    {
+      "label": "mobile: primary hero Check availability",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) auto 1px",
+        "outlineOffset": "1px",
+        "focusVisible": true,
+        "rect": {
+          "x": 20,
+          "y": 427.109375,
+          "width": 171.953125,
+          "height": 46.21875
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "rgb(216, 180, 110)"
+      }
+    },
+    {
+      "label": "mobile: secondary hero Explore the rooms",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) auto 1px",
+        "outlineOffset": "1px",
+        "focusVisible": true,
+        "rect": {
+          "x": 203.953125,
+          "y": 427.109375,
+          "width": 147.734375,
+          "height": 46.21875
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "rgba(0, 0, 0, 0)"
+      }
+    },
+    {
+      "label": "mobile: navigation menu",
+      "focus": {
+        "radius": "15px",
+        "outline": "rgb(47, 73, 63) solid 3px",
+        "outlineOffset": "3px",
+        "focusVisible": true,
+        "rect": {
+          "x": 313.40625,
+          "y": 16,
+          "width": 41.59375,
+          "height": 41.59375
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "rgba(0, 0, 0, 0)"
+      }
+    },
+    {
+      "label": "mobile: booking utility Start over",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) solid 3px",
+        "outlineOffset": "0px",
+        "focusVisible": true,
+        "rect": {
+          "x": 36,
+          "y": 734.65625,
+          "width": 303,
+          "height": 37.59375
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "rgb(255, 250, 240)"
+      }
+    },
+    {
+      "label": "mobile: Start over keyboard press",
+      "passed": true
+    },
+    {
+      "label": "mobile: owner Sign in",
+      "focus": {
+        "radius": "15px",
+        "outline": "oklab(0.66 0.0224951 0.097437 / 0.5) solid 3px",
+        "outlineOffset": "0px",
+        "focusVisible": true,
+        "rect": {
+          "x": 32,
+          "y": 534.59375,
+          "width": 311,
+          "height": 40
+        }
+      },
+      "hover": {
+        "hovered": true,
+        "transform": "none",
+        "backgroundColor": "oklch(0.31 0.041 44)"
+      }
+    }
+  ]
+}

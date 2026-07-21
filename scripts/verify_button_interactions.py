@@ -40,24 +40,29 @@ def inspect_control(page, label, locator):
     results.append({"label": label, "focus": focus, "hover": hover})
 
 
-def inspect_viewport(browser, name, viewport, mobile):
+def inspect_public_controls(browser, name, viewport, mobile):
     context = browser.new_context(viewport=viewport, is_mobile=mobile, has_touch=mobile)
     page = context.new_page()
     try:
         page.goto(f"{BASE_URL}/", wait_until="networkidle")
-        inspect_control(page, f"{name}: hero Check availability", page.get_by_role("link", name="Check availability", exact=True))
-        inspect_control(page, f"{name}: booking Start over", page.get_by_role("button", name="Start over"))
+        inspect_control(page, f"{name}: primary hero Check availability", page.get_by_role("link", name="Check availability", exact=True))
+        inspect_control(page, f"{name}: secondary hero Explore the rooms", page.get_by_role("link", name="Explore the rooms", exact=True))
         if not mobile:
-            inspect_control(page, f"{name}: header Book Direct", page.get_by_role("link", name="Book Direct", exact=True).first)
+            inspect_control(page, f"{name}: navigation Book Direct", page.get_by_role("link", name="Book Direct", exact=True).first)
         else:
             menu = page.get_by_role("button", name="Open navigation")
-            if menu.count():
-                inspect_control(page, f"{name}: navigation menu", menu)
+            inspect_control(page, f"{name}: navigation menu", menu)
+
+        page.goto(f"{BASE_URL}/booking", wait_until="networkidle")
         start_over = page.get_by_role("button", name="Start over")
+        inspect_control(page, f"{name}: booking utility Start over", start_over)
         start_over.focus()
         page.keyboard.press("Enter")
         start_over.wait_for(state="visible")
         results.append({"label": f"{name}: Start over keyboard press", "passed": True})
+
+        page.goto(f"{BASE_URL}/owner", wait_until="networkidle")
+        inspect_control(page, f"{name}: owner Sign in", page.get_by_role("button", name="Sign in", exact=True))
     finally:
         context.close()
 
@@ -65,8 +70,8 @@ def inspect_viewport(browser, name, viewport, mobile):
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
     try:
-        inspect_viewport(browser, "desktop", {"width": 1280, "height": 720}, False)
-        inspect_viewport(browser, "mobile", {"width": 375, "height": 812}, True)
+        inspect_public_controls(browser, "desktop", {"width": 1280, "height": 720}, False)
+        inspect_public_controls(browser, "mobile", {"width": 375, "height": 812}, True)
     finally:
         browser.close()
 
