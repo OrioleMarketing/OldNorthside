@@ -21,6 +21,7 @@ import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { createReservationCheckoutSession } from "./stripe";
 import { resendBalanceReminderForOwner } from "./email";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
+import { getChannelSyncReadiness, listChannelSyncEvents } from "./channelSync";
 
 const stayInput = z.object({
   checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a YYYY-MM-DD check-in date."),
@@ -147,6 +148,10 @@ export const appRouter = router({
         }
       }),
     settings: adminProcedure.query(() => getPublicSettings()),
+    channelSyncReadiness: adminProcedure.query(() => getChannelSyncReadiness()),
+    channelSyncEvents: adminProcedure
+      .input(z.object({ limit: z.number().int().min(1).max(100).optional() }).optional())
+      .query(({ input }) => listChannelSyncEvents(input?.limit)),
     reminderSchedule: adminProcedure.query(async () => ({ taskUid: await getBalanceReminderScheduleTaskUid() })),
     enableReminderSchedule: adminProcedure.mutation(async ({ ctx }) => {
       const sessionToken = getSessionToken(ctx.req);
@@ -194,7 +199,8 @@ export const appRouter = router({
           countyTaxRateBasisPoints: z.number().int().min(0).max(10_000).optional(),
           shortTermTaxThresholdNights: z.number().int().min(1).max(365).optional(),
           channelProvider: z.string().trim().max(96).nullable().optional(),
-          channelConnectionStatus: z.enum(["not_connected", "pending", "connected", "error"]).optional(),
+          // A connection can only become "connected" through a future authorized provider adapter.
+          channelConnectionStatus: z.enum(["not_connected", "pending", "error"]).optional(),
         }),
       )
       .mutation(async ({ input }) => {

@@ -1,0 +1,1 @@
+ALTER TABLE `channel_sync_events` ADD `processingToken` varchar(64);

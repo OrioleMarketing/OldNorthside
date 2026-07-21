@@ -36,6 +36,7 @@ function OwnerCalendar() {
   const reservations = trpc.owner.reservations.useQuery(range, { enabled: isAdmin });
   const blocks = trpc.owner.blocks.useQuery(range, { enabled: isAdmin });
   const settings = trpc.owner.settings.useQuery(undefined, { enabled: isAdmin });
+  const channelSyncReadiness = trpc.owner.channelSyncReadiness.useQuery(undefined, { enabled: isAdmin });
   const reminderSchedule = trpc.owner.reminderSchedule.useQuery(undefined, { enabled: isAdmin });
   const utils = trpc.useUtils();
   const createBlock = trpc.owner.createBlock.useMutation({
@@ -131,6 +132,9 @@ function OwnerCalendar() {
           <label>Channel-management provider<input value={channelProvider} onChange={event => setChannelProvider(event.target.value)} placeholder="To be connected" maxLength={96} /></label>
           <p className="owner-form__note"><Settings2 size={14}/> {paymentCollectionMode === "full_stay" ? "Guests will pay the full stay total, including applicable taxes, at booking." : "Guests pay the first night and its applicable taxes at booking; the remaining balance is requested before arrival."} Tax settings remain 7% state tax + 3% Marion County Innkeeper’s Tax for stays shorter than 30 nights.</p>
           <button className="owner-button" type="submit" disabled={updateSettings.isPending}>{updateSettings.isPending ? "Saving settings…" : "Save booking settings"}</button>
+          <div className="owner-reminder-control">
+            <div><p className="eyebrow"><Settings2 size={14}/> Channel synchronization</p><strong>{channelSyncReadiness.data?.ready ? "Mapped and ready for the authorized connector" : "Provider connection required"}</strong><span>{channelSyncReadiness.data?.provider ? `${channelSyncReadiness.data.mappedRooms} mapped room${channelSyncReadiness.data.mappedRooms === 1 ? "" : "s"}. Inventory will not be sent until an authorized connector verifies the connection.` : "Save the prospective channel-management provider here; listings and room mappings are connected in the provider activation step."}</span></div>
+          </div>
           <div className="owner-reminder-control">
             <div><p className="eyebrow"><Mail size={14}/> Balance reminder delivery</p><strong>{reminderSchedule.data?.taskUid ? "Automated schedule active" : "Schedule not yet active"}</strong><span>Checks hourly for due seven-day balance reminders. Activate after publishing the site.</span></div>
             {reminderSchedule.data?.taskUid ? <button className="owner-button owner-button--quiet" type="button" onClick={() => pauseReminderSchedule.mutate()} disabled={pauseReminderSchedule.isPending}>{pauseReminderSchedule.isPending ? "Pausing…" : "Pause reminders"}</button> : <button className="owner-button owner-button--quiet" type="button" onClick={() => enableReminderSchedule.mutate()} disabled={enableReminderSchedule.isPending}>{enableReminderSchedule.isPending ? "Activating…" : "Activate reminders"}</button>}

@@ -43,6 +43,27 @@
       "when": 1784596782685,
       "tag": "0005_tiny_lady_vermin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1784597128650,
+      "tag": "0006_clear_puppet_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1784597162413,
+      "tag": "0007_massive_vengeance",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1784597412723,
+      "tag": "0008_fresh_malcolm_colcord",
+      "breakpoints": true
     }
   ]
 }

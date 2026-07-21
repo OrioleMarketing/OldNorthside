@@ -1,0 +1,1 @@
+ALTER TABLE `channel_sync_events` MODIFY COLUMN `status` enum('received','processing','processed','retrying','failed','ignored') NOT NULL DEFAULT 'received';

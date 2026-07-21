@@ -3,12 +3,14 @@ import { nanoid } from "nanoid";
 import {
   bookingEmailEvents,
   bookingSettings,
+  channelInventoryBlocks,
   reservationBlocks,
   reservations,
   rooms,
   type Room,
 } from "../drizzle/schema";
 import { getDb } from "./db";
+import { queueOutboundAvailabilityUpdate } from "./channelSync";
 
 export const HOLD_DURATION_MINUTES = 20;
 
@@ -228,7 +230,21 @@ async function getUnavailableRoomIds(checkIn: string, checkOut: string) {
         gt(reservationBlocks.checkOut, checkIn),
       ),
     );
-  return new Set([...reservationsInRange.map(item => item.roomId), ...blocksInRange.map(item => item.roomId)]);
+  const channelBlocksInRange = await db
+    .select({ roomId: channelInventoryBlocks.roomId })
+    .from(channelInventoryBlocks)
+    .where(
+      and(
+        lt(channelInventoryBlocks.checkIn, checkOut),
+        gt(channelInventoryBlocks.checkOut, checkIn),
+        inArray(channelInventoryBlocks.status, ["active", "conflict"]),
+      ),
+    );
+  return new Set([
+    ...reservationsInRange.map(item => item.roomId),
+    ...blocksInRange.map(item => item.roomId),
+    ...channelBlocksInRange.map(item => item.roomId),
+  ]);
 }
 
 export async function getAvailableRooms(checkIn: string, checkOut: string) {
@@ -399,6 +415,19 @@ export async function recordStripePayment(input: {
       })
       .where(eq(reservations.id, reservation.id));
 
+    try {
+      await queueOutboundAvailabilityUpdate({
+        roomId: reservation.roomId,
+        checkIn: reservation.checkIn,
+        checkOut: reservation.checkOut,
+        reservationId: reservation.id,
+        eventVersion: `direct-confirmation-${reservation.id}`,
+      });
+    } catch (error) {
+      // Channel integration must never prevent a paid direct reservation from being confirmed.
+      console.error("[Channel sync] Unable to queue direct booking inventory update:", error);
+    }
+
     if (reservation.balanceDueCents > 0) {
       const settings = await getPublicSettings();
       const scheduledFor = reminderDate(reservation.checkIn, settings.balanceReminderDays);
@@ -474,6 +503,17 @@ export async function createOwnerBlock(input: {
   const db = await getDb();
   if (!db) throw new Error("Database unavailable.");
   await db.insert(reservationBlocks).values(input);
+  try {
+    await queueOutboundAvailabilityUpdate({
+      roomId: input.roomId,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
+      eventVersion: `owner-block-${input.roomId}-${input.checkIn}-${input.checkOut}`,
+    });
+  } catch (error) {
+    // An owner block remains valid locally even if a future connector cannot queue its update.
+    console.error("[Channel sync] Unable to queue owner block inventory update:", error);
+  }
 }
 
 export async function listOwnerBlocks(range?: { start?: string; end?: string }) {
@@ -493,11 +533,17 @@ export async function listOwnerBlocks(range?: { start?: string; end?: string }) 
 export async function updateBookingSettings(input: Partial<PublicBookingSettings>) {
   const db = await getDb();
   if (!db) throw new Error("Database unavailable.");
+  const normalizedInput: Partial<PublicBookingSettings> = {
+    ...input,
+    ...(input.channelProvider !== undefined
+      ? { channelProvider: input.channelProvider?.trim().toLowerCase() || null }
+      : {}),
+  };
   const current = await db.select().from(bookingSettings).limit(1);
   if (!current[0]) {
-    await db.insert(bookingSettings).values({ ...defaultSettings, ...input });
+    await db.insert(bookingSettings).values({ ...defaultSettings, ...normalizedInput });
   } else {
-    await db.update(bookingSettings).set(input).where(eq(bookingSettings.id, current[0].id));
+    await db.update(bookingSettings).set(normalizedInput).where(eq(bookingSettings.id, current[0].id));
   }
   return getPublicSettings();
 }

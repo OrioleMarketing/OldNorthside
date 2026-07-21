@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { timingSafeEqual } from "crypto";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
@@ -11,6 +12,7 @@ import { serveStatic, setupVite } from "./vite";
 import { constructStripeEvent, processStripeEvent } from "../stripe";
 import { sendBookingConfirmation, sendDueBalanceReminders } from "../email";
 import { hasBalanceReminderScheduleTaskUid } from "../booking";
+import { applyInboundChannelInventoryEvent } from "../channelSync";
 import { sdk } from "./sdk";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -70,6 +72,41 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+
+  app.post("/api/channel-sync/inbound", async (req, res) => {
+    const configuredSecret = process.env.CHANNEL_SYNC_WEBHOOK_SECRET;
+    if (!configuredSecret) {
+      return res.status(503).json({ error: "Channel synchronization is not configured." });
+    }
+    const suppliedSecret = req.header("x-channel-sync-secret");
+    if (
+      !suppliedSecret ||
+      suppliedSecret.length !== configuredSecret.length ||
+      !timingSafeEqual(Buffer.from(suppliedSecret), Buffer.from(configuredSecret))
+    ) {
+      return res.status(401).json({ error: "Unauthorized channel synchronization request." });
+    }
+
+    try {
+      const body = req.body as Record<string, unknown>;
+      // Deliberately project only the canonical non-PII inventory envelope; raw provider payloads are discarded.
+      const result = await applyInboundChannelInventoryEvent({
+        provider: typeof body.provider === "string" ? body.provider : "",
+        eventType: typeof body.eventType === "string" ? body.eventType as "reservation_created" | "reservation_modified" | "reservation_cancelled" : "" as never,
+        idempotencyKey: typeof body.idempotencyKey === "string" ? body.idempotencyKey : "",
+        externalReservationId: typeof body.externalReservationId === "string" ? body.externalReservationId : "",
+        externalRoomId: typeof body.externalRoomId === "string" ? body.externalRoomId : "",
+        checkIn: typeof body.checkIn === "string" ? body.checkIn : undefined,
+        checkOut: typeof body.checkOut === "string" ? body.checkOut : undefined,
+        eventVersion: typeof body.eventVersion === "string" ? body.eventVersion : undefined,
+      });
+      return res.status(202).json(result);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Invalid channel inventory event.";
+      console.error("[Channel sync inbound]", message);
+      return res.status(400).json({ error: message });
+    }
+  });
 
   app.post("/api/scheduled/balance-reminders", async (req, res) => {
     try {

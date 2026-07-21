@@ -14,7 +14,7 @@
 - [x] Use a secure payment-provider checkout integration; do not collect or store raw card details in the application.
 - [x] Make deposit-versus-full-stay collection an owner-configurable booking policy with clear guest-facing disclosure.
 - [x] Design the custom direct-booking system to synchronize inventory with supported Airbnb, Booking.com, Expedia, and other connected channels.
-- [ ] Add idempotent inbound and outbound channel-update safeguards to prevent double booking and sync loops.
+- [x] Add idempotent inbound and outbound channel-update safeguards to prevent double booking and sync loops.
 - [x] Preserve and migrate the existing Privacy and Terms content into clear public policy pages.
 - [ ] Connect the custom direct-booking system to an authorized channel-management provider for production OTA synchronization.
 - [x] Collect a first-night deposit at booking and expose the policy clearly throughout checkout, confirmation, Terms, and the owner settings.
@@ -29,8 +29,11 @@
 - [x] Add the supplied Resend API key as a server-only project secret; never expose it to the browser or source control.
 - [x] Send branded booking confirmation and seven-day balance-reminder emails through Resend, with duplicate-delivery protection and delivery logging.
 - [x] Use the Resend sandbox sender only for testing and document the required verified Old Northside sending domain for production.
-- [x] Configure `reservations@oldnorthsidebedandbreakfast.com` as the verified branded Resend sender for transactional guest communications.
+- [ ] Verify `oldnorthsidebedandbreakfast.com` in the configured Resend account so `reservations@oldnorthsidebedandbreakfast.com` can send branded transactional guest communications.
 - [x] Add an explicit owner control for first-night deposit versus full-stay payment and show the active policy to guests before checkout.
 - [x] Show the stored state and county tax line items in the owner reservation-management view alongside totals and remaining balance.
 - [x] Document a clear Resend test-sender configuration separate from the verified production sender.
 - [ ] Complete end-to-end sandbox checks for reservation conflicts, Stripe deposit checkout, payment webhook confirmation, and scheduled reminder delivery before launch.
+- [x] Implement an authenticated inbound channel-sync endpoint or provider adapter that records, atomically claims, processes, and finalizes inbound events.
+- [x] Add origin and version metadata so inbound channel updates do not re-emit equivalent outbound availability changes.
+- [ ] Add database-backed channel-sync tests covering duplicate idempotency-key insertion, single-winner atomic claim behavior, terminal-state transitions, and replay/duplicate inbound-outbound event handling.

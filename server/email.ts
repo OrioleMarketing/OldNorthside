@@ -148,7 +148,10 @@ async function sendEmail(input: { eventId: number; reservationId: number; kind: 
       html: input.html,
       headers: { "Idempotency-Key": `old-northside-email-${input.eventId}` },
     });
-    if (result.error) throw new Error("The transactional email provider rejected the message.");
+    if (result.error) {
+      const reason = [result.error.name, result.error.message].filter(Boolean).join(": ");
+      throw new Error(`The transactional email provider rejected the message${reason ? ` (${reason})` : ""}.`);
+    }
     await recordDelivery(input.eventId, input.reservationId, input.kind, result.data?.id);
     return "sent";
   } catch (error) {

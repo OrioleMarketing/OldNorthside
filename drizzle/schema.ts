@@ -161,6 +161,31 @@ export const channelMappings = mysqlTable(
   table => [uniqueIndex("channel_mapping_unique").on(table.provider, table.roomId, table.externalRoomId)],
 );
 
+/**
+ * Minimal channel-owned inventory blocks. These protect direct-booking availability without
+ * duplicating channel guest, rate, or payment data.
+ */
+export const channelInventoryBlocks = mysqlTable(
+  "channel_inventory_blocks",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    provider: varchar("provider", { length: 96 }).notNull(),
+    externalReservationId: varchar("externalReservationId", { length: 160 }).notNull(),
+    roomId: int("roomId").notNull(),
+    checkIn: date("checkIn", { mode: "string" }).notNull(),
+    checkOut: date("checkOut", { mode: "string" }).notNull(),
+    status: mysqlEnum("status", ["active", "cancelled", "conflict"]).notNull().default("active"),
+    originEventKey: varchar("originEventKey", { length: 255 }).notNull(),
+    lastEventVersion: varchar("lastEventVersion", { length: 160 }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    uniqueIndex("channel_inventory_block_unique").on(table.provider, table.externalReservationId),
+    index("channel_inventory_block_room_dates_idx").on(table.roomId, table.checkIn, table.checkOut),
+  ],
+);
+
 /** Idempotent audit events for inbound and outbound channel updates; no raw guest data is stored here. */
 export const channelSyncEvents = mysqlTable(
   "channel_sync_events",
@@ -172,9 +197,10 @@ export const channelSyncEvents = mysqlTable(
     idempotencyKey: varchar("idempotencyKey", { length: 255 }).notNull(),
     reservationId: int("reservationId"),
     externalReservationId: varchar("externalReservationId", { length: 160 }),
-    status: mysqlEnum("status", ["received", "processed", "retrying", "failed", "ignored"])
+    status: mysqlEnum("status", ["received", "processing", "processed", "retrying", "failed", "ignored"])
       .notNull()
       .default("received"),
+    processingToken: varchar("processingToken", { length: 64 }),
     detail: text("detail"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     processedAt: timestamp("processedAt"),
