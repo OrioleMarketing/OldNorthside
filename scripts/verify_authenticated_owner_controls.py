@@ -25,37 +25,46 @@ def login(page):
         raise AssertionError(f"Local innkeeper sign-in did not remain on the owner route: {page.url}")
 
 
-def inspect_control(page, label, locator):
+def move_keyboard_focus_to(page, locator, label):
     locator.wait_for(state="visible", timeout=15000)
     locator.scroll_into_view_if_needed()
-    locator.focus()
+    for _ in range(120):
+        page.keyboard.press("Tab")
+        if locator.evaluate("element => document.activeElement === element"):
+            return
+    raise AssertionError(f"{label} could not be reached through keyboard navigation")
+
+
+def inspect_control(page, label, locator):
+    move_keyboard_focus_to(page, locator, label)
     focus = locator.evaluate(
         """element => {
           const style = getComputedStyle(element);
           const rect = element.getBoundingClientRect();
           return {
             radius: style.borderRadius,
-            outline: style.outline,
+            outlineStyle: style.outlineStyle,
             focusVisible: element.matches(':focus-visible'),
             rect: {x: rect.x, y: rect.y, width: rect.width, height: rect.height},
           };
         }"""
     )
-    rect = focus["rect"]
-    page.mouse.move(rect["x"] + rect["width"] / 2, rect["y"] + rect["height"] / 2)
-    hover = locator.evaluate(
-        """element => {
-          const style = getComputedStyle(element);
-          return {hovered: element.matches(':hover'), transform: style.transform};
-        }"""
-    )
+    locator.hover()
+    hover = locator.evaluate("element => ({hovered: element.matches(':hover'), transform: getComputedStyle(element).transform})")
     if focus["radius"] != "15px":
         raise AssertionError(f"{label} radius was {focus['radius']}, expected 15px")
-    if not focus["focusVisible"] or focus["outline"] == "none":
-        raise AssertionError(f"{label} did not present a visible keyboard focus style")
+    if not focus["focusVisible"] or focus["outlineStyle"] == "none":
+        raise AssertionError(f"{label} did not present a visible keyboard focus style: {focus}")
     if not hover["hovered"]:
         raise AssertionError(f"{label} did not activate :hover")
     results.append({"label": label, "focus": focus, "hover": hover})
+
+
+def inspect_if_present(page, label, locator):
+    if locator.count():
+        inspect_control(page, label, locator.first)
+    else:
+        results.append({"label": label, "skipped": "No matching live reservation currently exposes this conditional control."})
 
 
 def verify_viewport(browser, name, viewport, mobile):
@@ -63,14 +72,15 @@ def verify_viewport(browser, name, viewport, mobile):
     page = context.new_page()
     try:
         login(page)
-        controls = [
-            ("Add reservation", page.get_by_role("button", name="Add reservation", exact=True)),
-            ("Block dates", page.get_by_role("button", name="Block dates", exact=True)),
-            ("Save booking settings", page.get_by_role("button", name="Save booking settings", exact=True)),
-            ("Sign out", page.get_by_role("button", name="Sign out", exact=True)),
-        ]
-        for label, locator in controls:
-            inspect_control(page, f"{name}: {label}", locator)
+        inspect_control(page, f"{name}: Add reservation", page.get_by_role("button", name="Add reservation", exact=True))
+        inspect_control(page, f"{name}: Block dates", page.get_by_role("button", name="Block dates", exact=True))
+        inspect_control(page, f"{name}: Save booking settings", page.get_by_role("button", name="Save booking settings", exact=True))
+        reminder_control = page.get_by_role("button", name="Activate reminders", exact=True)
+        if not reminder_control.count():
+            reminder_control = page.get_by_role("button", name="Pause reminders", exact=True)
+        inspect_control(page, f"{name}: reminder schedule control", reminder_control)
+        inspect_if_present(page, f"{name}: Send balance reminder", page.get_by_role("button", name="Send balance reminder", exact=True))
+        inspect_if_present(page, f"{name}: Send secure payment link", page.get_by_role("button", name="Send secure payment link", exact=True))
         results.append({"label": f"{name}: authenticated owner route", "passed": True})
     finally:
         context.close()
