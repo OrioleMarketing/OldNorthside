@@ -1,0 +1,36 @@
+
+- [x] Review the legacy and current Old Northside Bed & Breakfast websites and capture accurate property, room, and guest-experience information.
+- [x] Analyze the provided reference inns to establish a historic-luxury visual direction and interaction patterns suitable for Old Northside.
+- [x] Create an elegant responsive guest website for Old Northside Bed & Breakfast that reflects its historic-home setting.
+- [x] Present all seven private-bath guest rooms with accurate individual room details and availability-led booking entry points.
+- [x] Implement a date-aware availability calendar that prevents booking a room on reserved nights before reservation submission.
+- [x] Implement a direct reservation workflow that collects guest details, stay dates, room selection, and booking total.
+- [x] Add secure payment-processing integration and booking confirmation handling.
+- [x] Create an owner-friendly reservation administration workflow for managing room availability and reservations.
+- [ ] Test availability conflicts, booking completion, payment flow, responsive layouts, and accessibility before launch.
+- [x] Build the approved custom direct-booking system rather than embedding a third-party booking engine.
+- [x] Add a database-backed per-room availability model that prevents overlapping confirmed or held reservations.
+- [x] Add an owner reservation calendar with room blocking and reservation-status management.
+- [x] Use a secure payment-provider checkout integration; do not collect or store raw card details in the application.
+- [x] Make deposit-versus-full-stay collection an owner-configurable booking policy with clear guest-facing disclosure.
+- [x] Design the custom direct-booking system to synchronize inventory with supported Airbnb, Booking.com, Expedia, and other connected channels.
+- [ ] Add idempotent inbound and outbound channel-update safeguards to prevent double booking and sync loops.
+- [x] Preserve and migrate the existing Privacy and Terms content into clear public policy pages.
+- [ ] Connect the custom direct-booking system to an authorized channel-management provider for production OTA synchronization.
+- [x] Collect a first-night deposit at booking and expose the policy clearly throughout checkout, confirmation, Terms, and the owner settings.
+- [x] Implement configurable balance-payment reminders with a seven-days-before-arrival default.
+- [x] Build an automated pre-arrival balance-payment email flow with delivery status, duplicate-send prevention, and manual owner resend controls.
+- [x] Calculate and itemize 7% state tax and 3% Marion County Innkeeper’s Tax for stays shorter than 30 consecutive nights.
+- [x] Exempt stays of 30 or more consecutive nights from the supplied short-term lodging tax rules, while keeping the thresholds and rates configurable for future verification or policy changes.
+- [x] Include the tax breakdown in booking quotes, deposit collection, balance-payment requests, reservation confirmations, owner calendar details, and transaction records.
+- [x] Keep balance-reminder scheduling and delivery records provider-neutral so GoHighLevel email can be connected later without altering booking logic.
+- [x] Prepare a dedicated authenticated sending-domain configuration checklist for the future GoHighLevel email setup.
+- [x] Defer live transactional-email credentials and GoHighLevel workflow/API configuration until the owner is ready to connect the service.
+- [x] Add the supplied Resend API key as a server-only project secret; never expose it to the browser or source control.
+- [x] Send branded booking confirmation and seven-day balance-reminder emails through Resend, with duplicate-delivery protection and delivery logging.
+- [x] Use the Resend sandbox sender only for testing and document the required verified Old Northside sending domain for production.
+- [x] Configure `reservations@oldnorthsidebedandbreakfast.com` as the verified branded Resend sender for transactional guest communications.
+- [x] Add an explicit owner control for first-night deposit versus full-stay payment and show the active policy to guests before checkout.
+- [x] Show the stored state and county tax line items in the owner reservation-management view alongside totals and remaining balance.
+- [x] Document a clear Resend test-sender configuration separate from the verified production sender.
+- [ ] Complete end-to-end sandbox checks for reservation conflicts, Stripe deposit checkout, payment webhook confirmation, and scheduled reminder delivery before launch.

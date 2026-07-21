@@ -1,0 +1,1 @@
+ALTER TABLE `booking_email_events` MODIFY COLUMN `status` enum('scheduled','sending','sent','failed','cancelled') NOT NULL DEFAULT 'scheduled';

@@ -1,0 +1,1 @@
+ALTER TABLE `booking_settings` ADD `balanceReminderScheduleTaskUid` varchar(65);

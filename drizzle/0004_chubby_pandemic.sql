@@ -1,0 +1,1 @@
+ALTER TABLE `booking_settings` ADD `paymentCollectionMode` enum('first_night_deposit','full_stay') DEFAULT 'first_night_deposit' NOT NULL;
