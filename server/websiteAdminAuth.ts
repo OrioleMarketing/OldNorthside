@@ -123,13 +123,37 @@ export async function hashWebsiteAdminPassword(password: string) {
 
 export async function verifyWebsiteAdminPassword(password: string, encoded: string) {
   const [algorithm, n, r, p, salt, expected] = encoded.split("$");
-  if (algorithm !== "scrypt" || !n || !r || !p || !salt || !expected) return false;
+  const workFactor = Number(n);
+  const blockSize = Number(r);
+  const parallelization = Number(p);
+  if (
+    algorithm !== "scrypt" ||
+    !n ||
+    !r ||
+    !p ||
+    !salt ||
+    !expected ||
+    !/^[A-Za-z0-9_-]+$/.test(salt) ||
+    !/^[A-Za-z0-9_-]+$/.test(expected) ||
+    !Number.isInteger(workFactor) ||
+    workFactor < 2 ||
+    workFactor > 1_048_576 ||
+    (workFactor & (workFactor - 1)) !== 0 ||
+    !Number.isInteger(blockSize) ||
+    blockSize < 1 ||
+    blockSize > 64 ||
+    !Number.isInteger(parallelization) ||
+    parallelization < 1 ||
+    parallelization > 16
+  ) {
+    return false;
+  }
 
   try {
-    const derived = await derivePasswordKey(password, salt, Number(n), Number(r), Number(p));
-    const actualBuffer = Buffer.from(derived.toString("base64url"));
-    const expectedBuffer = Buffer.from(expected);
-    return actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer);
+    const expectedBuffer = Buffer.from(expected, "base64url");
+    if (expectedBuffer.length !== PASSWORD_KEY_LENGTH) return false;
+    const derived = await derivePasswordKey(password, salt, workFactor, blockSize, parallelization);
+    return timingSafeEqual(derived, expectedBuffer);
   } catch {
     return false;
   }

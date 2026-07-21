@@ -28,7 +28,7 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-/** Website-managed innkeeper identities. Passwords are stored as Argon2id-compatible hashes only. */
+/** Website-managed innkeeper identities. Passwords are stored only as salted scrypt hashes. */
 export const websiteAdmins = mysqlTable(
   "website_admins",
   {

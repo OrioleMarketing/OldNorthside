@@ -122,3 +122,5 @@
 - [x] Provision the supplied initial administrator with least-privilege admin access, store only a password hash, and verify protected dashboard access.
 - [x] Add regression coverage and browser verification for the FAQ page, external Visitor Guide link, website login, and admin-only owner dashboard.
 - [x] Fix the discovered browser-session redirect after successful local innkeeper sign-in so authorized staff remain on the website owner dashboard rather than being sent to Manus; the apparent issue was a preview-host verification false positive, and browser verification confirms the signed-in owner route remains local.
+- [x] Diagnose and correct the initial innkeeper administrator password-verification failure without exposing the password; hardened scrypt decoding and refreshed the stored server-side hash.
+- [x] Re-provision the initial administrator securely and verify a real local sign-in reaches the owner dashboard; endpoint, signed-session, and browser dashboard-entry checks passed.

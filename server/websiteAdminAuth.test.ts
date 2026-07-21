@@ -31,8 +31,13 @@ describe("websiteAdminAuth", () => {
   it("hashes passwords with a salted scrypt encoding and rejects the wrong secret", async () => {
     const encoded = await hashWebsiteAdminPassword("A secure test password 2026!");
     expect(encoded).toMatch(/^scrypt\$16384\$8\$1\$/);
+    const [, , , , salt, digest] = encoded.split("$");
+    expect(Buffer.from(salt ?? "", "base64url")).toHaveLength(16);
+    expect(Buffer.from(digest ?? "", "base64url")).toHaveLength(64);
     expect(await verifyWebsiteAdminPassword("A secure test password 2026!", encoded)).toBe(true);
     expect(await verifyWebsiteAdminPassword("wrong password", encoded)).toBe(false);
+    expect(await verifyWebsiteAdminPassword("A secure test password 2026!", `${encoded}!`)).toBe(false);
+    expect(await verifyWebsiteAdminPassword("A secure test password 2026!", "scrypt$not-a-number$8$1$salt$hash")).toBe(false);
   });
 
   it("issues and clears an httpOnly bounded website-admin session cookie", () => {
