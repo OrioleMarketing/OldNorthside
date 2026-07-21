@@ -48,6 +48,30 @@ export const websiteAdmins = mysqlTable(
 export type WebsiteAdmin = typeof websiteAdmins.$inferSelect;
 export type InsertWebsiteAdmin = typeof websiteAdmins.$inferInsert;
 
+/** One-time website-admin invitations. Only a SHA-256 token digest is persisted. */
+export const websiteAdminInvites = mysqlTable(
+  "website_admin_invites",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    email: varchar("email", { length: 320 }).notNull(),
+    name: varchar("name", { length: 180 }).notNull(),
+    tokenHash: varchar("tokenHash", { length: 64 }).notNull(),
+    createdByAdminId: int("createdByAdminId").notNull(),
+    expiresAt: timestamp("expiresAt").notNull(),
+    activatedAt: timestamp("activatedAt"),
+    revokedAt: timestamp("revokedAt"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    uniqueIndex("website_admin_invites_email_unique").on(table.email),
+    uniqueIndex("website_admin_invites_token_hash_unique").on(table.tokenHash),
+    index("website_admin_invites_status_idx").on(table.expiresAt, table.activatedAt, table.revokedAt),
+  ],
+);
+
+export type WebsiteAdminInvite = typeof websiteAdminInvites.$inferSelect;
+
 /** Individual guest rooms at Old Northside Bed & Breakfast. */
 export const rooms = mysqlTable(
   "rooms",

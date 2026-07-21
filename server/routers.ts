@@ -29,6 +29,7 @@ import { chargeSavedBalanceOffSession, createReservationCheckoutSession } from "
 import { resendBalanceReminderForOwner, sendBookingConfirmation, sendOwnerPaymentLink } from "./email";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
 import { getChannelSyncReadiness, listChannelSyncEvents } from "./channelSync";
+import { activateWebsiteAdminInvitation, createWebsiteAdminInvitation, getPublicWebsiteAdminInvitation, listWebsiteAdminAccess, revokeWebsiteAdminInvitation, revokeWebsiteAdministrator, websiteAdminIdForUser } from "./websiteAdminAccess";
 
 const stayInput = z.object({
   checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a YYYY-MM-DD check-in date."),
@@ -87,6 +88,24 @@ export const appRouter = router({
         clearLoginAttempts(ctx.req, input.email);
         setWebsiteAdminSession(ctx.res, ctx.req, user);
         return user;
+      }),
+    getInnkeeperInvitation: publicProcedure
+      .input(z.object({ token: z.string().min(1).max(256) }))
+      .query(({ input }) => getPublicWebsiteAdminInvitation(input.token)),
+    activateInnkeeperInvitation: publicProcedure
+      .input(z.object({ token: z.string().min(1).max(256), password: z.string().min(12).max(256) }))
+      .mutation(async ({ ctx, input }) => {
+        const invitation = await getPublicWebsiteAdminInvitation(input.token);
+        if (!invitation) throw new TRPCError({ code: "NOT_FOUND", message: "This invitation is invalid or no longer active." });
+        try {
+          await activateWebsiteAdminInvitation({ token: input.token, password: input.password });
+          const user = await authenticateWebsiteAdmin(invitation.email, input.password);
+          if (!user) throw new Error("The invitation could not create an innkeeper session.");
+          setWebsiteAdminSession(ctx.res, ctx.req, user);
+          return user;
+        } catch (error) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: error instanceof Error ? error.message : "This invitation could not be activated." });
+        }
       }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
@@ -162,6 +181,35 @@ export const appRouter = router({
   }),
 
   owner: router({
+    administratorAccess: adminProcedure.query(() => listWebsiteAdminAccess()),
+    inviteAdministrator: adminProcedure
+      .input(z.object({ name: z.string().trim().min(2).max(180), email: z.string().trim().email().max(320) }))
+      .mutation(async ({ input, ctx }) => {
+        try {
+          return await createWebsiteAdminInvitation({
+            ...input,
+            createdByAdminId: websiteAdminIdForUser(ctx.user.openId) ?? 0,
+          });
+        } catch (error) {
+          return bookingError(error);
+        }
+      }),
+    revokeAdministrator: adminProcedure
+      .input(z.object({ adminId: z.number().int().positive() }))
+      .mutation(async ({ input, ctx }) => {
+        const ownAdminId = websiteAdminIdForUser(ctx.user.openId);
+        if (ownAdminId === input.adminId) throw new TRPCError({ code: "BAD_REQUEST", message: "You cannot revoke your own innkeeper access." });
+        const revoked = await revokeWebsiteAdministrator(input.adminId);
+        if (!revoked) throw new TRPCError({ code: "NOT_FOUND", message: "That administrator is already inactive or could not be found." });
+        return { revoked: true } as const;
+      }),
+    revokeAdministratorInvitation: adminProcedure
+      .input(z.object({ inviteId: z.number().int().positive() }))
+      .mutation(async ({ input }) => {
+        const revoked = await revokeWebsiteAdminInvitation(input.inviteId);
+        if (!revoked) throw new TRPCError({ code: "NOT_FOUND", message: "That invitation is already inactive or could not be found." });
+        return { revoked: true } as const;
+      }),
     reservations: adminProcedure
       .input(stayInput.partial())
       .query(({ input }) => listOwnerReservations({ start: input.checkIn, end: input.checkOut })),

@@ -124,3 +124,5 @@
 - [x] Fix the discovered browser-session redirect after successful local innkeeper sign-in so authorized staff remain on the website owner dashboard rather than being sent to Manus; the apparent issue was a preview-host verification false positive, and browser verification confirms the signed-in owner route remains local.
 - [x] Diagnose and correct the initial innkeeper administrator password-verification failure without exposing the password; hardened scrypt decoding and refreshed the stored server-side hash.
 - [x] Re-provision the initial administrator securely and verify a real local sign-in reaches the owner dashboard; endpoint, signed-session, and browser dashboard-entry checks passed.
+- [x] Add a secure Innkeeper access management link and workflow so existing administrators can invite, review, and revoke additional portal administrators; invitations store only a one-time token digest and expire after 72 hours.
+- [x] Validate administrator invitation, activation, sign-in, and revocation paths with automated coverage and authenticated portal verification; the secure setup, session, and access-management presentation checks passed.

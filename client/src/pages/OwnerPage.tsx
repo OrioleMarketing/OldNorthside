@@ -12,12 +12,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { trpc } from "@/lib/trpc";
 import { addDays, format, startOfToday } from "date-fns";
-import { CalendarDays, CalendarPlus, ChevronLeft, ChevronRight, CircleDollarSign, CreditCard, LockKeyhole, Mail, Phone, Settings2, XCircle } from "lucide-react";
+import { CalendarDays, CalendarPlus, ChevronLeft, ChevronRight, CircleDollarSign, CreditCard, LockKeyhole, Mail, Phone, Settings2, ShieldCheck, XCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const ownerNavigation: DashboardNavigationItem[] = [
   { icon: CalendarDays, label: "Reservations", path: "/owner" },
+  { icon: ShieldCheck, label: "Innkeeper access", path: "/owner/access" },
 ];
 
 function isoDate(date: Date) {

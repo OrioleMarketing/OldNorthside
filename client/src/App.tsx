@@ -6,6 +6,8 @@ import Home from "./pages/Home";
 import NotFound from "@/pages/NotFound";
 import { AboutPage, BalancePaymentPage, BookingPage, ConfirmationPage, FAQPage, PetPolicyPage, PoliciesPage, RoomsPage, VisitorGuidePage } from "@/pages/InnPages";
 import OwnerPage from "@/pages/OwnerPage";
+import InnkeeperAccessPage from "@/pages/InnkeeperAccessPage";
+import InnkeeperInvitePage from "@/pages/InnkeeperInvitePage";
 import { Menu, Phone, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "wouter";
@@ -38,7 +40,7 @@ function ScrollToTop() {
 
 function Router() {
   return <Switch>
-    <Route path="/" component={Home} /><Route path="/about" component={AboutPage} /><Route path="/visitor-guide" component={VisitorGuidePage} /><Route path="/faq" component={FAQPage} /><Route path="/rooms" component={RoomsPage} /><Route path="/booking" component={BookingPage} /><Route path="/booking/confirmation" component={ConfirmationPage} /><Route path="/booking/balance" component={BalancePaymentPage} /><Route path="/owner" component={OwnerPage} /><Route path="/pet-policy" component={PetPolicyPage} /><Route path="/privacy">{() => <PoliciesPage kind="privacy" />}</Route><Route path="/terms">{() => <PoliciesPage kind="terms" />}</Route><Route path="/404" component={NotFound} /><Route component={NotFound} />
+    <Route path="/" component={Home} /><Route path="/about" component={AboutPage} /><Route path="/visitor-guide" component={VisitorGuidePage} /><Route path="/faq" component={FAQPage} /><Route path="/rooms" component={RoomsPage} /><Route path="/booking" component={BookingPage} /><Route path="/booking/confirmation" component={ConfirmationPage} /><Route path="/booking/balance" component={BalancePaymentPage} /><Route path="/owner/invite" component={InnkeeperInvitePage} /><Route path="/owner/access" component={InnkeeperAccessPage} /><Route path="/owner" component={OwnerPage} /><Route path="/pet-policy" component={PetPolicyPage} /><Route path="/privacy">{() => <PoliciesPage kind="privacy" />}</Route><Route path="/terms">{() => <PoliciesPage kind="terms" />}</Route><Route path="/404" component={NotFound} /><Route component={NotFound} />
   </Switch>;
 }
 

@@ -76,6 +76,7 @@
   button:not(:disabled), [role="button"]:not([aria-disabled="true"]), [type="button"]:not(:disabled), [type="submit"]:not(:disabled), [type="reset"]:not(:disabled), a[href], select:not(:disabled), input[type="checkbox"]:not(:disabled), input[type="radio"]:not(:disabled) { @apply cursor-pointer; }
   button, a, input, select { transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), transform 160ms var(--ease-out); }
   button:active, .inn-button:active { transform: scale(.975); }
+:where(button, [role="button"], a, input, select, textarea):focus-visible { outline: 3px solid rgb(168 116 29 / .72); outline-offset: 3px; }
   ::selection { background: oklch(0.78 0.1 80 / .45); color: oklch(0.24 0.024 52); }
 }
 
@@ -323,3 +324,21 @@ input[type="reset"]:not(.button-radius-exempt):focus-visible,
 .innkeeper-login__error { margin: 0; border-left: 3px solid #a72b28; padding: .65rem .8rem; background: #f9e8e5; color: #8e2624; font-size: .86rem; line-height: 1.45; }
 .innkeeper-login__help { margin: 1.5rem 0 0; color: #738177; font-size: .78rem; line-height: 1.55; }
 @media (max-width: 34rem) { .innkeeper-login { padding: 1rem; } .innkeeper-login__panel { border-radius: 1rem; padding: 1.5rem; } }
+
+/* Innkeeper administrator access management */
+.owner-access-management__grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); }
+.owner-access-management__panel { margin-top: 1.25rem; }
+.owner-invite-link { display: grid; gap: .75rem; padding: 1rem; border: 1px solid #d8c49d; background: #f8f0e2; }
+.owner-invite-link strong { color: #2d463d; font: 600 1.05rem/1.2 'Fraunces', Georgia, serif; }
+.owner-invite-link p { margin: 0; color: #675849; font-size: .72rem; line-height: 1.55; }
+.owner-invite-link input { min-height: 2.7rem; border: 1px solid #c8ae80; background: #fffdf8; padding: .55rem .65rem; color: #2e251f; font: 500 .72rem 'DM Sans', sans-serif; }
+.owner-invite-link .owner-button { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; width: fit-content; margin-top: 0; }
+.owner-access-list { display: grid; gap: .55rem; }
+.owner-access-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem .95rem; border: 1px solid #ddc9a6; background: #f5ecdd; }
+.owner-access-card > div { display: grid; min-width: 0; gap: .22rem; }
+.owner-access-card strong { color: #34281f; font-size: .82rem; }
+.owner-access-card span:not(.reservation-status) { display: inline-flex; align-items: center; gap: .3rem; color: #735f4c; font-size: .72rem; overflow-wrap: anywhere; }
+.owner-access-card small { color: #806757; font-size: .65rem; }
+.owner-access-card--inactive { opacity: .7; }
+@media (max-width: 920px) { .owner-access-management__grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .owner-access-card { align-items: stretch; flex-direction: column; } .owner-access-card .owner-cancel-button, .owner-invite-link .owner-button { width: 100%; } }
