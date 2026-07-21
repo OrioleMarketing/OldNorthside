@@ -89,6 +89,15 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   const depositNights = settings?.depositNights ?? 1;
   const paymentCollectionMode = settings?.paymentCollectionMode ?? "first_night_deposit";
   const reminderDays = settings?.balanceReminderDays ?? 7;
+  const availabilityStatus = !canCheckAvailability
+    ? "Select a check-in and check-out date to view live availability."
+    : availabilityQuery.isLoading
+      ? "Checking each room for your stay."
+      : availabilityQuery.isError
+        ? `Availability could not be loaded: ${availabilityQuery.error.message}`
+        : availableRooms.length
+          ? `${availableRooms.length} room${availableRooms.length === 1 ? " is" : "s are"} available for your selected stay.`
+          : "No rooms are available for those dates. Try another stay or contact the inn for help.";
 
   return (
     <section className={compact ? "booking-panel booking-panel--compact" : "booking-panel"} aria-labelledby="availability-heading">
@@ -123,7 +132,8 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
           </div>
         </div>
 
-        <div className="booking-step booking-step--rooms">
+        <div className="booking-step booking-step--rooms" aria-busy={canCheckAvailability && availabilityQuery.isLoading}>
+          <p className="sr-only" role="status">{availabilityStatus}</p>
           <div className="booking-step__number">02</div>
           <p className="booking-step__label">Available rooms</p>
           {!canCheckAvailability ? (
@@ -143,6 +153,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
                     onClick={() => setSelectedRoomId(room.id)}
                     className={`available-room ${isSelected ? "available-room--selected" : ""}`}
                     aria-pressed={isSelected}
+                    aria-label={`${room.name}, ${money.format(quote.subtotalCents / 100)} for ${quote.nights} night${quote.nights === 1 ? "" : "s"}. ${isSelected ? "Selected" : "Select this room"}.`}
                   >
                     <span className="available-room__image" style={{ backgroundImage: room.imageUrl ? `url(${room.imageUrl})` : undefined }} />
                     <span className="available-room__body">
@@ -161,7 +172,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
       </div>
 
       {selected ? (
-        <form className="booking-checkout" onSubmit={submitReservation}>
+        <form className="booking-checkout" onSubmit={submitReservation} aria-busy={checkout.isPending}>
           <div className="booking-checkout__heading">
             <div>
               <div className="booking-step__number">03</div>
@@ -195,8 +206,8 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
           </div>
 
           <div className="booking-checkout__actions">
-            <p><LockKeyhole size={15} /> Payment is securely processed by Stripe. Old Northside does not store card details.</p>
-            <Button type="submit" className="inn-button inn-button--primary" disabled={checkout.isPending}>
+            <p id="secure-payment-notice"><LockKeyhole size={15} /> Payment is securely processed by Stripe. Old Northside does not store card details.</p>
+            <Button type="submit" className="inn-button inn-button--primary" disabled={checkout.isPending} aria-describedby="secure-payment-notice">
               {checkout.isPending ? <><Loader2 className="animate-spin" /> Preparing secure checkout…</> : <><LockKeyhole /> {paymentCollectionMode === "full_stay" ? "Continue to secure payment" : "Continue to secure deposit"}</>}
             </Button>
           </div>

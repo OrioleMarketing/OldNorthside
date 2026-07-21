@@ -7,7 +7,7 @@
 - [x] Implement a direct reservation workflow that collects guest details, stay dates, room selection, and booking total.
 - [x] Add secure payment-processing integration and booking confirmation handling.
 - [x] Create an owner-friendly reservation administration workflow for managing room availability and reservations.
-- [ ] Test availability conflicts, booking completion, payment flow, responsive layouts, and accessibility before launch.
+- [ ] Complete the owner-authorized live Stripe checkout and webhook check before launch; availability conflicts, booking completion states, responsive layouts, and booking-widget accessibility are now validated.
 - [x] Build the approved custom direct-booking system rather than embedding a third-party booking engine.
 - [x] Add a database-backed per-room availability model that prevents overlapping confirmed or held reservations.
 - [x] Add an owner reservation calendar with room blocking and reservation-status management.
@@ -33,7 +33,7 @@
 - [x] Add an explicit owner control for first-night deposit versus full-stay payment and show the active policy to guests before checkout.
 - [x] Show the stored state and county tax line items in the owner reservation-management view alongside totals and remaining balance.
 - [x] Document a clear Resend test-sender configuration separate from the verified production sender.
-- [ ] Complete end-to-end sandbox checks for reservation conflicts, Stripe deposit checkout, payment webhook confirmation, and scheduled reminder delivery before launch.
+- [ ] With explicit owner authorization, complete a sandbox Stripe deposit checkout and webhook check; reservation-conflict and reminder state transitions are database-validated, while live email delivery awaits sending-domain verification.
 - [x] Implement an authenticated inbound channel-sync endpoint or provider adapter that records, atomically claims, processes, and finalizes inbound events.
 - [x] Add origin and version metadata so inbound channel updates do not re-emit equivalent outbound availability changes.
 - [x] Add database-backed channel-sync tests covering duplicate idempotency-key insertion, single-winner atomic claim behavior, terminal-state transitions, and replay/duplicate inbound-outbound event handling.
@@ -49,3 +49,5 @@
 - [x] Rewrite the Indianapolis welcome line as property-specific copy tied to the historic house, Old Northside, and nearby walkable experiences, with regression coverage for the approved wording.
 - [x] Normalize any remaining Home.tsx property-name strings to “Old Northside Bed and Breakfast.”
 - [x] Update booking confirmation page copy to use the approved full property name and extend regression coverage to reject legacy Home and confirmation branding.
+- [x] Add database-backed validation for availability exclusion, overlapping reservation rejection, deposit confirmation, balance-reminder scheduling, and paid-balance reminder cancellation.
+- [x] Improve and test booking-widget accessibility for dynamic availability status, room selection state, required guest fields, and pending checkout feedback.
