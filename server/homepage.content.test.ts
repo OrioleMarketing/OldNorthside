@@ -8,12 +8,14 @@ const appPath = fileURLToPath(new URL("../client/src/App.tsx", import.meta.url))
 const innPagesPath = fileURLToPath(new URL("../client/src/pages/InnPages.tsx", import.meta.url));
 const emailPath = fileURLToPath(new URL("../server/email.ts", import.meta.url));
 const stripePath = fileURLToPath(new URL("../server/stripe.ts", import.meta.url));
+const bookingWidgetPath = fileURLToPath(new URL("../client/src/components/BookingWidget.tsx", import.meta.url));
 const homepageSource = readFileSync(homepagePath, "utf8");
 const indexSource = readFileSync(indexPath, "utf8");
 const appSource = readFileSync(appPath, "utf8");
 const innPagesSource = readFileSync(innPagesPath, "utf8");
 const emailSource = readFileSync(emailPath, "utf8");
 const stripeSource = readFileSync(stripePath, "utf8");
+const bookingWidgetSource = readFileSync(bookingWidgetPath, "utf8");
 
 describe("homepage guest-facing positioning", () => {
   it("preserves the approved Dewenter-Greenen House history and artistic context", () => {
@@ -31,6 +33,16 @@ describe("homepage guest-facing positioning", () => {
     expect(homepageSource).toContain("many downtown restaurants, cultural destinations, and city features within walking distance");
     expect(homepageSource).toContain("Begin at the Dewenter-Greenen House");
     expect(homepageSource).toContain("Old Northside for tree-lined walks and nearby downtown discoveries");
+  });
+
+  it("uses the approved welcoming hero, clear reading rhythm, parking image, and booking hierarchy", () => {
+    expect(homepageSource).toContain('const HERO_IMAGE = "/manus-storage/dewenter-room_a9fea36d.jpg"');
+    expect(homepageSource).toContain('/manus-storage/OffStreetParking_1c77e0fb.png');
+    expect(homepageSource).toContain('alt="Off-street guest parking at Old Northside Bed and Breakfast"');
+    expect(homepageSource).not.toContain('neighborhood-grid__monogram">ON');
+    expect(homepageSource.indexOf('className="section section--ink story-section"')).toBeLessThan(homepageSource.indexOf('id="availability"'));
+    expect(bookingWidgetSource).toContain('numberOfMonths={1}');
+    expect(bookingWidgetSource).not.toContain('numberOfMonths={compact ? 1 : 2}');
   });
 
   it("presents the owner-approved Indianapolis visitor experience and links to an internal Visitor Guide", () => {
@@ -58,6 +70,7 @@ describe("homepage guest-facing positioning", () => {
     expect(homepageSource).toContain("/manus-storage/gary-hofmeister-portrait_bf2246de.jpg");
     expect(homepageSource).toContain("garyh@hofmeister.com");
     expect(indexSource).toContain("<title>Old Northside Bed and Breakfast</title>");
+    expect(indexSource).toContain('/manus-storage/favicon_design_1_5841d8ac.webp');
     expect(appSource).toContain("Bed and Breakfast · Indianapolis");
     expect(appSource).toContain("Old Northside Bed and Breakfast. All rights reserved.");
     expect(innPagesSource).toContain("Old Northside Bed and Breakfast");

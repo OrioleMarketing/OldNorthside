@@ -122,7 +122,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             selected={stay}
             onSelect={setStay}
             disabled={{ before: today }}
-            numberOfMonths={compact ? 1 : 2}
+            numberOfMonths={1}
             defaultMonth={today}
             className="booking-calendar"
           />

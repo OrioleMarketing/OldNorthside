@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { ArrowRight, BedDouble, CalendarDays, CarFront, Coffee, Footprints, Landmark, MapPin, ShieldCheck, Sparkles, TreePine, Trophy, UtensilsCrossed, Wifi } from "lucide-react";
 import { Link } from "wouter";
 
-const HERO_IMAGE = "/manus-storage/exterior_3b0e8c31.jpg";
+const HERO_IMAGE = "/manus-storage/dewenter-room_a9fea36d.jpg";
 const ROOM_IMAGES: Record<string, string> = {
   "the-bridal-room": "/manus-storage/library-suite_b24b3222.jpg",
   "the-tiffany-room": "/manus-storage/tiffany-room_0dbdd78d.jpg",
@@ -50,7 +50,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="availability" className="section section--paper section--pullup"><div className="container"><BookingWidget /></div></section>
 
       <section className="section section--ink story-section">
         <div className="container story-grid">
@@ -103,7 +102,9 @@ export default function Home() {
 
       <section className="amenities-band"><div className="container amenities-grid">{amenities.map(({ icon: Icon, title, body }) => <article key={title} className="amenity"><Icon aria-hidden="true" size={24} /><div><h3>{title}</h3><p>{body}</p></div></article>)}</div></section>
 
-      <section className="section neighborhood-section"><div className="container neighborhood-grid"><div className="neighborhood-grid__visual"><div className="neighborhood-grid__monogram">ON</div></div><div><p className="eyebrow eyebrow--gold">Old Northside</p><h2 className="font-display">Park once. Explore Indianapolis on foot.</h2><p>Free off-street parking is a practical benefit in Indianapolis. Leave the car at the inn, then enjoy tree-lined Old Northside streets and many downtown restaurants, cultural destinations, and city features within walking distance.</p><p>When you return, you come back to the quiet character of a historic home rather than a downtown parking search.</p><Link href="/about" className="inn-button inn-button--dark">Plan your stay <CalendarDays size={17} /></Link></div></div></section>
+      <section id="availability" className="section section--paper"><div className="container"><BookingWidget /></div></section>
+
+      <section className="section neighborhood-section"><div className="container neighborhood-grid"><div className="neighborhood-grid__visual"><img src="/manus-storage/OffStreetParking_1c77e0fb.png" alt="Off-street guest parking at Old Northside Bed and Breakfast" className="neighborhood-grid__image" /></div><div><p className="eyebrow eyebrow--gold">Old Northside</p><h2 className="font-display">Park once. Explore Indianapolis on foot.</h2><p>Free off-street parking is a practical benefit in Indianapolis. Leave the car at the inn, then enjoy tree-lined Old Northside streets and many downtown restaurants, cultural destinations, and city features within walking distance.</p><p>When you return, you come back to the quiet character of a historic home rather than a downtown parking search.</p><Link href="/about" className="inn-button inn-button--dark">Plan your stay <CalendarDays size={17} /></Link></div></div></section>
 
       <section className="section indy-section" aria-labelledby="indy-heading">
         <div className="container">

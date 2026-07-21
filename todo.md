@@ -55,3 +55,10 @@
 - [ ] Optionally add an owner-supplied downloadable Visitor Guide URL or file alongside the live public Visitor Guide page.
 - [x] Create and complete one clearly labeled sandbox reservation using Stripe’s test checkout, then verify the payment webhook confirms the reservation and records only the required payment identifier.
 - [x] Create a concise public Old Northside Bed and Breakfast Visitor Guide page from the owner-approved Indianapolis content and link the homepage action to it.
+- [x] Replace the tombstone-like hero image with a warmer property image and preserve readable booking calls to action.
+- [x] Move the house-history content above the Book Direct section in the homepage hierarchy.
+- [x] Configure the booking calendar to display a single month at a time without reducing date-selection functionality.
+- [x] Improve paragraph rhythm with clear visual separation between paragraphs and tighter, more readable line-height across long-form homepage copy.
+- [x] Replace the ambiguous “ON” parking placeholder with the owner-supplied off-street-parking photograph and accurate accessible alternative text.
+- [x] Install the owner-supplied favicon in the site metadata and browser tab.
+- [x] Validate the approved homepage refinements with type checking, focused regression coverage, and desktop/mobile visual review; the only full-suite failure remains the external Resend sender-domain prerequisite.
