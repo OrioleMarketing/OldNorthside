@@ -63,8 +63,11 @@ describe("homepage guest-facing positioning", () => {
     expect(homepageSource).toContain("Monument Circle");
     expect(homepageSource).toContain("Lucas Oil Stadium");
     expect(homepageSource).toContain("Indianapolis Zoo");
-    expect(homepageSource).toContain('href="/visitor-guide"');
-    expect(homepageSource).toContain("Open the Visitor Guide");
+    expect(homepageSource).toContain('href="https://www.visitindy.com/"');
+    expect(homepageSource).toContain('target="_blank"');
+    expect(homepageSource).toContain('rel="noopener noreferrer"');
+    expect(homepageSource).toContain('aria-label="Explore Visit Indy in a new tab"');
+    expect(homepageSource).toContain("Explore Visit Indy");
     expect(homepageSource).not.toContain("Indianapolis%20Visitor%20Guide");
     expect(appSource).toContain('path="/visitor-guide"');
     expect(innPagesSource).toContain("Indianapolis Visitor Guide");

@@ -1,6 +1,6 @@
 import BookingWidget from "@/components/BookingWidget";
 import { trpc } from "@/lib/trpc";
-import { ArrowRight, BedDouble, CalendarDays, CarFront, Coffee, Footprints, Landmark, MapPin, Phone, ShieldCheck, Sparkles, TreePine, Trophy, UtensilsCrossed, Wifi } from "lucide-react";
+import { ArrowRight, BedDouble, CalendarDays, CarFront, Coffee, ExternalLink, Footprints, MapPin, Phone, ShieldCheck, Sparkles, TreePine, Trophy, UtensilsCrossed, Wifi } from "lucide-react";
 import { Link } from "wouter";
 
 const HERO_IMAGE = "/manus-storage/dewenter-room_a9fea36d.jpg";
@@ -131,7 +131,7 @@ export default function Home() {
               <p className="eyebrow eyebrow--light">A few nearby favorites</p>
               <p>Explore the President Benjamin Harrison Home, take in Monument Circle, or catch the atmosphere at Lucas Oil Stadium, the Indiana Convention Center, Gainbridge Fieldhouse, the Indianapolis Zoo, and Victory Field.</p>
             </div>
-            <Link className="inn-button indy-guide__button" href="/visitor-guide">Open the Visitor Guide <Landmark size={17} /></Link>
+            <a className="inn-button indy-guide__button" href="https://www.visitindy.com/" target="_blank" rel="noopener noreferrer" aria-label="Explore Visit Indy in a new tab">Explore Visit Indy <ExternalLink aria-hidden="true" size={17} /></a>
           </div>
         </div>
       </section>

@@ -66,3 +66,5 @@
 - [x] Remove the unintended light hero boundary and add a responsive overlapping contact-divider inspired by the supplied reference.
 - [x] Validate the refined hero-to-house transition in desktop and mobile layouts with regression coverage.
 - [x] Update the hero welcome sentence to identify the Dewenter-Greenen House as the current Old Northside Bed and Breakfast.
+- [x] Replace the homepage Visitor Guide destination with the owner-approved Visit Indy website and ensure it opens securely in a new browser tab.
+- [x] Validate the external Visit Indy call to action with focused regression coverage and a visual review.
