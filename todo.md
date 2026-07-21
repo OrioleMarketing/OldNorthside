@@ -7,7 +7,7 @@
 - [x] Implement a direct reservation workflow that collects guest details, stay dates, room selection, and booking total.
 - [x] Add secure payment-processing integration and booking confirmation handling.
 - [x] Create an owner-friendly reservation administration workflow for managing room availability and reservations.
-- [ ] Complete the owner-authorized live Stripe checkout and webhook check before launch; availability conflicts, booking completion states, responsive layouts, and booking-widget accessibility are now validated.
+- [ ] Complete a production-mode Stripe checkout and webhook check after live Stripe keys are configured; sandbox checkout, availability conflicts, booking completion states, responsive layouts, and booking-widget accessibility are validated.
 - [x] Build the approved custom direct-booking system rather than embedding a third-party booking engine.
 - [x] Add a database-backed per-room availability model that prevents overlapping confirmed or held reservations.
 - [x] Add an owner reservation calendar with room blocking and reservation-status management.
@@ -33,7 +33,7 @@
 - [x] Add an explicit owner control for first-night deposit versus full-stay payment and show the active policy to guests before checkout.
 - [x] Show the stored state and county tax line items in the owner reservation-management view alongside totals and remaining balance.
 - [x] Document a clear Resend test-sender configuration separate from the verified production sender.
-- [ ] With explicit owner authorization, complete a sandbox Stripe deposit checkout and webhook check; reservation-conflict and reminder state transitions are database-validated, while live email delivery awaits sending-domain verification.
+- [x] Complete an owner-authorized sandbox Stripe deposit checkout and webhook check; reservation-conflict and reminder state transitions are database-validated, while live email delivery awaits sending-domain verification.
 - [x] Implement an authenticated inbound channel-sync endpoint or provider adapter that records, atomically claims, processes, and finalizes inbound events.
 - [x] Add origin and version metadata so inbound channel updates do not re-emit equivalent outbound availability changes.
 - [x] Add database-backed channel-sync tests covering duplicate idempotency-key insertion, single-winner atomic claim behavior, terminal-state transitions, and replay/duplicate inbound-outbound event handling.
@@ -53,3 +53,4 @@
 - [x] Improve and test booking-widget accessibility for dynamic availability status, room selection state, required guest fields, and pending checkout feedback.
 - [x] Add an “Explore Indianapolis” guest section that presents the Historic Old Northside setting, downtown proximity, dining, green spaces, events, breweries, sports, and named nearby landmarks using the owner-supplied visitor content.
 - [ ] Replace the live visitor-guide request action with a downloadable Visitor Guide link when the owner supplies the final guide URL or file.
+- [x] Create and complete one clearly labeled sandbox reservation using Stripe’s test checkout, then verify the payment webhook confirms the reservation and records only the required payment identifier.
