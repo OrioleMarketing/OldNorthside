@@ -74,3 +74,9 @@
 - [x] Confirm page-top restoration during actual in-browser navigation between representative routes after scrolling down, then record the result before publication.
 - [x] Validate page-top restoration by scrolling down on a representative public route, then using a site navigation link to another route and confirming the destination loads at the top.
 - [x] Record the exact runtime scroll-restoration route sequence and observed top-of-page result before publication.
+- [x] Confirm the Resend MX verification record’s host and safe coexistence requirements before changing any DNS records that could affect current inbound email delivery.
+- [x] Confirm the supplied Resend DNS screenshot uses only `resend._domainkey` and `send` hosts and does not require replacing the root-domain inbound MX records.
+- [x] Confirm the current DNS screenshot preserves three root-domain inbound MX records and has no existing `send`-subdomain MX or SPF record that would conflict with Resend.
+- [x] Confirm the verified `oldnorthsidebedandbreakfast.com` Resend domain is used by the website’s production sender configuration without sending an unsolicited test email.
+- [x] Verify and document without exposing secrets that `RESEND_FROM_EMAIL` is an address at `oldnorthsidebedandbreakfast.com`.
+- [x] Add focused automated coverage requiring the configured sender domain to equal `oldnorthsidebedandbreakfast.com`.

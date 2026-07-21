@@ -20,6 +20,7 @@ describe("Resend configuration", () => {
 
     const payload = (await response.json()) as ResendDomainsResponse;
     const senderDomain = fromEmail!.slice(fromEmail!.lastIndexOf("@") + 1).toLowerCase();
+    expect(senderDomain, "RESEND_FROM_EMAIL must use the verified Old Northside Bed and Breakfast domain").toBe("oldnorthsidebedandbreakfast.com");
     const matchingDomain = payload.data?.find(domain => domain.name?.toLowerCase() === senderDomain);
     expect(matchingDomain, `The configured sender domain ${senderDomain} is not available in this Resend account`).toBeTruthy();
     expect(matchingDomain?.status, `The configured sender domain ${senderDomain} is not verified in Resend`).toBe("verified");
