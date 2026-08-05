@@ -3,16 +3,27 @@ import { trpc } from "@/lib/trpc";
 import { ArrowRight, BedDouble, CalendarDays, CarFront, Coffee, ExternalLink, Footprints, MapPin, Phone, ShieldCheck, Sparkles, TreePine, Trophy, UtensilsCrossed, Wifi } from "lucide-react";
 import { Link } from "wouter";
 
-const HERO_IMAGE = "/manus-storage/dewenter-room_c0fd6bf3.jpg";
-const ROOM_IMAGES: Record<string, string> = {
-  "bridal-room": "/manus-storage/bridal-room-1_13ca6d81.jpg",
-  "tiffany-room": "/manus-storage/tiffany-room-1_b1f1fa89.jpg",
-  "literary-room": "/manus-storage/literary-room-1_187fc98d.jpg",
-  "dewenter-room": "/manus-storage/dewenter-room-1_7072f519.jpg",
-  "hollywood-room": "/manus-storage/hollywood-room-1_1cf10f56.jpg",
-  "rose-garden-room": "/manus-storage/rose-garden-1_b8433d99.jpg",
-  "library-wedding-suite": "/manus-storage/wedding-suite-1_181e4bed.jpg",
+const HERO_IMAGES = {
+  desktop: "/manus-storage/hero-dewenter-1280_74dd3461.webp",
+  mobile: "/manus-storage/hero-dewenter-768_921ad6ea.webp",
 };
+
+const ROOM_IMAGES: Record<string, { desktop: string; mobile: string }> = {
+  "bridal-room": {
+    desktop: "/manus-storage/room-bridal-960_79a564f7.webp",
+    mobile: "/manus-storage/room-bridal-640_93be8826.webp",
+  },
+  "tiffany-room": {
+    desktop: "/manus-storage/room-tiffany-960_d940efd6.webp",
+    mobile: "/manus-storage/room-tiffany-640_4bae0166.webp",
+  },
+  "literary-room": {
+    desktop: "/manus-storage/room-literary-960_527011a2.webp",
+    mobile: "/manus-storage/room-literary-640_f72ea39d.webp",
+  },
+};
+
+const ROOM_IMAGE_FALLBACK = "/manus-storage/dewenter-room-1_7072f519.jpg";
 
 const amenities = [
   { icon: Coffee, title: "Breakfast on your schedule", body: "Enjoy a complete breakfast at the time that suits your morning." },
@@ -36,7 +47,10 @@ export default function Home() {
   return (
     <main>
       <section className="hero" aria-labelledby="home-title">
-        <div className="hero__image" style={{ backgroundImage: `url(${HERO_IMAGE})` }} />
+        <picture className="hero__image" aria-hidden="true">
+          <source media="(max-width: 720px)" srcSet={HERO_IMAGES.mobile} />
+          <img src={HERO_IMAGES.desktop} alt="" width={1280} height={853} fetchPriority="high" decoding="async" />
+        </picture>
         <div className="hero__veil" />
         <div className="container hero__content">
           <p className="eyebrow eyebrow--light">Indianapolis · Est. 1885</p>
@@ -76,7 +90,10 @@ export default function Home() {
             <Link href="/about" className="text-link">Discover the house <ArrowRight size={16} /></Link>
           </div>
           <div className="story-grid__image-wrap">
-            <img src="/manus-storage/literary-room_a03a0fed.jpg" alt="The warm, historic interior of a guest room at Old Northside Bed and Breakfast" className="story-grid__image" />
+            <picture className="story-grid__image-media">
+              <source media="(max-width: 720px)" srcSet="/manus-storage/story-literary-640_85b174a5.webp" />
+              <img src="/manus-storage/story-literary-960_a9c686d7.webp" alt="The warm, historic interior of a guest room at Old Northside Bed and Breakfast" className="story-grid__image" width={960} height={640} loading="lazy" decoding="async" />
+            </picture>
             <div className="story-grid__note"><Sparkles size={17} /> Seven private-bath rooms</div>
           </div>
         </div>
@@ -84,7 +101,7 @@ export default function Home() {
 
       <section className="section owner-section" aria-labelledby="owner-heading">
         <div className="container owner-grid">
-          <div className="owner-portrait-wrap"><img src="/manus-storage/gary-hofmeister-portrait_bf2246de.jpg" alt="Gary Hofmeister, owner of Old Northside Bed and Breakfast" className="owner-portrait" /></div>
+          <div className="owner-portrait-wrap"><img src="/manus-storage/gary-hofmeister-portrait_bf2246de.jpg" alt="Gary Hofmeister, owner of Old Northside Bed and Breakfast" className="owner-portrait" width={356} height={365} loading="lazy" decoding="async" /></div>
           <div className="owner-copy">
             <p className="eyebrow eyebrow--gold">A message from Gary Hofmeister</p>
             <h2 id="owner-heading" className="font-display">Gary Hofmeister, Renaissance Man.</h2>
@@ -100,12 +117,23 @@ export default function Home() {
         <div className="container">
           <div className="section-heading"><div><p className="eyebrow eyebrow--gold">Accommodations</p><h2 id="rooms-heading" className="font-display">Choose the room that feels like yours.</h2></div><Link className="text-link" href="/rooms">View all seven rooms <ArrowRight size={16} /></Link></div>
           <div className="room-grid">
-            {roomsQuery.isLoading ? <div className="room-loading">Gathering the rooms…</div> : rooms.slice(0, 3).map(room => (
-              <article className="room-card" key={room.id}>
-                <img src={ROOM_IMAGES[room.slug] ?? room.imageUrl ?? HERO_IMAGE} alt={room.name} />
-                <div className="room-card__content"><p className="eyebrow eyebrow--gold">From ${Math.round(room.weekdayRateCents / 100)} nightly</p><h3 className="font-display">{room.name}</h3><p>{room.bed} · Private {room.bath.toLowerCase()}{room.hasFireplace ? " · Fireplace" : ""}</p><a href="#availability" className="room-card__action">Check dates <ArrowRight size={16} /></a></div>
-              </article>
-            ))}
+            {roomsQuery.isLoading ? <div className="room-loading">Gathering the rooms…</div> : rooms.slice(0, 3).map(room => {
+              const responsiveImage = ROOM_IMAGES[room.slug];
+              const fallbackImage = room.imageUrl ?? ROOM_IMAGE_FALLBACK;
+              return (
+                <article className="room-card" key={room.id}>
+                  {responsiveImage ? (
+                    <picture>
+                      <source media="(max-width: 720px)" srcSet={responsiveImage.mobile} />
+                      <img src={responsiveImage.desktop} alt={room.name} width={960} height={640} loading="lazy" decoding="async" />
+                    </picture>
+                  ) : (
+                    <img src={fallbackImage} alt={room.name} width={1280} height={853} loading="lazy" decoding="async" />
+                  )}
+                  <div className="room-card__content"><p className="eyebrow eyebrow--gold">From ${Math.round(room.weekdayRateCents / 100)} nightly</p><h3 className="font-display">{room.name}</h3><p>{room.bed} · Private {room.bath.toLowerCase()}{room.hasFireplace ? " · Fireplace" : ""}</p><a href="#availability" className="room-card__action">Check dates <ArrowRight size={16} /></a></div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -114,7 +142,7 @@ export default function Home() {
 
       <section id="availability" className="section section--paper"><div className="container"><BookingWidget /></div></section>
 
-      <section className="section neighborhood-section"><div className="container neighborhood-grid"><div className="neighborhood-grid__visual"><img src="/manus-storage/OffStreetParking_1c77e0fb.png" alt="Off-street guest parking at Old Northside Bed and Breakfast" className="neighborhood-grid__image" /></div><div><p className="eyebrow eyebrow--gold">Old Northside</p><h2 className="font-display">Park once. Explore Indianapolis on foot.</h2><p>Free off-street parking is a practical benefit in Indianapolis. Leave the car at the inn, then enjoy tree-lined Old Northside streets and many downtown restaurants, cultural destinations, and city features within walking distance.</p><p>When you return, you come back to the quiet character of a historic home rather than a downtown parking search.</p><Link href="/about" className="inn-button inn-button--dark">Plan your stay <CalendarDays size={17} /></Link></div></div></section>
+      <section className="section neighborhood-section"><div className="container neighborhood-grid"><div className="neighborhood-grid__visual"><picture><source media="(max-width: 720px)" srcSet="/manus-storage/offstreet-parking-720_4661aec3.webp" /><img src="/manus-storage/offstreet-parking-1120_d36080ac.webp" alt="Off-street guest parking at Old Northside Bed and Breakfast" className="neighborhood-grid__image" width={1120} height={724} loading="lazy" decoding="async" /></picture></div><div><p className="eyebrow eyebrow--gold">Old Northside</p><h2 className="font-display">Park once. Explore Indianapolis on foot.</h2><p>Free off-street parking is a practical benefit in Indianapolis. Leave the car at the inn, then enjoy tree-lined Old Northside streets and many downtown restaurants, cultural destinations, and city features within walking distance.</p><p>When you return, you come back to the quiet character of a historic home rather than a downtown parking search.</p><Link href="/about" className="inn-button inn-button--dark">Plan your stay <CalendarDays size={17} /></Link></div></div></section>
 
       <section className="section indy-section" aria-labelledby="indy-heading">
         <div className="container">

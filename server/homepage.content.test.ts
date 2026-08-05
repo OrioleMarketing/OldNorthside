@@ -44,11 +44,12 @@ describe("homepage guest-facing positioning", () => {
   });
 
   it("uses the approved welcoming hero, lighter transition, clear reading rhythm, parking image, and booking hierarchy", () => {
-    expect(homepageSource).toContain('const HERO_IMAGE = "/manus-storage/dewenter-room_c0fd6bf3.jpg"');
+    expect(homepageSource).toContain('const HERO_IMAGES = {');
+    expect(homepageSource).toContain('/manus-storage/hero-dewenter-1280_74dd3461.webp');
     expect(homepageSource).toContain('Welcome to the Dewenter-Greenen House, now the Old Northside Bed and Breakfast');
     expect(homepageSource).toContain('className="hero-transition"');
     expect(homepageSource).toContain('Inn contact and booking details');
-    expect(homepageSource).toContain('/manus-storage/OffStreetParking_1c77e0fb.png');
+    expect(homepageSource).toContain('/manus-storage/offstreet-parking-1120_d36080ac.webp');
     expect(homepageSource).toContain('alt="Off-street guest parking at Old Northside Bed and Breakfast"');
     expect(homepageSource).not.toContain('neighborhood-grid__monogram">ON');
     expect(homepageSource.indexOf('className="section section--paper story-section"')).toBeLessThan(homepageSource.indexOf('id="availability"'));
@@ -129,8 +130,8 @@ describe("FAQ, Visitor Guide, and innkeeper sign-in", () => {
 });
 
 describe("official room and pet-policy updates", () => {
-  it("uses authorized interior room images as the room-card covers and gallery lead images", () => {
-    const officialInteriorCovers = [
+  it("uses authorized interior room images in galleries and optimized derivatives for homepage room-card covers", () => {
+    const officialGalleryLeadImages = [
       "/manus-storage/bridal-room-1_13ca6d81.jpg",
       "/manus-storage/tiffany-room-1_b1f1fa89.jpg",
       "/manus-storage/literary-room-1_187fc98d.jpg",
@@ -139,11 +140,14 @@ describe("official room and pet-policy updates", () => {
       "/manus-storage/rose-garden-1_b8433d99.jpg",
       "/manus-storage/wedding-suite-1_181e4bed.jpg",
     ];
+    const optimizedHomepageCovers = [
+      "/manus-storage/room-bridal-960_79a564f7.webp",
+      "/manus-storage/room-tiffany-960_d940efd6.webp",
+      "/manus-storage/room-literary-960_527011a2.webp",
+    ];
 
-    officialInteriorCovers.forEach(image => {
-      expect(homepageSource).toContain(image);
-      expect(innPagesSource).toContain(image);
-    });
+    officialGalleryLeadImages.forEach(image => expect(innPagesSource).toContain(image));
+    optimizedHomepageCovers.forEach(image => expect(homepageSource).toContain(image));
     expect(homepageSource).not.toContain("/manus-storage/bridal-room_3e9601fd.png");
     expect(roomSourceRecord).toContain("the largest and only main-floor guest room");
     expect(roomSourceRecord).toContain("hand-faux-painted walls");
