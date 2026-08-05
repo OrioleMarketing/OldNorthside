@@ -23,3 +23,9 @@ Original source files are retained outside the project under `/home/ubuntu/webde
 ## Optimization direction
 
 Keep the hero image as a high-priority responsive media element. Serve the story and room-card images through responsive `<picture>` sources with declared dimensions. Defer the off-street-parking image because it appears below the primary booking content. Preserve the original sources and do not alter guest-facing copy, booking behavior, or image composition.
+
+## Post-release live verification
+
+On 2026-08-05, the apex and `www` hostnames both resolved to the Manus custom-domain edge addresses `104.18.26.246` and `104.18.27.246`. An HTTPS header request to `https://oldnorthsidebedandbreakfast.com/` returned `HTTP/2 200`, and a browser review confirmed that the published homepage rendered the current public navigation, hero, responsive hero image, booking calendar, room imagery, and direct-booking calls to action.
+
+This check confirms the custom domain is serving the published site after the performance release. It does **not** validate the separately blocked iCal feeds, production Stripe credentials, channel-manager connection, optional downloadable Visitor Guide, or conditional resend controls.
