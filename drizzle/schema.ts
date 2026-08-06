@@ -104,9 +104,9 @@ export const bookingSettings = mysqlTable("booking_settings", {
   paymentCollectionMode: mysqlEnum("paymentCollectionMode", ["first_night_deposit", "full_stay"])
     .notNull()
     .default("first_night_deposit"),
-  balanceReminderDays: int("balanceReminderDays").notNull().default(7),
+  balanceReminderDays: int("balanceReminderDays").notNull().default(6),
   stateTaxRateBasisPoints: int("stateTaxRateBasisPoints").notNull().default(700),
-  countyTaxRateBasisPoints: int("countyTaxRateBasisPoints").notNull().default(300),
+  countyTaxRateBasisPoints: int("countyTaxRateBasisPoints").notNull().default(1000),
   shortTermTaxThresholdNights: int("shortTermTaxThresholdNights").notNull().default(30),
   channelProvider: varchar("channelProvider", { length: 96 }),
   channelConnectionStatus: mysqlEnum("channelConnectionStatus", ["not_connected", "pending", "connected", "error"])
@@ -117,6 +117,25 @@ export const bookingSettings = mysqlTable("booking_settings", {
 });
 
 export type BookingSettings = typeof bookingSettings.$inferSelect;
+
+/** Owner-managed date restrictions for special events, applied to any overlapping stay. */
+export const bookingEventRestrictions = mysqlTable(
+  "booking_event_restrictions",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    name: varchar("name", { length: 160 }).notNull(),
+    eventStart: date("eventStart", { mode: "string" }).notNull(),
+    eventEnd: date("eventEnd", { mode: "string" }).notNull(),
+    minimumNights: int("minimumNights").notNull().default(1),
+    bookingOpensOn: date("bookingOpensOn", { mode: "string" }),
+    bookingClosesOn: date("bookingClosesOn", { mode: "string" }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [index("booking_event_restrictions_dates_idx").on(table.eventStart, table.eventEnd)],
+);
+
+export type BookingEventRestriction = typeof bookingEventRestrictions.$inferSelect;
 
 /**
  * Reservation totals are retained as the contractual quote snapshot, not a duplicate of Stripe data.
@@ -133,6 +152,7 @@ export const reservations = mysqlTable(
     guestPhone: varchar("guestPhone", { length: 50 }).notNull(),
     guestCount: int("guestCount").notNull().default(1),
     childCount: int("childCount").notNull().default(0),
+    adultGuestDetailsJson: text("adultGuestDetailsJson"),
     hasPet: int("hasPet").notNull().default(0),
     dogCount: int("dogCount").notNull().default(0),
     dogsUnder25Lbs: int("dogsUnder25Lbs").notNull().default(0),

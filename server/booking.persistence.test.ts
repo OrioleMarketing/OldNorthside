@@ -11,6 +11,13 @@ async function databaseOrThrow() {
   return db;
 }
 
+function dateOffset(days: number) {
+  const date = new Date();
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 async function removeBookingFixture(roomId: number) {
   const db = await databaseOrThrow();
   const roomReservations = await db
@@ -45,34 +52,40 @@ describe.sequential("booking persistence safeguards", () => {
     });
     const [room] = await db.select().from(rooms).where(eq(rooms.slug, slug)).limit(1);
     if (!room) throw new Error("Unable to create booking validation room.");
+    const checkIn = dateOffset(50);
+    const checkOut = dateOffset(52);
+    const overlapCheckIn = dateOffset(51);
+    const overlapCheckOut = dateOffset(53);
 
     try {
       const initialHold = await createReservationHold({
         roomId: room.id,
-        checkIn: "2031-10-12",
-        checkOut: "2031-10-14",
+        checkIn,
+        checkOut,
         guestName: "Automated Booking Validation",
         guestEmail: "booking-validation@example.test",
         guestPhone: "317-555-0110",
         guestCount: 1,
+        adultGuests: [{ name: "Automated Booking Validation", hasStayedBefore: false }],
       });
 
       expect(initialHold.reservation.status).toBe("pending_deposit");
       expect(initialHold.quote.depositDueCents).toBeGreaterThan(0);
       expect(initialHold.quote.balanceDueCents).toBeGreaterThan(0);
 
-      const availability = await getAvailableRooms("2031-10-12", "2031-10-14");
+      const availability = await getAvailableRooms(checkIn, checkOut);
       expect(availability.some(item => item.room.id === room.id)).toBe(false);
 
       await expect(
         createReservationHold({
           roomId: room.id,
-          checkIn: "2031-10-13",
-          checkOut: "2031-10-15",
+          checkIn: overlapCheckIn,
+          checkOut: overlapCheckOut,
           guestName: "Overlapping Validation",
           guestEmail: "overlap-validation@example.test",
           guestPhone: "317-555-0111",
           guestCount: 1,
+          adultGuests: [{ name: "Overlapping Validation", hasStayedBefore: false }],
         }),
       ).rejects.toThrow("Those dates have just become unavailable");
 

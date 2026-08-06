@@ -134,3 +134,16 @@
 - [x] Diagnose and repair the reported innkeeper password rejection, securely synchronize the authorized administrator credential, and verify a real owner-dashboard sign-in without exposing the password; the owner later confirmed the existing login was working, so no credential change was made.
 - [x] Research and compare current eviivo Suite and Beds24 pricing, onboarding fees, and contract terms for a seven-room B&B, with source-backed uncertainty notes where providers require a quote.
 - [x] Create a decision slide deck covering recommended channel managers, commercial comparison, Expedia two-way API versus iCal synchronization, and a staged integration strategy for Old Northside Bed and Breakfast.
+- [ ] Document the account, technical, security, and operational materials required to authorize an iPOS Pays payment integration for the direct-booking system.
+- [x] Change the Marion County Innkeeper’s Tax from 3% to 10% across configurable tax rules, quotes, payment amounts, confirmations, and owner records, with regression coverage.
+- [x] Replace guest-facing references to Victorian style with Romanesque Revival architecture where applicable.
+- [x] Add the supplied restricted dog-breed, guard-dog, aggression, biting-history, and call-the-inn disclosure to the public Pet Policy and relevant booking flow.
+- [x] Update registration to use Adult Guests limited to one or two, Children limited to two, remove the inclusive-count note, collect each adult guest’s name and prior-stay checkbox, and disclose the $15-per-night additional-adult policy with no additional beds.
+- [x] Enforce a one-day minimum booking lead time and a maximum 28-night stay, while preserving availability and payment safeguards.
+- [x] Apply Friday and Saturday premium room rates rather than Saturday and Sunday rates, with regression coverage.
+- [x] Confirm and implement a first-night-plus-tax deposit, remaining-balance charge six days before arrival, and the supplied less-than-seven-days cancellation gift-certificate policy including transferability and charity options.
+- [x] Design configurable special-event minimum-stay and advance-booking restrictions after the owner provides the applicable dates, stay minimums, and booking windows.
+- [x] Add an innkeeper-managed special-events list with event dates, minimum-night, and alternate booking-window controls, and display the requested guest-facing special-event disclaimer.
+- [x] Activate six-day automatic collection only for unpaid balances with recorded saved-card authorization, and deliver a secure payment link to guests without authorization or after a charge failure.
+- [x] Restore the development server after the interrupted special-event implementation and verify the repaired build before continuing feature work.
+- [x] Enforce a 160-day maximum advance-booking limit in the guest calendar, server-side availability checks, reservation creation, and regression coverage.

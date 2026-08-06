@@ -2,6 +2,8 @@ import { and, eq, lte, or, sql } from "drizzle-orm";
 import { Resend } from "resend";
 import { bookingEmailEvents, reservations, rooms } from "../drizzle/schema";
 import { getDb } from "./db";
+import { recordStripePayment } from "./booking";
+import { chargeSavedBalanceOffSession } from "./stripe";
 
 type EmailKind = "booking_confirmation" | "balance_reminder";
 export type DeliveryResult = "sent" | "skipped";
@@ -168,7 +170,7 @@ export async function sendBookingConfirmation(reservationId: number): Promise<De
 
   const reservation = context.reservation;
   const paymentMessage = reservation.balanceDueCents > 0
-    ? `We received your first-night deposit of <strong>${formatCurrency(reservation.depositDueCents)}</strong>. The remaining balance is <strong>${formatCurrency(reservation.balanceDueCents)}</strong>. If a balance remains, we will send a secure payment reminder before arrival.`
+    ? `We received your first-night deposit, including applicable tax, of <strong>${formatCurrency(reservation.depositDueCents)}</strong>. The remaining balance is <strong>${formatCurrency(reservation.balanceDueCents)}</strong> and is due six days before arrival. If you authorized a saved payment method, the balance may be charged then; otherwise, we will send a secure payment link.`
     : `We received your full stay payment of <strong>${formatCurrency(reservation.depositDueCents)}</strong>, including all applicable taxes. There is no remaining balance.`;
   const body = `<p>Dear ${escapeHtml(reservation.guestName)},</p>
     <p>Your reservation at Old Northside Bed and Breakfast is confirmed. We look forward to welcoming you.</p>
@@ -247,7 +249,7 @@ export async function sendDueBalanceReminders(limit = 25) {
   if (!db) throw new Error("Database unavailable while finding scheduled balance reminders.");
   const retryAfter = new Date(Date.now() - 15 * 60 * 1000);
   const due = await db
-    .select({ reservationId: bookingEmailEvents.reservationId })
+    .select({ id: bookingEmailEvents.id, reservationId: bookingEmailEvents.reservationId })
     .from(bookingEmailEvents)
     .where(
       and(
@@ -260,14 +262,59 @@ export async function sendDueBalanceReminders(limit = 25) {
     )
     .limit(limit);
 
+  let charged = 0;
   let sent = 0;
+  let fallbackSent = 0;
   let skipped = 0;
   for (const event of due) {
-    const result = await sendBalanceReminder(event.reservationId);
-    if (result === "sent") sent += 1;
-    else skipped += 1;
+    const context = await loadReservationEmailContext(event.reservationId);
+    const canChargeSavedCard = Boolean(
+      context
+      && context.reservation.status === "confirmed"
+      && !context.reservation.balancePaidAt
+      && context.reservation.balanceDueCents > 0
+      && context.reservation.stripeCustomerId
+      && context.reservation.stripePaymentMethodId
+      && context.reservation.paymentMethodConsentAt,
+    );
+    if (!canChargeSavedCard || !context) {
+      const result = await sendBalanceReminder(event.reservationId);
+      if (result === "sent") sent += 1;
+      else skipped += 1;
+      continue;
+    }
+
+    try {
+      const charge = await chargeSavedBalanceOffSession({
+        reservation: context.reservation,
+        roomName: context.room.name,
+      });
+      await recordStripePayment({
+        reservationId: context.reservation.id,
+        paymentKind: "balance",
+        paymentIntentId: charge.paymentIntentId,
+      });
+      await db
+        .update(bookingEmailEvents)
+        .set({ status: "sent", sentAt: new Date(), failedAt: null })
+        .where(eq(bookingEmailEvents.id, event.id));
+      charged += 1;
+    } catch (error) {
+      console.error(`[Balance collection] Scheduled charge failed for reservation ${context.reservation.bookingReference}; sending secure payment link instead.`, error);
+      await db
+        .update(bookingEmailEvents)
+        .set({ status: "scheduled", scheduledFor: new Date(), failedAt: null })
+        .where(eq(bookingEmailEvents.id, event.id));
+      const fallback = await sendBalanceReminder(event.reservationId);
+      if (fallback === "sent") {
+        fallbackSent += 1;
+        sent += 1;
+      } else {
+        skipped += 1;
+      }
+    }
   }
-  return { sent, skipped, considered: due.length };
+  return { charged, sent, fallbackSent, skipped, considered: due.length };
 }
 
 export async function sendOwnerPaymentLink(input: {

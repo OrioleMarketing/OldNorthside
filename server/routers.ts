@@ -6,8 +6,10 @@ import {
   appendReservationAuditEvent,
   cancelOwnerBlock,
   cancelReservationForOwner,
+  createEventRestriction,
   createOwnerBlock,
   createOwnerReservation,
+  deleteEventRestriction,
   createReservationHold,
   getActiveRooms,
   getAvailableRooms,
@@ -15,6 +17,7 @@ import {
   getOwnerReservationById,
   getPublicSettings,
   getReservationByReference,
+  listEventRestrictions,
   listOwnerBlocks,
   listOwnerReservations,
   recordStripePayment,
@@ -41,8 +44,9 @@ const reservationInput = stayInput.extend({
   guestName: z.string().trim().min(2).max(180),
   guestEmail: z.string().trim().email().max(320),
   guestPhone: z.string().trim().min(7).max(50),
-  guestCount: z.number().int().min(1).max(4),
-  childCount: z.number().int().min(0).max(4).default(0),
+  guestCount: z.number().int().min(1).max(2),
+  childCount: z.number().int().min(0).max(2).default(0),
+  adultGuests: z.array(z.object({ name: z.string().trim().min(2).max(180), hasStayedBefore: z.boolean() })).min(1).max(2),
   hasPet: z.boolean().default(false),
   dogCount: z.number().int().min(0).max(2).default(0),
   dogsUnder25Lbs: z.boolean().default(false),
@@ -352,6 +356,32 @@ export const appRouter = router({
       }),
     settings: adminProcedure.query(() => getPublicSettings()),
     channelSyncReadiness: adminProcedure.query(() => getChannelSyncReadiness()),
+    eventRestrictions: adminProcedure.query(() => listEventRestrictions()),
+    createEventRestriction: adminProcedure
+      .input(z.object({
+        name: z.string().trim().min(2).max(160),
+        eventStart: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        eventEnd: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        minimumNights: z.number().int().min(1).max(28),
+        bookingOpensOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+        bookingClosesOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          return await createEventRestriction(input);
+        } catch (error) {
+          return bookingError(error);
+        }
+      }),
+    deleteEventRestriction: adminProcedure
+      .input(z.object({ restrictionId: z.number().int().positive() }))
+      .mutation(async ({ input }) => {
+        try {
+          return await deleteEventRestriction(input.restrictionId);
+        } catch (error) {
+          return bookingError(error);
+        }
+      }),
     channelSyncEvents: adminProcedure
       .input(z.object({ limit: z.number().int().min(1).max(100).optional() }).optional())
       .query(({ input }) => listChannelSyncEvents(input?.limit)),
@@ -397,7 +427,7 @@ export const appRouter = router({
         z.object({
           depositNights: z.number().int().min(1).max(30).optional(),
           paymentCollectionMode: z.enum(["first_night_deposit", "full_stay"]).optional(),
-          balanceReminderDays: z.number().int().min(1).max(30).optional(),
+          balanceReminderDays: z.number().int().min(6).max(30).optional(),
           stateTaxRateBasisPoints: z.number().int().min(0).max(10_000).optional(),
           countyTaxRateBasisPoints: z.number().int().min(0).max(10_000).optional(),
           shortTermTaxThresholdNights: z.number().int().min(1).max(365).optional(),

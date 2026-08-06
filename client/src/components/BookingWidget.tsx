@@ -36,6 +36,11 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     date.setDate(date.getDate() + 1);
     return date;
   }, [today]);
+  const latestBookableDate = useMemo(() => {
+    const date = new Date(today);
+    date.setDate(date.getDate() + 160);
+    return date;
+  }, [today]);
   const [stay, setStay] = useState<DateRange | undefined>();
   const [calendarMonth, setCalendarMonth] = useState(today);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
@@ -44,6 +49,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   const [guestPhone, setGuestPhone] = useState("");
   const [guestCount, setGuestCount] = useState("1");
   const [childCount, setChildCount] = useState("0");
+  const [adultGuests, setAdultGuests] = useState([{ name: "", hasStayedBefore: false }]);
   const [paymentSelection, setPaymentSelection] = useState<"deposit" | "full_stay">("deposit");
   const [paymentSelectionTouched, setPaymentSelectionTouched] = useState(false);
   const [hasPet, setHasPet] = useState(false);
@@ -94,6 +100,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
     setGuestPhone("");
     setGuestCount("1");
     setChildCount("0");
+    setAdultGuests([{ name: "", hasStayedBefore: false }]);
     setPaymentSelection(settings?.paymentCollectionMode === "full_stay" ? "full_stay" : "deposit");
     setPaymentSelectionTouched(false);
     setHasPet(false);
@@ -127,6 +134,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
       guestPhone,
       guestCount: Number(guestCount),
       childCount: Number(childCount),
+      adultGuests,
       paymentSelection,
       hasPet,
       dogCount: hasPet ? Number(dogCount) : 0,
@@ -137,7 +145,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
   }
 
   const depositNights = settings?.depositNights ?? 1;
-  const reminderDays = settings?.balanceReminderDays ?? 7;
+  const reminderDays = settings?.balanceReminderDays ?? 6;
   const amountDueToday = selected
     ? paymentSelection === "full_stay"
       ? selected.quote.totalCents
@@ -167,7 +175,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
         </div>
         <div className="booking-panel__actions">
           <p className="booking-panel__description">
-            Choose your dates first. We will show only rooms that are available for your entire stay.
+            Choose your dates first. Reservations must be made at least one day and no more than 160 days in advance, and we will show only rooms available for your entire stay.
           </p>
           <Button type="button" variant="ghost" className="booking-reset" onClick={resetBooking} aria-label="Start over and clear your booking selections">
             <RotateCcw aria-hidden="true" size={15} /> Start over
@@ -183,7 +191,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             mode="range"
             selected={stay}
             onSelect={setStay}
-            disabled={{ before: today }}
+            disabled={[{ before: tomorrow }, { after: latestBookableDate }]}
             month={calendarMonth}
             onMonthChange={setCalendarMonth}
             numberOfMonths={1}
@@ -248,12 +256,16 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
           </div>
 
           <div className="guest-fields">
-            <label><span>Full name</span><Input required value={guestName} onChange={event => setGuestName(event.target.value)} placeholder="Your full name" /></label>
             <label><span>Email address</span><Input required type="email" value={guestEmail} onChange={event => setGuestEmail(event.target.value)} placeholder="you@example.com" /></label>
             <label><span>Mobile number</span><Input required type="tel" value={guestPhone} onChange={event => setGuestPhone(event.target.value)} placeholder="(317) 555-0123" /></label>
-            <label><span>Total guests</span><select value={guestCount} onChange={event => { const nextGuestCount = event.target.value; setGuestCount(nextGuestCount); if (Number(childCount) > Number(nextGuestCount)) setChildCount(nextGuestCount); }}><option value="1">1 guest</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option></select></label>
-            <label><span>Children (under age 18)</span><select value={childCount} onChange={event => setChildCount(event.target.value)}><option value="0">0 children</option>{Array.from({ length: Number(guestCount) }, (_, index) => <option key={index + 1} value={String(index + 1)}>{index + 1} {index === 0 ? "child" : "children"}</option>)}</select><small>Included in the total guest count.</small></label>
+            <label><span>Adult guests</span><select value={guestCount} onChange={event => { const nextGuestCount = Number(event.target.value); setGuestCount(String(nextGuestCount)); setAdultGuests(current => Array.from({ length: nextGuestCount }, (_, index) => current[index] ?? { name: "", hasStayedBefore: false })); }}><option value="1">1 adult</option><option value="2">2 adults</option></select></label>
+            <label><span>Children (under age 18)</span><select value={childCount} onChange={event => setChildCount(event.target.value)}><option value="0">0 children</option><option value="1">1 child</option><option value="2">2 children</option></select></label>
+            {adultGuests.map((adult, index) => <div className="booking-adult-guest" key={index}>
+              <label><span>Adult guest {index + 1} full name</span><Input required value={adult.name} onChange={event => { const name = event.target.value; setAdultGuests(current => current.map((item, itemIndex) => itemIndex === index ? { ...item, name } : item)); if (index === 0) setGuestName(name); }} placeholder="Full name" /></label>
+              <label className="booking-pet-confirmation"><input type="checkbox" checked={adult.hasStayedBefore} onChange={event => setAdultGuests(current => current.map((item, itemIndex) => itemIndex === index ? { ...item, hasStayedBefore: event.target.checked } : item))} /><span>{adult.name.trim() || `Adult guest ${index + 1}`} has stayed with us before.</span></label>
+            </div>)}
           </div>
+          <p className="booking-additional-adult-note">Additional adults may be added at $15 per night per person, but no additional beds are available. Please call the inn for additional people.</p>
 
           <fieldset className="booking-payment-choice">
             <legend>Payment today</legend>
@@ -266,7 +278,7 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
 
           <fieldset className="booking-pet-disclosure">
             <legend>Will a dog stay with you?</legend>
-            <p>Dog stays are limited to a maximum of two dogs, with each dog under 25 pounds.</p>
+            <p>Dog stays are limited to a maximum of two dogs, with each dog under 25 pounds. Restricted breeds, guard dogs, and dogs with a history of aggression or biting are not permitted.</p>
             <div className="booking-pet-disclosure__choices">
               <label><input type="radio" name="has-pet" checked={!hasPet} onChange={() => { setHasPet(false); setDogsUnder25Lbs(false); setPetPolicyAcknowledged(false); }} /> No, we will not bring a dog</label>
               <label><input type="radio" name="has-pet" checked={hasPet} onChange={() => setHasPet(true)} /> Yes, we will bring a dog</label>
@@ -274,23 +286,23 @@ export default function BookingWidget({ compact = false, onBooked }: BookingWidg
             {hasPet ? <div className="booking-pet-disclosure__details">
               <label><span>Number of dogs</span><select value={dogCount} onChange={event => setDogCount(event.target.value)}><option value="1">1 dog</option><option value="2">2 dogs</option></select></label>
               <label className="booking-pet-confirmation"><input type="checkbox" checked={dogsUnder25Lbs} onChange={event => setDogsUnder25Lbs(event.target.checked)} required /><span>Each dog traveling with us is under 25 pounds.</span></label>
-              <label className="booking-pet-confirmation booking-pet-confirmation--policy"><input type="checkbox" checked={petPolicyAcknowledged} onChange={event => setPetPolicyAcknowledged(event.target.checked)} required /><span>I have reviewed the <Link href="/pet-policy">Pet Policy</Link>. Our dog(s) will be housebroken, will not disturb other guests, will be covered if allowed on a bed, and will never be left at the inn unattended. I understand that a cleaning or repair fee may be assessed for carpet or furniture damage.</span></label>
+              <label className="booking-pet-confirmation booking-pet-confirmation--policy"><input type="checkbox" checked={petPolicyAcknowledged} onChange={event => setPetPolicyAcknowledged(event.target.checked)} required /><span>I have reviewed the <Link href="/pet-policy">Pet Policy</Link>. Our dog(s) are not a restricted breed or guard dog and have no aggression or biting history. They will be housebroken, will not disturb other guests, will be covered if allowed on a bed, and will never be left at the inn unattended. I understand that a cleaning or repair fee may be assessed for carpet or furniture damage.</span></label>
             </div> : null}
           </fieldset>
 
-          {paymentSelection === "deposit" && balanceDueAfterPayment > 0 ? <label className="booking-pet-confirmation booking-payment-consent"><input type="checkbox" checked={savePaymentMethodForBalance} onChange={event => setSavePaymentMethodForBalance(event.target.checked)} /><span><strong>Optional: save this payment method for your remaining balance.</strong> By selecting this box, you authorize Old Northside Bed and Breakfast to securely store the payment method used for today’s deposit and charge the remaining <strong>{money.format(balanceDueAfterPayment / 100)}</strong> before your arrival. We will send a payment reminder first. You may decline and pay through a secure link instead.</span></label> : null}
+          {paymentSelection === "deposit" && balanceDueAfterPayment > 0 ? <label className="booking-pet-confirmation booking-payment-consent"><input type="checkbox" checked={savePaymentMethodForBalance} onChange={event => setSavePaymentMethodForBalance(event.target.checked)} /><span><strong>Optional: authorize the saved payment method for the remaining balance.</strong> By selecting this box, you authorize Old Northside Bed and Breakfast to securely store the payment method used for today’s deposit and charge the remaining <strong>{money.format(balanceDueAfterPayment / 100)}</strong> six days before arrival. You may instead leave this unchecked and pay through the secure balance link we will send.</span></label> : null}
 
           <div className="quote-card" aria-live="polite">
             <div><span>{selected.quote.nights} night{selected.quote.nights === 1 ? "" : "s"} · room subtotal</span><strong>{money.format(selected.quote.subtotalCents / 100)}</strong></div>
             {selected.quote.isShortTermTaxable ? <>
               <div><span>Indiana state tax (7%)</span><strong>{money.format(selected.quote.stateTaxCents / 100)}</strong></div>
-              <div><span>Marion County Innkeeper’s Tax (3%)</span><strong>{money.format(selected.quote.countyTaxCents / 100)}</strong></div>
+              <div><span>Marion County Innkeeper’s Tax (10%)</span><strong>{money.format(selected.quote.countyTaxCents / 100)}</strong></div>
             </> : <div><span>Long-stay lodging tax treatment</span><strong>Taxes not applied</strong></div>}
             <div className="quote-card__total"><span>Total stay</span><strong>{money.format(selected.quote.totalCents / 100)}</strong></div>
             <p>
               {paymentSelection === "full_stay"
                 ? <>The full stay amount of {money.format(selected.quote.totalCents / 100)}, including applicable taxes, is due today. There is no remaining balance.</>
-                : <>Today’s {depositNights === 1 ? "first-night" : `${depositNights}-night`} deposit is {money.format(selected.quote.firstNightDepositDueCents / 100)}. The remaining {money.format(balanceDueAfterPayment / 100)} will be requested {reminderDays} days before arrival.</>}
+                : <>Today’s {depositNights === 1 ? "first-night" : `${depositNights}-night`} deposit, including applicable tax, is {money.format(selected.quote.firstNightDepositDueCents / 100)}. The remaining {money.format(balanceDueAfterPayment / 100)} is due {reminderDays} days before arrival.</>}
             </p>
           </div>
 

@@ -39,7 +39,7 @@ function OwnerCalendar() {
   const [blockReason, setBlockReason] = useState("Owner hold");
   const [depositNights, setDepositNights] = useState("1");
   const [paymentCollectionMode, setPaymentCollectionMode] = useState<"first_night_deposit" | "full_stay">("first_night_deposit");
-  const [reminderDays, setReminderDays] = useState("7");
+  const [reminderDays, setReminderDays] = useState("6");
   const [channelProvider, setChannelProvider] = useState("");
   const [phoneRoomId, setPhoneRoomId] = useState<number | null>(null);
   const [phoneCheckIn, setPhoneCheckIn] = useState(() => isoDate(startOfToday()));
@@ -48,8 +48,17 @@ function OwnerCalendar() {
   const [phoneGuestEmail, setPhoneGuestEmail] = useState("");
   const [phoneGuestPhone, setPhoneGuestPhone] = useState("");
   const [phoneGuestCount, setPhoneGuestCount] = useState("1");
+  const [phoneSecondAdultName, setPhoneSecondAdultName] = useState("");
+  const [phonePrimaryAdultReturning, setPhonePrimaryAdultReturning] = useState(false);
+  const [phoneSecondAdultReturning, setPhoneSecondAdultReturning] = useState(false);
   const [phoneDepositCollected, setPhoneDepositCollected] = useState(false);
   const [sendDepositPaymentLink, setSendDepositPaymentLink] = useState(true);
+  const [eventName, setEventName] = useState("");
+  const [eventStart, setEventStart] = useState(() => isoDate(addDays(startOfToday(), 30)));
+  const [eventEnd, setEventEnd] = useState(() => isoDate(addDays(startOfToday(), 32)));
+  const [eventMinimumNights, setEventMinimumNights] = useState("2");
+  const [eventBookingOpensOn, setEventBookingOpensOn] = useState("");
+  const [eventBookingClosesOn, setEventBookingClosesOn] = useState("");
   const [pendingCancellation, setPendingCancellation] = useState<{ id: number; reference: string } | null>(null);
   const [cancellationReason, setCancellationReason] = useState("");
   const [pendingBlockCancellation, setPendingBlockCancellation] = useState<{ id: number; roomName: string; dates: string } | null>(null);
@@ -64,6 +73,7 @@ function OwnerCalendar() {
   const settings = trpc.owner.settings.useQuery(undefined, { enabled: isAdmin });
   const channelSyncReadiness = trpc.owner.channelSyncReadiness.useQuery(undefined, { enabled: isAdmin });
   const reminderSchedule = trpc.owner.reminderSchedule.useQuery(undefined, { enabled: isAdmin });
+  const eventRestrictions = trpc.owner.eventRestrictions.useQuery(undefined, { enabled: isAdmin });
   const utils = trpc.useUtils();
 
   async function invalidateOperationalData() {
@@ -88,6 +98,9 @@ function OwnerCalendar() {
       setPhoneGuestEmail("");
       setPhoneGuestPhone("");
       setPhoneGuestCount("1");
+      setPhoneSecondAdultName("");
+      setPhonePrimaryAdultReturning(false);
+      setPhoneSecondAdultReturning(false);
       setPhoneDepositCollected(false);
       setSendDepositPaymentLink(true);
       await invalidateOperationalData();
@@ -150,6 +163,24 @@ function OwnerCalendar() {
     onSuccess: result => toast.success(result.result === "sent" ? "Balance reminder sent to the guest." : "A balance reminder is already being delivered."),
     onError: error => toast.error(error.message),
   });
+  const createEventRestriction = trpc.owner.createEventRestriction.useMutation({
+    onSuccess: async () => {
+      toast.success("Special-event booking rule saved.");
+      setEventName("");
+      setEventMinimumNights("2");
+      setEventBookingOpensOn("");
+      setEventBookingClosesOn("");
+      await Promise.all([utils.owner.eventRestrictions.invalidate(), utils.booking.availability.invalidate()]);
+    },
+    onError: error => toast.error(error.message),
+  });
+  const deleteEventRestriction = trpc.owner.deleteEventRestriction.useMutation({
+    onSuccess: async () => {
+      toast.success("Special-event booking rule removed.");
+      await Promise.all([utils.owner.eventRestrictions.invalidate(), utils.booking.availability.invalidate()]);
+    },
+    onError: error => toast.error(error.message),
+  });
 
   useEffect(() => {
     if (!blockRoomId && rooms.data?.[0]) setBlockRoomId(rooms.data[0].id);
@@ -206,6 +237,9 @@ function OwnerCalendar() {
             guestEmail: phoneGuestEmail,
             guestPhone: phoneGuestPhone,
             guestCount: Number(phoneGuestCount),
+            adultGuests: Number(phoneGuestCount) === 2
+              ? [{ name: phoneGuestName, hasStayedBefore: phonePrimaryAdultReturning }, { name: phoneSecondAdultName, hasStayedBefore: phoneSecondAdultReturning }]
+              : [{ name: phoneGuestName, hasStayedBefore: phonePrimaryAdultReturning }],
             markDepositCollected: phoneDepositCollected,
             sendDepositPaymentLink: !phoneDepositCollected && sendDepositPaymentLink,
           });
@@ -214,7 +248,9 @@ function OwnerCalendar() {
           <div className="owner-form__dates"><label>Check-in<input type="date" value={phoneCheckIn} onChange={event => setPhoneCheckIn(event.target.value)} required /></label><label>Check-out<input type="date" value={phoneCheckOut} min={phoneCheckIn} onChange={event => setPhoneCheckOut(event.target.value)} required /></label></div>
           <label>Guest name<input value={phoneGuestName} onChange={event => setPhoneGuestName(event.target.value)} maxLength={180} required /></label>
           <label>Guest email<input type="email" value={phoneGuestEmail} onChange={event => setPhoneGuestEmail(event.target.value)} maxLength={320} required /></label>
-          <div className="owner-form__dates"><label>Phone<input type="tel" value={phoneGuestPhone} onChange={event => setPhoneGuestPhone(event.target.value)} minLength={7} maxLength={50} required /></label><label>Guests<select value={phoneGuestCount} onChange={event => setPhoneGuestCount(event.target.value)}><option value="1">1 guest</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option></select></label></div>
+          <div className="owner-form__dates"><label>Phone<input type="tel" value={phoneGuestPhone} onChange={event => setPhoneGuestPhone(event.target.value)} minLength={7} maxLength={50} required /></label><label>Adult guests<select value={phoneGuestCount} onChange={event => setPhoneGuestCount(event.target.value)}><option value="1">1 adult</option><option value="2">2 adults</option></select></label></div>
+          <label className="owner-checkbox"><input type="checkbox" checked={phonePrimaryAdultReturning} onChange={event => setPhonePrimaryAdultReturning(event.target.checked)} /><span>Primary adult guest has stayed with us before.</span></label>
+          {phoneGuestCount === "2" ? <><label>Second adult guest name<input value={phoneSecondAdultName} onChange={event => setPhoneSecondAdultName(event.target.value)} maxLength={180} required /></label><label className="owner-checkbox"><input type="checkbox" checked={phoneSecondAdultReturning} onChange={event => setPhoneSecondAdultReturning(event.target.checked)} /><span>Second adult guest has stayed with us before.</span></label></> : null}
           <label className="owner-checkbox"><input type="checkbox" checked={phoneDepositCollected} onChange={event => setPhoneDepositCollected(event.target.checked)} /><span>Deposit was collected offline. I will not use this to imply a card charge occurred through this site.</span></label>
           {!phoneDepositCollected ? <label className="owner-checkbox"><input type="checkbox" checked={sendDepositPaymentLink} onChange={event => setSendDepositPaymentLink(event.target.checked)} /><span>Email the guest a secure Stripe deposit link now.</span></label> : null}
           <button className="owner-button" type="submit" disabled={createPhoneReservation.isPending || !phoneRoomId}>{createPhoneReservation.isPending ? "Adding reservation…" : "Add reservation"}</button>
@@ -236,18 +272,34 @@ function OwnerCalendar() {
       </section>
 
       <section className="owner-panel">
+        <div className="owner-panel__heading"><span className="owner-panel__icon"><CalendarDays size={18} /></span><div><p className="eyebrow">Special-event restrictions</p><h2 className="font-display">Manage event booking windows</h2></div></div>
+        <p className="owner-form__note"><Settings2 size={14} /> Add only confirmed event rules. Any stay overlapping an event will follow its minimum-night and booking-window requirements.</p>
+        <form className="owner-form" onSubmit={event => { event.preventDefault(); createEventRestriction.mutate({ name: eventName, eventStart, eventEnd, minimumNights: Number(eventMinimumNights), bookingOpensOn: eventBookingOpensOn || null, bookingClosesOn: eventBookingClosesOn || null }); }}>
+          <label>Event name<input value={eventName} onChange={event => setEventName(event.target.value)} maxLength={160} placeholder="e.g., Indy 500 Weekend" required /></label>
+          <div className="owner-form__dates"><label>Event starts<input type="date" value={eventStart} onChange={event => setEventStart(event.target.value)} required /></label><label>Event ends<input type="date" value={eventEnd} min={eventStart} onChange={event => setEventEnd(event.target.value)} required /></label></div>
+          <label>Minimum nights<input type="number" min="1" max="28" value={eventMinimumNights} onChange={event => setEventMinimumNights(event.target.value)} required /></label>
+          <div className="owner-form__dates"><label>Bookings open on<input type="date" value={eventBookingOpensOn} onChange={event => setEventBookingOpensOn(event.target.value)} /></label><label>Bookings close after<input type="date" value={eventBookingClosesOn} onChange={event => setEventBookingClosesOn(event.target.value)} /></label></div>
+          <button className="owner-button" type="submit" disabled={createEventRestriction.isPending}>{createEventRestriction.isPending ? "Saving rule…" : "Save event rule"}</button>
+        </form>
+        <div className="owner-active-blocks" aria-live="polite">
+          <h3>Current special-event rules</h3>
+          {eventRestrictions.isLoading ? <p>Loading special-event rules…</p> : eventRestrictions.data?.length ? <div className="owner-active-blocks__list">{eventRestrictions.data.map(rule => <article key={rule.id} className="owner-active-block"><div><strong>{rule.name}</strong><span>{rule.eventStart}–{rule.eventEnd} · {rule.minimumNights}-night minimum</span><small>{rule.bookingOpensOn ? `Opens ${rule.bookingOpensOn}` : "No opening restriction"}{rule.bookingClosesOn ? ` · Closes after ${rule.bookingClosesOn}` : ""}</small></div><button className="owner-cancel-button" type="button" onClick={() => deleteEventRestriction.mutate({ restrictionId: rule.id })} disabled={deleteEventRestriction.isPending}><XCircle size={14} /> Remove rule</button></article>)}</div> : <p className="owner-empty">No special-event restrictions are set.</p>}
+        </div>
+      </section>
+
+      <section className="owner-panel">
         <div className="owner-panel__heading"><span className="owner-panel__icon"><CircleDollarSign size={18} /></span><div><p className="eyebrow">Booking policy</p><h2 className="font-display">Payment & connection</h2></div></div>
         <form className="owner-form" onSubmit={event => { event.preventDefault(); updateSettings.mutate({ depositNights: Number(depositNights), paymentCollectionMode, balanceReminderDays: Number(reminderDays), channelProvider: channelProvider.trim() || null }); }}>
           <label>Payment due at booking<select value={paymentCollectionMode} onChange={event => setPaymentCollectionMode(event.target.value as "first_night_deposit" | "full_stay")}><option value="first_night_deposit">First night’s deposit</option><option value="full_stay">Full stay amount</option></select></label>
           <div className="owner-form__dates">{paymentCollectionMode === "first_night_deposit" ? <label>Deposit nights<input type="number" min="1" max="30" value={depositNights} onChange={event => setDepositNights(event.target.value)} required /></label> : <div className="owner-form__static-field"><span>Full stay collected</span><strong>Taxes included today</strong></div>}<label>Balance reminder<input type="number" min="1" max="30" value={reminderDays} onChange={event => setReminderDays(event.target.value)} required disabled={paymentCollectionMode === "full_stay"} /></label></div>
           <label>Channel-management provider<input value={channelProvider} onChange={event => setChannelProvider(event.target.value)} placeholder="To be connected" maxLength={96} /></label>
-          <p className="owner-form__note"><Settings2 size={14} /> {paymentCollectionMode === "full_stay" ? "Guests will pay the full stay total, including applicable taxes, at booking." : "Guests pay the first night and its applicable taxes at booking; the remaining balance is requested before arrival."} Tax settings remain 7% state tax + 3% Marion County Innkeeper’s Tax for stays shorter than 30 nights.</p>
+          <p className="owner-form__note"><Settings2 size={14} /> {paymentCollectionMode === "full_stay" ? "Guests will pay the full stay total, including applicable taxes, at booking." : "Guests pay the first night and its applicable taxes at booking; the remaining balance is due six days before arrival."} Tax settings are 7% state tax + 10% Marion County Innkeeper’s Tax for stays shorter than 30 nights.</p>
           <button className="owner-button" type="submit" disabled={updateSettings.isPending}>{updateSettings.isPending ? "Saving settings…" : "Save booking settings"}</button>
           <div className="owner-reminder-control">
             <div><p className="eyebrow"><Settings2 size={14} /> Channel synchronization</p><strong>{channelSyncReadiness.data?.ready ? "Mapped and ready for the authorized connector" : "Provider connection required"}</strong><span>{channelSyncReadiness.data?.provider ? `${channelSyncReadiness.data.mappedRooms} mapped room${channelSyncReadiness.data.mappedRooms === 1 ? "" : "s"}. Inventory will not be sent until an authorized connector verifies the connection.` : "Save the prospective channel-management provider here; listings and room mappings are connected in the provider activation step."}</span></div>
           </div>
           <div className="owner-reminder-control">
-            <div><p className="eyebrow"><Mail size={14} /> Balance reminder delivery</p><strong>{reminderSchedule.data?.taskUid ? "Automated schedule active" : "Schedule not yet active"}</strong><span>Checks hourly for due seven-day balance reminders. Activate after publishing the site.</span></div>
+            <div><p className="eyebrow"><Mail size={14} /> Balance reminder delivery</p><strong>{reminderSchedule.data?.taskUid ? "Automated schedule active" : "Schedule not yet active"}</strong><span>Checks hourly for due six-day balance reminders. Activate after publishing the site.</span></div>
             {reminderSchedule.data?.taskUid ? <button className="owner-button owner-button--quiet" type="button" onClick={() => pauseReminderSchedule.mutate()} disabled={pauseReminderSchedule.isPending}>{pauseReminderSchedule.isPending ? "Pausing…" : "Pause reminders"}</button> : <button className="owner-button owner-button--quiet" type="button" onClick={() => enableReminderSchedule.mutate()} disabled={enableReminderSchedule.isPending}>{enableReminderSchedule.isPending ? "Activating…" : "Activate reminders"}</button>}
           </div>
         </form>

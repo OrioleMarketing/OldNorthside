@@ -11,6 +11,13 @@ async function databaseOrThrow() {
   return db;
 }
 
+function dateOffset(days: number) {
+  const date = new Date();
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 async function removeFixture(roomId: number) {
   const db = await databaseOrThrow();
   const roomReservations = await db.select({ id: reservations.id }).from(reservations).where(eq(reservations.roomId, roomId));
@@ -48,22 +55,32 @@ describe.sequential("owner reservation and cancellation workflow", () => {
     });
     const [room] = await db.select().from(rooms).where(eq(rooms.slug, slug)).limit(1);
     if (!room) throw new Error("Unable to create owner-workflow test room.");
+    const checkIn = dateOffset(30);
+    const checkOut = dateOffset(32);
 
     try {
       const created = await createOwnerReservation({
         roomId: room.id,
-        checkIn: "2032-04-11",
-        checkOut: "2032-04-13",
+        checkIn,
+        checkOut,
         guestName: "Owner Workflow Validation",
         guestEmail: "owner-workflow@example.test",
         guestPhone: "317-555-0115",
         guestCount: 2,
+        adultGuests: [
+          { name: "Owner Workflow Validation", hasStayedBefore: false },
+          { name: "Second Workflow Guest", hasStayedBefore: true },
+        ],
         markDepositCollected: false,
       });
       expect(created.reservation.source).toBe("owner");
       expect(created.reservation.status).toBe("pending_deposit");
+      expect(created.reservation.adultGuestDetailsJson).toBe(JSON.stringify([
+        { name: "Owner Workflow Validation", hasStayedBefore: false },
+        { name: "Second Workflow Guest", hasStayedBefore: true },
+      ]));
 
-      const unavailable = await getAvailableRooms("2032-04-11", "2032-04-13");
+      const unavailable = await getAvailableRooms(checkIn, checkOut);
       expect(unavailable.some(item => item.room.id === room.id)).toBe(false);
 
       const confirmed = await recordStripePayment({
@@ -89,7 +106,7 @@ describe.sequential("owner reservation and cancellation workflow", () => {
       expect(cancelled.reservation.cancelledByUserId).toBe(42);
       expect(cancelled.reservation.cancellationReason).toContain("Guest requested cancellation");
 
-      const released = await getAvailableRooms("2032-04-11", "2032-04-13");
+      const released = await getAvailableRooms(checkIn, checkOut);
       expect(released.some(item => item.room.id === room.id)).toBe(true);
 
       const audit = await db.select().from(reservationAuditEvents).where(eq(reservationAuditEvents.reservationId, created.reservation.id));
@@ -101,7 +118,7 @@ describe.sequential("owner reservation and cancellation workflow", () => {
     }
   });
 
-  it("persists children, honors a full-stay selection, and releases an owner block when unblocked", async () => {
+  it("persists adult details and children, honors a full-stay selection, and releases an owner block when unblocked", async () => {
     const db = await databaseOrThrow();
     const key = nanoid(12).toLowerCase();
     const slug = `owner-unblock-${key}`;
@@ -118,21 +135,28 @@ describe.sequential("owner reservation and cancellation workflow", () => {
     });
     const [room] = await db.select().from(rooms).where(eq(rooms.slug, slug)).limit(1);
     if (!room) throw new Error("Unable to create owner-unblock test room.");
+    const checkIn = dateOffset(45);
+    const checkOut = dateOffset(47);
 
     try {
       const fullStay = await createOwnerReservation({
         roomId: room.id,
-        checkIn: "2032-05-11",
-        checkOut: "2032-05-13",
+        checkIn,
+        checkOut,
         guestName: "Child Count Validation",
         guestEmail: "child-count@example.test",
         guestPhone: "317-555-0116",
-        guestCount: 3,
+        guestCount: 2,
         childCount: 1,
+        adultGuests: [
+          { name: "Child Count Validation", hasStayedBefore: false },
+          { name: "Second Adult Validation", hasStayedBefore: false },
+        ],
         paymentSelection: "full_stay",
         markDepositCollected: false,
       });
       expect(fullStay.reservation.childCount).toBe(1);
+      expect(fullStay.reservation.adultGuestDetailsJson).toContain("Second Adult Validation");
       expect(fullStay.reservation.balanceDueCents).toBe(0);
       expect(fullStay.reservation.depositDueCents).toBe(fullStay.reservation.totalCents);
 
@@ -144,15 +168,15 @@ describe.sequential("owner reservation and cancellation workflow", () => {
 
       await createOwnerBlock({
         roomId: room.id,
-        checkIn: "2032-05-11",
-        checkOut: "2032-05-13",
+        checkIn,
+        checkOut,
         reason: "Maintenance validation block",
         createdByUserId: 42,
       });
       const [block] = await db.select().from(reservationBlocks).where(eq(reservationBlocks.roomId, room.id)).limit(1);
       if (!block) throw new Error("Unable to create owner block for validation.");
 
-      const blockedAvailability = await getAvailableRooms("2032-05-11", "2032-05-13");
+      const blockedAvailability = await getAvailableRooms(checkIn, checkOut);
       expect(blockedAvailability.some(item => item.room.id === room.id)).toBe(false);
 
       const cancelled = await cancelOwnerBlock({
@@ -163,7 +187,7 @@ describe.sequential("owner reservation and cancellation workflow", () => {
       expect(cancelled.status).toBe("cancelled");
       expect(cancelled.cancellationReason).toBe("Maintenance block cleared.");
 
-      const releasedAvailability = await getAvailableRooms("2032-05-11", "2032-05-13");
+      const releasedAvailability = await getAvailableRooms(checkIn, checkOut);
       expect(releasedAvailability.some(item => item.room.id === room.id)).toBe(true);
 
       const blockAudit = await db.select().from(reservationAuditEvents).where(eq(reservationAuditEvents.reservationBlockId, block.id));

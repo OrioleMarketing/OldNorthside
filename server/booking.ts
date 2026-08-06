@@ -2,6 +2,7 @@ import { and, asc, eq, gt, inArray, lt, or, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import {
   bookingEmailEvents,
+  bookingEventRestrictions,
   bookingSettings,
   channelInventoryBlocks,
   reservationAuditEvents,
@@ -14,6 +15,9 @@ import { getDb } from "./db";
 import { queueOutboundAvailabilityUpdate } from "./channelSync";
 
 export const HOLD_DURATION_MINUTES = 20;
+export const MAX_STAY_NIGHTS = 28;
+export const MINIMUM_BOOKING_LEAD_DAYS = 1;
+export const MAX_ADVANCE_BOOKING_DAYS = 160;
 
 export type PublicBookingSettings = {
   depositNights: number;
@@ -39,6 +43,15 @@ export type ReservationQuote = {
   isShortTermTaxable: boolean;
 };
 
+export type EventRestrictionInput = {
+  name: string;
+  eventStart: string;
+  eventEnd: string;
+  minimumNights: number;
+  bookingOpensOn?: string | null;
+  bookingClosesOn?: string | null;
+};
+
 export type BookingInput = {
   roomId: number;
   checkIn: string;
@@ -48,6 +61,7 @@ export type BookingInput = {
   guestPhone: string;
   guestCount: number;
   childCount?: number;
+  adultGuests: Array<{ name: string; hasStayedBefore: boolean }>;
   paymentSelection?: "deposit" | "full_stay";
   hasPet?: boolean;
   dogCount?: number;
@@ -59,9 +73,9 @@ export type BookingInput = {
 const defaultSettings: PublicBookingSettings = {
   depositNights: 1,
   paymentCollectionMode: "first_night_deposit",
-  balanceReminderDays: 7,
+  balanceReminderDays: 6,
   stateTaxRateBasisPoints: 700,
-  countyTaxRateBasisPoints: 300,
+  countyTaxRateBasisPoints: 1000,
   shortTermTaxThresholdNights: 30,
   channelProvider: null,
   channelConnectionStatus: "not_connected",
@@ -82,7 +96,50 @@ export function getNights(checkIn: string, checkOut: string) {
   if (nights < 1) {
     throw new Error("Check-out must be at least one night after check-in.");
   }
+  if (nights > MAX_STAY_NIGHTS) {
+    throw new Error(`Reservations are limited to a maximum of ${MAX_STAY_NIGHTS} nights.`);
+  }
   return nights;
+}
+
+function indianapolisDateKey(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Indiana/Indianapolis",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const year = parts.find(part => part.type === "year")?.value;
+  const month = parts.find(part => part.type === "month")?.value;
+  const day = parts.find(part => part.type === "day")?.value;
+  if (!year || !month || !day) throw new Error("Could not determine the local booking date.");
+  return `${year}-${month}-${day}`;
+}
+
+export function earliestBookableCheckIn(now = new Date()) {
+  const today = dateAtUtcMidnight(indianapolisDateKey(now));
+  today.setUTCDate(today.getUTCDate() + MINIMUM_BOOKING_LEAD_DAYS);
+  return today.toISOString().slice(0, 10);
+}
+
+export function latestBookableCheckIn(now = new Date()) {
+  const today = dateAtUtcMidnight(indianapolisDateKey(now));
+  today.setUTCDate(today.getUTCDate() + MAX_ADVANCE_BOOKING_DAYS);
+  return today.toISOString().slice(0, 10);
+}
+
+function assertBookingLeadTime(checkIn: string, now = new Date()) {
+  const earliest = earliestBookableCheckIn(now);
+  if (checkIn < earliest) {
+    throw new Error(`Reservations must be made at least ${MINIMUM_BOOKING_LEAD_DAYS} day in advance.`);
+  }
+}
+
+export function assertBookingAdvanceWindow(checkIn: string, now = new Date()) {
+  const latest = latestBookableCheckIn(now);
+  if (checkIn > latest) {
+    throw new Error(`Reservations may be made up to ${MAX_ADVANCE_BOOKING_DAYS} days in advance.`);
+  }
 }
 
 function getSettingsForQuote(settings: Partial<PublicBookingSettings>): PublicBookingSettings {
@@ -259,8 +316,88 @@ async function getUnavailableRoomIds(checkIn: string, checkOut: string) {
   ]);
 }
 
+function validateEventRestrictionInput(input: EventRestrictionInput) {
+  const name = input.name.trim();
+  if (name.length < 2 || name.length > 160) throw new Error("Enter a special-event name between 2 and 160 characters.");
+  const eventStart = dateAtUtcMidnight(input.eventStart);
+  const eventEnd = dateAtUtcMidnight(input.eventEnd);
+  if (eventEnd <= eventStart) throw new Error("The special-event end date must be after its start date.");
+  if (!Number.isInteger(input.minimumNights) || input.minimumNights < 1 || input.minimumNights > MAX_STAY_NIGHTS) {
+    throw new Error(`Special-event minimum stays must be between one and ${MAX_STAY_NIGHTS} nights.`);
+  }
+  const bookingOpensOn = input.bookingOpensOn?.trim() || null;
+  const bookingClosesOn = input.bookingClosesOn?.trim() || null;
+  if (bookingOpensOn) dateAtUtcMidnight(bookingOpensOn);
+  if (bookingClosesOn) dateAtUtcMidnight(bookingClosesOn);
+  if (bookingOpensOn && bookingClosesOn && bookingClosesOn < bookingOpensOn) {
+    throw new Error("The special-event booking close date cannot be before its opening date.");
+  }
+  return { name, eventStart: input.eventStart, eventEnd: input.eventEnd, minimumNights: input.minimumNights, bookingOpensOn, bookingClosesOn };
+}
+
+function validateEventRestrictionsForStay(
+  restrictions: Array<typeof bookingEventRestrictions.$inferSelect>,
+  checkIn: string,
+  checkOut: string,
+  now = new Date(),
+) {
+  const nights = getNights(checkIn, checkOut);
+  const bookingDate = indianapolisDateKey(now);
+  for (const restriction of restrictions) {
+    if (!(restriction.eventStart < checkOut && restriction.eventEnd > checkIn)) continue;
+    if (nights < restriction.minimumNights) {
+      throw new Error(`${restriction.name} requires a minimum stay of ${restriction.minimumNights} night${restriction.minimumNights === 1 ? "" : "s"}.`);
+    }
+    if (restriction.bookingOpensOn && bookingDate < restriction.bookingOpensOn) {
+      throw new Error(`${restriction.name} reservations open on ${restriction.bookingOpensOn}.`);
+    }
+    if (restriction.bookingClosesOn && bookingDate > restriction.bookingClosesOn) {
+      throw new Error(`${restriction.name} reservations closed on ${restriction.bookingClosesOn}. Please call the inn for assistance.`);
+    }
+  }
+}
+
+async function assertEventRestrictions(checkIn: string, checkOut: string, now = new Date()) {
+  const db = await getDb();
+  if (!db) return;
+  const restrictions = await db
+    .select()
+    .from(bookingEventRestrictions)
+    .where(and(lt(bookingEventRestrictions.eventStart, checkOut), gt(bookingEventRestrictions.eventEnd, checkIn)));
+  validateEventRestrictionsForStay(restrictions, checkIn, checkOut, now);
+}
+
+export async function listEventRestrictions() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(bookingEventRestrictions).orderBy(asc(bookingEventRestrictions.eventStart), asc(bookingEventRestrictions.id));
+}
+
+export async function createEventRestriction(input: EventRestrictionInput) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable.");
+  const values = validateEventRestrictionInput(input);
+  await db.insert(bookingEventRestrictions).values(values);
+  const created = await db.select().from(bookingEventRestrictions)
+    .where(and(eq(bookingEventRestrictions.name, values.name), eq(bookingEventRestrictions.eventStart, values.eventStart)))
+    .orderBy(sql`${bookingEventRestrictions.id} desc`)
+    .limit(1);
+  return created[0];
+}
+
+export async function deleteEventRestriction(restrictionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database unavailable.");
+  const [result] = await db.delete(bookingEventRestrictions).where(eq(bookingEventRestrictions.id, restrictionId));
+  if (result.affectedRows !== 1) throw new Error("That special-event restriction could not be found.");
+  return { deleted: true } as const;
+}
+
 export async function getAvailableRooms(checkIn: string, checkOut: string) {
   getNights(checkIn, checkOut);
+  assertBookingLeadTime(checkIn);
+  assertBookingAdvanceWindow(checkIn);
+  await assertEventRestrictions(checkIn, checkOut);
   const [activeRooms, settings, unavailableRoomIds] = await Promise.all([
     getActiveRooms(),
     getPublicSettings(),
@@ -295,18 +432,38 @@ export function getValidatedPetDetails(input: BookingInput) {
   return { hasPet: 1, dogCount, dogsUnder25Lbs: 1, petPolicyAcknowledged: 1 };
 }
 
+function getValidatedAdultGuests(input: BookingInput) {
+  if (!Number.isInteger(input.guestCount) || input.guestCount < 1 || input.guestCount > 2) {
+    throw new Error("Select one or two adult guests.");
+  }
+  const childCount = input.childCount ?? 0;
+  if (!Number.isInteger(childCount) || childCount < 0 || childCount > 2) {
+    throw new Error("Select between zero and two children.");
+  }
+  if (input.adultGuests.length !== input.guestCount) {
+    throw new Error("Provide the name and returning-guest answer for each adult guest.");
+  }
+  return {
+    childCount,
+    adultGuests: input.adultGuests.map(adult => {
+      const name = adult.name.trim();
+      if (name.length < 2 || name.length > 180) {
+        throw new Error("Enter a full name for each adult guest.");
+      }
+      return { name, hasStayedBefore: Boolean(adult.hasStayedBefore) };
+    }),
+  };
+}
+
 export async function createReservationHold(
   input: BookingInput,
   options?: { source?: "direct" | "owner"; holdDurationMinutes?: number },
 ) {
   getNights(input.checkIn, input.checkOut);
-  if (!Number.isInteger(input.guestCount) || input.guestCount < 1 || input.guestCount > 4) {
-    throw new Error("Select between one and four total guests.");
-  }
-  const childCount = input.childCount ?? 0;
-  if (!Number.isInteger(childCount) || childCount < 0 || childCount > input.guestCount) {
-    throw new Error("Children must be between zero and the total number of guests.");
-  }
+  assertBookingLeadTime(input.checkIn);
+  assertBookingAdvanceWindow(input.checkIn);
+  await assertEventRestrictions(input.checkIn, input.checkOut);
+  const { childCount, adultGuests } = getValidatedAdultGuests(input);
   const petDetails = getValidatedPetDetails(input);
   const db = await getDb();
   if (!db) throw new Error("Reservations are temporarily unavailable. Please try again shortly.");
@@ -374,6 +531,7 @@ export async function createReservationHold(
       guestPhone: input.guestPhone,
       guestCount: input.guestCount,
       childCount,
+      adultGuestDetailsJson: JSON.stringify(adultGuests),
       ...petDetails,
       checkIn: input.checkIn,
       checkOut: input.checkOut,

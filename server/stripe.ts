@@ -127,6 +127,8 @@ export async function chargeSavedBalanceOffSession(input: {
       payment_kind: "balance",
       charge_origin: "owner_authorized_off_session",
     },
+  }, {
+    idempotencyKey: `old-northside-scheduled-balance-${reservation.id}`,
   });
 
   if (paymentIntent.status !== "succeeded") {

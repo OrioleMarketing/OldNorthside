@@ -102,7 +102,7 @@ describe("owner payment-link and saved-card charge helpers", () => {
       confirm: true,
       off_session: true,
       metadata: expect.objectContaining({ charge_origin: "owner_authorized_off_session", payment_kind: "balance" }),
-    }));
+    }), { idempotencyKey: "old-northside-scheduled-balance-41" });
   });
 
   it("returns a safe payment-link fallback error if Stripe cannot complete the off-session charge", async () => {
