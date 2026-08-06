@@ -1,0 +1,134 @@
+{
+  "project_info": {
+    "title": "Channel Manager Decision",
+    "created": 1786029843.935,
+    "last_updated": 1786030651.177,
+    "total_slides": 12
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "inventory_decision",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "monthly_cost",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "commercial_risk",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "finalist_capability",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "api_vs_ical",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "ical_limitations",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "target_architecture",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "recommendation",
+      "state": "edited",
+      "pageNum": 9
+    },
+    {
+      "id": "decision_questions",
+      "state": "edited",
+      "pageNum": 10
+    },
+    {
+      "id": "closing",
+      "state": "edited",
+      "pageNum": 11
+    },
+    {
+      "id": "sources",
+      "state": "edited",
+      "pageNum": 12
+    }
+  ],
+  "outline": [
+    {
+      "id": "cover",
+      "title": "Channel Manager Decision",
+      "summary": "Title slide for the Old Northside Bed and Breakfast channel-manager recommendation.",
+      "image_plan": "/home/ubuntu/upload/search_images/hLaYc04De5CD.webp - Visual representation of a historic bed and breakfast property (Old Northside Bed and Breakfast)"
+    },
+    {
+      "id": "inventory_decision",
+      "title": "The decision is about inventory control",
+      "summary": "Frame the business decision around synchronized direct bookings and Expedia availability."
+    },
+    {
+      "id": "monthly_cost",
+      "title": "Beds24 is materially lower cost at seven rooms",
+      "summary": "Compare published recurring pricing for a seven-room, one-OTA configuration."
+    },
+    {
+      "id": "commercial_risk",
+      "title": "Commercial risk is lower with Beds24",
+      "summary": "Compare onboarding, trial, contract, and support terms."
+    },
+    {
+      "id": "finalist_capability",
+      "title": "Both finalists can replace manual Expedia updates",
+      "summary": "Present the Expedia connection scope of eviivo and Beds24.",
+      "image_plan": "/home/ubuntu/upload/search_images/3hiTNst2E66h.jpg - Hotel channel manager software dashboard showing multi-channel connectivity"
+    },
+    {
+      "id": "api_vs_ical",
+      "title": "API connectivity is an operating system; iCal is a safety net",
+      "summary": "Contrast two-way channel-manager API synchronization with the current iCal bridge."
+    },
+    {
+      "id": "ical_limitations",
+      "title": "iCal protects dates—but not the full booking journey",
+      "summary": "Explain the latency and data limitations of calendar feed synchronization."
+    },
+    {
+      "id": "target_architecture",
+      "title": "Recommended target architecture: one inventory master",
+      "summary": "Show the staged path from iCal bridge to certified channel-manager API integration."
+    },
+    {
+      "id": "recommendation",
+      "title": "Recommendation: demo both, favor based on operating style",
+      "summary": "Provide the tailored eviivo versus Beds24 selection recommendation."
+    },
+    {
+      "id": "decision_questions",
+      "title": "The next decision meeting should answer five questions",
+      "summary": "Provide the due-diligence questions to use with finalists."
+    },
+    {
+      "id": "closing",
+      "title": "Evaluate eviivo and Beds24 side by side",
+      "summary": "Close with the recommended strategic principle and next decision action."
+    },
+    {
+      "id": "sources",
+      "title": "Sources",
+      "summary": "List the primary provider and Expedia/Vrbo sources used in the deck."
+    }
+  ]
+}

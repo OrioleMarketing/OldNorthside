@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+body{margin:0}
+.slide-container{width:1280px;min-height:720px;box-sizing:border-box;background:#fff;color:#0a0a0a;font-family:Arial,Helvetica,sans-serif}
+.slide-container *{box-sizing:border-box}
+.slide-container .page{min-height:720px;display:grid;grid-template-columns:386px 1fr}
+.slide-container .rail{padding:46px 32px 0 82px;background:#f4f7fd}
+.slide-container .eyebrow{color:#1d4ed8;font-size:14px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase}
+.slide-container h1{margin:17px 0 0;font-size:46px;line-height:1.02;letter-spacing:-2.5px;font-weight:900}
+.slide-container .big-five{margin-top:6px;color:#1d4ed8;font-size:142px;line-height:.77;letter-spacing:-9px;font-weight:900}
+.slide-container .rail-copy{margin-top:8px;border-top:1px dotted #777;padding-top:8px;color:#333;font-size:17px;line-height:1.42;max-width:240px}
+.slide-container .questions{padding:20px 84px 0 50px;display:flex;flex-direction:column}
+.slide-container .intro{margin:0 0 12px;max-width:760px;color:#333;font-size:20px;line-height:1.35}
+.slide-container .list{border-top:5px solid #0a0a0a}
+.slide-container .qrow{min-height:64px;display:grid;grid-template-columns:76px 1fr;border-bottom:1px dotted #777;align-items:center}
+.slide-container .qnum{color:#1d4ed8;font-size:34px;font-weight:900;letter-spacing:-1.5px}
+.slide-container .qtext{font-size:20px;line-height:1.27;font-weight:700;letter-spacing:-.3px;padding-right:12px}
+.slide-container .qtext span{color:#333;font-size:15px;font-weight:400;letter-spacing:0}
+.slide-container .close{margin-top:10px;display:grid;grid-template-columns:148px 1fr;border-top:1px dotted #777;padding-top:8px}
+.slide-container .close-label{color:#1d4ed8;font-size:13px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase}
+.slide-container .close-copy{font-size:18px;line-height:1.33;color:#0a0a0a;font-weight:700}
+</style>
+</head>
+<body>
+<div class="slide-container">
+  <div class="page">
+    <aside class="rail">
+      <div class="eyebrow">Vendor meeting agenda</div>
+      <h1>The next decision meeting should answer five questions</h1>
+      <div class="big-five">05</div>
+      <p class="rail-copy">Do not leave a sales call with generic assurances. Leave with a mapped operating model, named owners, and written commercial terms.</p>
+    </aside>
+    <main class="questions">
+      <p class="intro">Use the same questions with both eviivo and Beds24. The answers should be specific to Old Northside—not an example property.</p>
+      <section class="list">
+        <div class="qrow"><div class="qnum">01</div><div class="qtext">Can the existing Expedia listing and all seven rooms be mapped without recreating the listing? <span>Ask to see the room and rate-plan mapping path.</span></div></div>
+        <div class="qrow"><div class="qnum">02</div><div class="qtext">Will the connection synchronize availability, rates, restrictions, and reservations—not only iCal blocks? <span>Ask for the exact Expedia capability scope.</span></div></div>
+        <div class="qrow"><div class="qnum">03</div><div class="qtext">How will the custom direct-booking site connect to the manager? <span>Require the supported API, webhook, or iCal method and its limitations.</span></div></div>
+        <div class="qrow"><div class="qnum">04</div><div class="qtext">Who owns mapping, test bookings, cutover, and rollback support? <span>Name the vendor and inn-side responsibilities.</span></div></div>
+        <div class="qrow"><div class="qnum">05</div><div class="qtext">What are the complete first-year costs and exit terms? <span>Include subscription, onboarding, payment, support, cancellation, and any contract commitment.</span></div></div>
+      </section>
+      <section class="close"><div class="close-label">Decision rule</div><div class="close-copy">A finalist is ready only when it can demonstrate the mapping and provide the commercial commitment in writing.</div></section>
+    </main>
+  </div>
+</div>
+</body>
+</html>

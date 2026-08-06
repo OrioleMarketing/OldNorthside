@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+body{margin:0}
+.slide-container{width:1280px;min-height:720px;box-sizing:border-box;background:#fff;color:#0a0a0a;font-family:Arial,Helvetica,sans-serif}
+.slide-container *{box-sizing:border-box}
+.slide-container .layout{min-height:720px;display:grid;grid-template-columns:310px 1fr}
+.slide-container .rail{padding:54px 30px 0 54px;background:#f4f7fd}
+.slide-container .rail-label{font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#1d4ed8}
+.slide-container .photo{width:226px;height:294px;margin-top:22px;border:6px solid #0a0a0a;overflow:hidden}
+.slide-container .photo img{width:214px;height:282px;display:block;object-fit:cover}
+.slide-container .rail-note{margin-top:22px;border-top:1px dotted #777;padding-top:12px;font-size:14px;line-height:1.4;color:#333}
+.slide-container .content{padding:57px 74px 0 54px}
+.slide-container h1{margin:0;max-width:780px;font-size:48px;line-height:1.02;letter-spacing:-2.3px;font-weight:900}
+/* slightly reduced top gap below title to save 2px without changing font */
+.slide-container .subhead{margin:12px 0 0;color:#333;font-size:20px;line-height:1.35}
+.slide-container .comparison{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:44px}
+.slide-container .vendor{border-top:5px solid #0a0a0a;padding-top:16px}
+.slide-container .vendor-name{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px dotted #777;padding-bottom:12px}
+.slide-container .vendor-name h2{margin:0;font-size:29px;letter-spacing:-1.2px;font-weight:900}
+.slide-container .badge{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#1d4ed8;white-space:nowrap}
+.slide-container .vendor p{margin:15px 0 0;font-size:16px;line-height:1.38;color:#333}
+.slide-container .cap-list{margin:17px 0 0;padding:0;list-style:none}
+.slide-container .cap-list li{border-top:1px dotted #aaa;padding-top:9px;margin-top:9px;font-size:16px;line-height:1.34;color:#333}
+.slide-container .cap-list strong{color:#0a0a0a}
+/* Reduced top margin to shave vertical space without changing font sizes */
+.slide-container .implication{margin-top:12px;border-top:1px dotted #777;padding-top:16px;display:flex;gap:18px;align-items:flex-start}
+.slide-container .implication-label{font-size:13px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:#1d4ed8;white-space:nowrap;margin-top:4px}
+.slide-container .implication-text{font-size:20px;line-height:1.25;font-weight:700;letter-spacing:-.4px}
+.slide-container .source{margin-top:14px;font-size:11px;color:#555;letter-spacing:.1px}
+</style>
+</head>
+<body>
+<div class="slide-container">
+  <div class="layout">
+    <aside class="rail">
+      <div class="rail-label">Finalist capability</div>
+      <div class="photo"><img src="/home/ubuntu/upload/search_images/3hiTNst2E66h.jpg" alt="Independent inn exterior"></div>
+      <p class="rail-note">For a seven-room inn, the value of a channel manager is not the logo count. It is dependable room, rate, and reservation synchronization.</p>
+    </aside>
+    <main class="content">
+      <h1>Both finalists can replace<br>manual Expedia updates</h1>
+      <p class="subhead">Each offers a certified two-way connection, but they emphasize different operating experiences.</p>
+      <section class="comparison">
+        <article class="vendor">
+          <div class="vendor-name"><h2>eviivo Suite</h2><span class="badge">Preferred</span></div>
+          <p>eviivo positions its Expedia integration as an instant, two-way connection for independent accommodation operators.</p>
+          <ul class="cap-list">
+            <li><strong>Core flow:</strong> bookings, availability, and rates.</li>
+            <li><strong>Broader scope:</strong> content, policies, promotions, fees, guest conversations, and reviews.</li>
+            <li><strong>Operating fit:</strong> a more all-in-one hospitality workflow.</li>
+          </ul>
+        </article>
+        <article class="vendor">
+          <div class="vendor-name"><h2>Beds24</h2><span class="badge">Elite · 2025</span></div>
+          <p>Beds24 reports official two-way Expedia connectivity and its 2025 Expedia Elite Partner recognition.</p>
+          <ul class="cap-list">
+            <li><strong>Core flow:</strong> real-time booking import plus rates and inventory updates.</li>
+            <li><strong>Control model:</strong> flexible room, rate, and channel configuration.</li>
+            <li><strong>Operating fit:</strong> a more configurable, cost-conscious setup.</li>
+          </ul>
+        </article>
+      </section>
+      <section class="implication">
+        <div class="implication-label">Decision test</div>
+        <div class="implication-text">Ask both vendors to demonstrate Old Northside’s actual Expedia room and rate-plan mapping—not a generic channel connection.</div>
+      </section>
+      <div class="source">Sources: eviivo Expedia Connection [4] · Beds24 Channel Manager and 2025 news [5]</div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+body{margin:0}
+.slide-container{width:1280px;min-height:720px;box-sizing:border-box;background:#fff;color:#0a0a0a;font-family:Arial, Helvetica, sans-serif}
+.slide-container *{box-sizing:border-box}
+.slide-container .page{min-height:720px;display:grid;grid-template-columns:370px 1fr}
+.slide-container .left{padding:40px 28px 0 86px;border-right:1px solid #1d4ed8}
+.slide-container .kicker{color:#1d4ed8;font-size:14px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase}
+.slide-container .num{margin-top:20px;color:#dbe5f7;font-size:138px;font-weight:900;letter-spacing:-9px;line-height:.8}
+.slide-container .left-note{margin-top:40px;width:170px;border-top:1px dotted #777;padding-top:10px;color:#333;font-size:15px;line-height:1.45}
+.slide-container .main{padding:68px 86px 0 64px;display:flex;flex-direction:column}
+.slide-container h1{margin:0;max-width:720px;font-size:52px;line-height:1.01;letter-spacing:-2.6px;font-weight:900}
+.slide-container .lead{margin:16px 0 0;max-width:730px;color:#333;font-size:24px;line-height:1.38}
+.slide-container .principle{margin-top:24px;width:730px;border-top:5px solid #0a0a0a;border-bottom:1px dotted #777;padding-top:16px;padding-bottom:16px;display:flex;gap:18px;align-items:baseline}
+.slide-container .principle-tag{color:#1d4ed8;font-size:14px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap}
+.slide-container .principle-text{font-size:27px;font-weight:800;letter-spacing:-.8px;line-height:1.14}
+.slide-container .actions{margin-top:16px;width:730px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.slide-container .action{border-top:1px dotted #777;padding-top:10px;font-size:17px;line-height:1.35;color:#333}
+.slide-container .action strong{display:block;color:#0a0a0a;font-size:18px;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="slide-container">
+  <div class="page">
+    <aside class="left">
+      <div class="kicker">Decision framing</div>
+      <div class="num">01</div>
+      <p class="left-note">The question is not “which calendar?” It is “which system owns sellable inventory?”</p>
+    </aside>
+    <main class="main">
+      <h1>The decision is about<br>inventory control</h1>
+      <p class="lead">Old Northside needs direct bookings and Expedia availability to stay synchronized—without turning the owner into the manual connection between systems.</p>
+      <section class="principle">
+        <div class="principle-tag">Operating principle</div>
+        <div class="principle-text">One inventory source of truth.<br>Every channel follows it.</div>
+      </section>
+      <section class="actions">
+        <div class="action"><strong>Direct website</strong>Sees valid availability before a guest begins checkout.</div>
+        <div class="action"><strong>Expedia</strong>Receives consistent rates and availability without manual re-entry.</div>
+        <div class="action"><strong>Owner</strong>Manages exceptions, not competing calendars.</div>
+      </section>
+    </main>
+  </div>
+</div>
+</body>
+</html>

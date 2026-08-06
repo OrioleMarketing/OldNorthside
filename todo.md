@@ -130,3 +130,7 @@
 - [ ] Audit and preserve the client’s iCal calendar synchronization during the custom-domain transition; identify any feed URLs that must remain reachable or be updated before retiring the legacy website host.
 - [x] Audit and reduce the initial image payload identified by GTmetrix while preserving the visual presentation, explicit image dimensions, responsive rendering, and booking flows; created a documented source-versus-optimized image audit and confirmed desktop/mobile presentation plus booking safeguards.
 - [x] Convert oversized initial-load property and room images to optimized next-generation responsive assets, update delivery URLs, and validate the resulting payload reduction; responsive WebP derivatives, explicit dimensions, lazy loading, and high-priority hero delivery are now in place.
+
+- [x] Diagnose and repair the reported innkeeper password rejection, securely synchronize the authorized administrator credential, and verify a real owner-dashboard sign-in without exposing the password; the owner later confirmed the existing login was working, so no credential change was made.
+- [x] Research and compare current eviivo Suite and Beds24 pricing, onboarding fees, and contract terms for a seven-room B&B, with source-backed uncertainty notes where providers require a quote.
+- [x] Create a decision slide deck covering recommended channel managers, commercial comparison, Expedia two-way API versus iCal synchronization, and a staged integration strategy for Old Northside Bed and Breakfast.

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+body{margin:0}
+.slide-container{width:1280px;min-height:720px;box-sizing:border-box;background:#ffffff;color:#0a0a0a;font-family:Arial,Helvetica,sans-serif}
+.slide-container *{box-sizing:border-box}
+.slide-container .page{min-height:720px;padding:58px 84px 0 84px;display:flex;flex-direction:column}
+.slide-container .eyebrow{font-size:14px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;color:#1d4ed8}
+.slide-container h1{margin:14px 0 0;font-size:50px;line-height:1;letter-spacing:-2.6px;font-weight:900}
+.slide-container .subline{margin-top:13px;color:#333;font-size:18px;line-height:1.35}
+.slide-container .compare{margin-top:38px;display:grid;grid-template-columns:1fr 1fr;gap:54px}
+.slide-container .provider{min-height:318px;border-top:7px solid #0a0a0a;padding-top:20px}
+.slide-container .provider.beds{border-top-color:#1d4ed8}
+.slide-container .name{font-size:25px;font-weight:900;letter-spacing:-1px}
+.slide-container .qualifier{margin-top:5px;color:#666;font-size:14px;line-height:1.3}
+.slide-container .price-row{margin-top:31px;display:flex;align-items:flex-end;gap:12px}
+.slide-container .currency{font-size:31px;font-weight:900;line-height:1;color:#1d4ed8}
+.slide-container .price{font-size:82px;font-weight:900;letter-spacing:-5px;line-height:.83}
+.slide-container .unit{font-size:19px;font-weight:700;padding-bottom:5px;color:#333}
+.slide-container .detail{margin-top:23px;border-top:1px dotted #777;padding-top:14px;display:grid;grid-template-columns:138px 1fr;gap:12px;font-size:16px;line-height:1.36}
+.slide-container .detail-label{font-size:12px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#1d4ed8}
+.slide-container .bottom{margin-top:22px;border-top:1px dotted #777;display:grid;grid-template-columns:245px 1fr;gap:30px;padding-top:17px}
+.slide-container .bottom-label{font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#1d4ed8}
+.slide-container .bottom-copy{font-size:20px;line-height:1.32;font-weight:700;letter-spacing:-.3px}
+.slide-container .source{margin-top:15px;color:#666;font-size:12px;line-height:1.3}
+</style>
+</head>
+<body>
+<div class="slide-container">
+  <main class="page">
+    <div class="eyebrow">Published recurring pricing</div>
+    <h1>Beds24 is materially lower cost at seven rooms</h1>
+    <div class="subline">One property • seven rooms • one room type • one Expedia connection</div>
+
+    <section class="compare">
+      <article class="provider">
+        <div class="name">eviivo Suite</div>
+        <div class="qualifier">Published single-property starting point</div>
+        <div class="price-row"><div class="currency">$</div><div class="price">50</div><div class="unit">/ month<br>from</div></div>
+        <div class="detail"><div class="detail-label">Meaning</div><div>This is the public entry floor. The exact subscription is tailored to inventory capacity and feature selection.</div></div>
+        <div class="detail"><div class="detail-label">Optional cost</div><div>Selected managers add $1–$3 per room per month; taxes are excluded.</div></div>
+      </article>
+      <article class="provider beds">
+        <div class="name">Beds24</div>
+        <div class="qualifier">Public calculator configuration for Old Northside</div>
+        <div class="price-row"><div class="currency">€</div><div class="price">31.65</div><div class="unit">/ month<br>configured</div></div>
+        <div class="detail"><div class="detail-label">Includes</div><div>Seven rooms, one room type, and one OTA connection in Beds24’s Hotel/B&amp;B calculator.</div></div>
+        <div class="detail"><div class="detail-label">Cost driver</div><div>Each additional active room-type-to-channel link adds €0.55 per month.</div></div>
+      </article>
+    </section>
+
+    <section class="bottom">
+      <div class="bottom-label">Decision read</div>
+      <div class="bottom-copy">Beds24 is the price-led option for a simple one-OTA setup. eviivo may justify a higher quote when the inn values a more integrated operating platform.</div>
+    </section>
+    <div class="source">Sources: eviivo Pricing (2026) • Beds24 public calculator and pricing page (7-room, one-OTA configuration). Currency conversion intentionally omitted.</div>
+  </main>
+</div>
+</body>
+</html>

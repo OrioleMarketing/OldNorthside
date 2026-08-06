@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+.slide-container{width:1280px;min-height:720px;box-sizing:border-box;background:#fff;color:#0a0a0a;font-family:Arial,Helvetica,sans-serif}
+.slide-container *{box-sizing:border-box}
+.slide-container .page{min-height:720px;padding:58px 82px 0 82px;display:flex;flex-direction:column}
+.slide-container .eyebrow{color:#1d4ed8;font-size:14px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase}
+.slide-container h1{margin:12px 0 0;font-size:49px;line-height:1.02;letter-spacing:-2.5px;font-weight:900}
+.slide-container .principle{margin-top:17px;display:flex;align-items:baseline;gap:17px;border-top:1px dotted #777;padding-top:13px}
+.slide-container .principle-label{color:#1d4ed8;font-size:13px;font-weight:800;letter-spacing:1.7px;text-transform:uppercase;white-space:nowrap}
+.slide-container .principle-text{font-size:20px;font-weight:700;line-height:1.28}
+.slide-container .stages{margin-top:38px;display:grid;grid-template-columns:1fr 70px 1fr 70px 1fr;align-items:stretch}
+.slide-container .stage{min-height:250px;border-top:6px solid #0a0a0a;padding-top:12px;display:flex;flex-direction:column}
+.slide-container .stage.stage-three{border-top-color:#1d4ed8}
+.slide-container .step{color:#1d4ed8;font-size:13px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase}
+.slide-container .stage h2{margin:8px 0 0;font-size:29px;line-height:1;letter-spacing:-1.2px;font-weight:900}
+.slide-container .stage p{margin:12px 0 0;color:#333;font-size:17px;line-height:1.35;min-height:48px}
+.slide-container .rule{margin-top:10px;border-top:1px dotted #777;padding-top:8px}
+.slide-container .rule strong{display:block;color:#0a0a0a;font-size:13px;letter-spacing:1.1px;text-transform:uppercase;margin-bottom:5px}
+.slide-container .rule span{display:block;color:#333;font-size:15px;line-height:1.32}
+.slide-container .connector{display:flex;align-items:center;justify-content:center;padding-top:45px}
+.slide-container .connector-line{width:48px;height:3px;background:#1d4ed8;position:relative}
+.slide-container .connector-line:after{content:"";position:absolute;right:-1px;top:-6px;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:11px solid #1d4ed8}
+.slide-container .destination{margin-top:20px;border-top:5px solid #1d4ed8;display:grid;grid-template-columns:252px 1fr;padding-top:12px}
+.slide-container .destination-label{color:#1d4ed8;font-size:14px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase}
+.slide-container .destination-text{font-size:25px;font-weight:800;letter-spacing:-.7px;line-height:1.2}
+.slide-container .source{margin-top:14px;color:#666;font-size:12px;line-height:1.3}
+</style>
+</head>
+<body>
+<div class="slide-container">
+  <main class="page">
+    <div class="eyebrow">Recommended integration path</div>
+    <h1>Recommended target architecture:<br>one inventory master</h1>
+    <div class="principle"><div class="principle-label">Design rule</div><div class="principle-text">Move deliberately from calendar protection to certified distribution—without running two independent inventory authorities.</div></div>
+
+    <section class="stages">
+      <article class="stage">
+        <div class="step">Stage 1</div>
+        <h2>Stabilize</h2>
+        <p>Preserve the current external calendars while the inn collects the real room mappings and feed URLs.</p>
+        <div class="rule"><strong>Control point</strong><span>Per-room iCal import and export only after a safe mapping review.</span></div>
+        <div class="rule"><strong>Exit criterion</strong><span>Every room’s external listing and direct-booking calendar is known.</span></div>
+      </article>
+      <div class="connector"><div class="connector-line"></div></div>
+      <article class="stage">
+        <div class="step">Stage 2</div>
+        <h2>Select &amp; map</h2>
+        <p>Choose eviivo or Beds24, then map seven rooms and rate plans in a test or parallel-run environment.</p>
+        <div class="rule"><strong>Control point</strong><span>Test bookings, changes, cancellations, and exception handling before cutover.</span></div>
+        <div class="rule"><strong>Exit criterion</strong><span>Room and rate-plan mappings reconcile across all connected channels.</span></div>
+      </article>
+      <div class="connector"><div class="connector-line"></div></div>
+      <article class="stage stage-three">
+        <div class="step">Stage 3</div>
+        <h2>Cut over</h2>
+        <p>Make the selected manager the authoritative inventory hub and activate its certified Expedia connection.</p>
+        <div class="rule"><strong>Control point</strong><span>Connect the direct website through the manager’s supported interface.</span></div>
+        <div class="rule"><strong>Exit criterion</strong><span>Retire the duplicate iCal loop after monitored validation.</span></div>
+      </article>
+    </section>
+
+    <section class="destination"><div class="destination-label">Target state</div><div class="destination-text">The channel manager owns sellable inventory; Expedia and the direct website consume synchronized availability from that single source.</div></section>
+  </main>
+</div>
+</body>
+</html>

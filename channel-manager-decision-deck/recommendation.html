@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+body{margin:0}
+.slide-container{width:1280px;min-height:720px;box-sizing:border-box;background:#ffffff;color:#0a0a0a;font-family:Arial,Helvetica,sans-serif}
+.slide-container *{box-sizing:border-box}
+.slide-container .page{min-height:720px;padding:57px 84px 0 84px;display:flex;flex-direction:column}
+.slide-container .eyebrow{color:#1d4ed8;font-size:14px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase}
+.slide-container h1{margin:12px 0 0;font-size:49px;line-height:1.02;letter-spacing:-2.5px;font-weight:900}
+/* reduced vertical spacing to avoid overflow */
+.slide-container .recommendation{margin-top:8px;width:1112px;border-top:6px solid #1d4ed8;border-bottom:1px dotted #777;padding-top:6px;display:grid;grid-template-columns:240px 1fr}
+.slide-container .rec-label{color:#1d4ed8;font-size:13px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase}
+.slide-container .rec-text{font-size:25px;line-height:1.21;font-weight:800;letter-spacing:-.7px}
+.slide-container .lanes{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.slide-container .lane{min-height:200px;border-top:5px solid #0a0a0a;padding-top:8px}
+.slide-container .lane.eviivo{border-top-color:#1d4ed8}
+.slide-container .lane-top{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px dotted #777;padding-bottom:10px}
+.slide-container .lane h2{margin:0;font-size:30px;line-height:1;letter-spacing:-1.3px;font-weight:900}
+.slide-container .fit{font-size:12px;color:#1d4ed8;font-weight:800;letter-spacing:1.3px;text-transform:uppercase}
+.slide-container .lane p{margin:10px 0 0;color:#333;font-size:18px;line-height:1.34}
+.slide-container .signals{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slide-container .signal{border-top:1px dotted #777;padding-top:4px;color:#333;font-size:15px;line-height:1.28}
+.slide-container .signal strong{display:block;color:#0a0a0a;font-size:16px;margin-bottom:2px}
+.slide-container .gate{margin-top:12px;width:1112px;display:grid;grid-template-columns:240px 1fr;border-top:1px dotted #777;padding-top:8px}
+.slide-container .gate-label{color:#1d4ed8;font-size:13px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase}
+.slide-container .gate-text{font-size:20px;line-height:1.3;font-weight:700}
+.slide-container .source{margin-top:4px;color:#666;font-size:12px;line-height:1.3}
+</style>
+</head>
+<body>
+<div class="slide-container">
+  <main class="page">
+    <div class="eyebrow">Tailored recommendation</div>
+    <h1>Demo both, favor based on operating style</h1>
+
+    <section class="recommendation">
+      <div class="rec-label">Default path</div>
+      <div class="rec-text">Start with Beds24 as the cost-and-control benchmark. Select eviivo only if its all-in-one operating experience and implementation support justify the quoted premium.</div>
+    </section>
+
+    <section class="lanes">
+      <article class="lane">
+        <div class="lane-top"><h2>Choose Beds24 when…</h2><span class="fit">Default finalist</span></div>
+        <p>Old Northside wants a transparent, low-commitment channel manager and is comfortable with a more configurable setup.</p>
+        <div class="signals">
+          <div class="signal"><strong>Commercial fit</strong>€31.65/month in the public seven-room, one-OTA configuration.</div>
+          <div class="signal"><strong>Operating fit</strong>Flexible mapping and clear pay-as-you-go commercial terms.</div>
+        </div>
+      </article>
+      <article class="lane eviivo">
+        <div class="lane-top"><h2>Choose eviivo when…</h2><span class="fit">Conditional finalist</span></div>
+        <p>Gary prefers a more managed hospitality platform and values integrated operations over minimum subscription cost.</p>
+        <div class="signals">
+          <div class="signal"><strong>Operating fit</strong>Broader all-in-one PMS, booking, channel, and optional service experience.</div>
+          <div class="signal"><strong>Commercial test</strong>Confirm the seven-room price, onboarding fee, term, notice, and cutover support in writing.</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="gate">
+      <div class="gate-label">Before signature</div>
+      <div class="gate-text">Require both vendors to demonstrate the existing Expedia listing, seven-room mapping, direct-site connection method, test-booking process, and full first-year cost.</div>
+    </section>
+    <div class="source">Sources: eviivo Pricing and Expedia connection; Beds24 Pricing, FAQ, and Expedia connection materials. [1] [2] [3] [4] [5]</div>
+  </main>
+</div>
+</body>
+</html>

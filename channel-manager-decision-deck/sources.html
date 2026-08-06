@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+.slide-container{width:1280px;min-height:720px;box-sizing:border-box;background:#ffffff;color:#0a0a0a;font-family:Arial,Helvetica,sans-serif}
+.slide-container *{box-sizing:border-box}
+.slide-container .page{min-height:720px;padding:58px 82px 0 82px}
+.slide-container .top{display:grid;grid-template-columns:1fr 360px;gap:36px;align-items:end}
+.slide-container .eyebrow{color:#1d4ed8;font-size:14px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase}
+.slide-container h1{margin:13px 0 0;font-size:52px;line-height:1;letter-spacing:-2.7px;font-weight:900}
+.slide-container .method{border-top:4px solid #1d4ed8;padding-top:10px;color:#333;font-size:15px;line-height:1.38}
+.slide-container .method strong{display:block;color:#0a0a0a;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+/* Shrunk top spacing for sources and tighter source spacing to avoid overflow */
+.slide-container .sources{margin-top:6px;border-top:1px dotted #777;display:grid;grid-template-columns:1fr 1fr;gap:20px;padding-top:6px}
+.slide-container .group-title{font-size:15px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase;color:#1d4ed8;margin:0 0 6px}
+.slide-container .source{border-top:1px dotted #999;padding-top:4px;margin-top:4px}
+.slide-container .source-name{font-size:17px;font-weight:800;line-height:1.25;color:#0a0a0a}
+.slide-container .source-url{margin-top:4px;color:#333;font-size:13px;line-height:1.28;word-break:break-word}
+/* Reduced foot spacing between sections */
+.slide-container .foot{margin-top:8px;border-top:5px solid #0a0a0a;padding-top:8px;display:grid;grid-template-columns:190px 1fr;gap:25px}
+.slide-container .foot-label{color:#1d4ed8;font-size:13px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase}
+.slide-container .foot-copy{font-size:16px;line-height:1.35;color:#333}
+.slide-container .foot-copy strong{color:#0a0a0a}
+</style>
+</head>
+<body>
+<div class="slide-container">
+  <main class="page">
+    <div class="top">
+      <div>
+        <div class="eyebrow">Evidence appendix</div>
+        <h1>Sources</h1>
+      </div>
+      <div class="method"><strong>Method note</strong>Pricing and feature claims are drawn from public provider pages checked in August 2026. Vendor quotes and signed agreements govern any purchase decision.</div>
+    </div>
+
+    <section class="sources">
+      <div>
+        <div class="group-title">Provider evidence</div>
+        <article class="source"><div class="source-name">[1] eviivo Pricing</div><div class="source-url">https://eviivo.com/pricing/</div></article>
+        <article class="source"><div class="source-name">[2] Beds24 Pricing Calculator</div><div class="source-url">https://beds24.com/pricing.html</div></article>
+        <article class="source"><div class="source-name">[3] Beds24 Frequently Asked Questions</div><div class="source-url">https://beds24.com/faq.html</div></article>
+        <article class="source"><div class="source-name">[4] eviivo Expedia Connection</div><div class="source-url">https://eviivo.com/products/channel-manager/expedia-connection/</div></article>
+      </div>
+      <div>
+        <div class="group-title">Marketplace &amp; calendar evidence</div>
+        <article class="source"><div class="source-name">[5] Beds24 Channel Manager &amp; Partner News</div><div class="source-url">https://beds24.com/channel-manager.html https://beds24.com/news.html</div></article>
+        <article class="source"><div class="source-name">[6] Vrbo: Import a Calendar</div><div class="source-url">https://help.vrbo.com/articles/How-do-I-import-my-iCal-or-Google-calendar</div></article>
+        <article class="source"><div class="source-name">[7] Vrbo: Export a Reservation Calendar</div><div class="source-url">https://help.vrbo.com/articles/Export-your-reservation-calendar</div></article>
+        <article class="source"><div class="source-name">Expedia Group: Connectivity Providers</div><div class="source-url">https://partner.expediagroup.com/en-us/industries/hotels/hotel-connectivity-providers</div></article>
+      </div>
+    </section>
+
+    <section class="foot"><div class="foot-label">Reading the figures</div><div class="foot-copy"><strong>Beds24:</strong> €31.65/month reflects the public calculator for seven rooms, one room type, and one OTA connection. <strong>eviivo:</strong> $50/month is a published single-property starting point; its seven-room onboarding fee, term, notice period, and final feature bundle should be confirmed in a written quote.</div></section>
+  </main>
+</div>
+</body>
+</html>

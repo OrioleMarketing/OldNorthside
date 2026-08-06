@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+.slide-container { width:1280px; min-height:720px; box-sizing:border-box; background:#ffffff; color:#0a0a0a; font-family:Arial, Helvetica, sans-serif; }
+.slide-container * { box-sizing:border-box; }
+.slide-container .page { min-height:720px; padding:58px 60px 0 60px; }
+.slide-container .eyebrow { color:#1d4ed8; font-size:14px; letter-spacing:2.5px; font-weight:800; text-transform:uppercase; }
+.slide-container h1 { margin:12px 0 0; max-width:1030px; font-size:49px; line-height:1.02; letter-spacing:-2.5px; font-weight:900; }
+.slide-container .intro { margin:8px 0 0; max-width:915px; color:#333; font-size:20px; line-height:1.36; }
+.slide-container .comparison { margin-top:18px; width:1116px; border-top:5px solid #0a0a0a; }
+.slide-container .head, .slide-container .row { display:grid; grid-template-columns:260px 1fr 1fr; }
+.slide-container .head { min-height:60px; border-bottom:1px dotted #777; align-items:end; }
+.slide-container .head div { padding:0 16px 10px 0; }
+.slide-container .head .api { color:#1d4ed8; font-size:24px; font-weight:900; letter-spacing:-.8px; border-right:1px solid #1d4ed8; }
+.slide-container .head .ical { padding-left:20px; font-size:24px; font-weight:900; letter-spacing:-.8px; }
+.slide-container .row { min-height:56px; border-bottom:1px dotted #777; align-items:center; }
+.slide-container .row .label { color:#333; font-size:14px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+.slide-container .row .api, .slide-container .row .ical { color:#222; font-size:18px; line-height:1.3; }
+.slide-container .row .api { padding-right:18px; border-right:1px solid #1d4ed8; }
+.slide-container .row .ical { padding-left:20px; }
+.slide-container .bottom-line { margin-top:18px; width:1116px; display:grid; grid-template-columns:260px 1fr; border-top:1px dotted #777; padding-top:14px; }
+.slide-container .bottom-label { color:#1d4ed8; font-size:14px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase; }
+.slide-container .bottom-text { font-size:25px; line-height:1.22; font-weight:800; letter-spacing:-.7px; }
+.slide-container .source { margin-top:12px; color:#666; font-size:12px; }
+</style>
+</head>
+<body>
+<div class="slide-container">
+  <main class="page">
+    <div class="eyebrow">Integration model</div>
+    <h1>API connectivity is an operating system;<br>iCal is a safety net</h1>
+    <p class="intro">Both help prevent calendar collisions. Only the certified two-way connection can run the full Expedia distribution workflow.</p>
+    <section class="comparison">
+      <div class="head">
+        <div></div>
+        <div class="api">Two-way channel-manager API</div>
+        <div class="ical">Current iCal bridge</div>
+      </div>
+      <div class="row">
+        <div class="label">Data exchanged</div>
+        <div class="api">Bookings, availability, rates, and often restrictions or content.</div>
+        <div class="ical">Calendar events and blocked dates only.</div>
+      </div>
+      <div class="row">
+        <div class="label">Update model</div>
+        <div class="api">Structured, authenticated messages in both directions.</div>
+        <div class="ical">Periodic `.ics` file import and export.</div>
+      </div>
+      <div class="row">
+        <div class="label">Guest journey</div>
+        <div class="api">Reservation flow can align with OTA/PMS operations and rate plans.</div>
+        <div class="ical">No guest, payment, rate, or booking-confirmation data moves across.</div>
+      </div>
+      <div class="row">
+        <div class="label">Best role</div>
+        <div class="api">Long-term source of truth for OTA distribution.</div>
+        <div class="ical">Temporary availability protection or light-use fallback.</div>
+      </div>
+    </section>
+    <section class="bottom-line">
+      <div class="bottom-label">Operating rule</div>
+      <div class="bottom-text">The direct website should synchronize with one chosen manager; the manager then synchronizes with Expedia.</div>
+    </section>
+    <div class="source">Sources: eviivo Expedia connection [4] • Beds24 channel manager [5] • Vrbo calendar guidance [6][7]</div>
+  </main>
+</div>
+</body>
+</html>
