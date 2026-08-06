@@ -147,3 +147,6 @@
 - [x] Activate six-day automatic collection only for unpaid balances with recorded saved-card authorization, and deliver a secure payment link to guests without authorization or after a charge failure.
 - [x] Restore the development server after the interrupted special-event implementation and verify the repaired build before continuing feature work.
 - [x] Enforce a 160-day maximum advance-booking limit in the guest calendar, server-side availability checks, reservation creation, and regression coverage.
+- [ ] Assess and document the Expedia Partner Central availability-integration path for Old Northside, including supported iCal or connectivity-provider options and the room-by-room prerequisites before activation.
+- [ ] Use the owner-supplied Expedia Partner Central property reference during authorized provider verification without storing Partner Central credentials or activating a connection prematurely.
+- [x] Add the owner-supplied Dewenter-Greenen House architectural history, Herman C. Dewenter and Charles P. Greenen background, Old Northside preservation history, notable nearby sites, and parks to The House page after resolving any historical transcription conflicts.
