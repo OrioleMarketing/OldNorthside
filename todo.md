@@ -150,3 +150,4 @@
 - [ ] Assess and document the Expedia Partner Central availability-integration path for Old Northside, including supported iCal or connectivity-provider options and the room-by-room prerequisites before activation.
 - [ ] Use the owner-supplied Expedia Partner Central property reference during authorized provider verification without storing Partner Central credentials or activating a connection prematurely.
 - [x] Add the owner-supplied Dewenter-Greenen House architectural history, Herman C. Dewenter and Charles P. Greenen background, Old Northside preservation history, notable nearby sites, and parks to The House page after resolving any historical transcription conflicts.
+- [ ] Push the current verified Old Northside project to the authorized `OrioleMarketing/OldNorthside` GitHub repository and verify the remote revision.
