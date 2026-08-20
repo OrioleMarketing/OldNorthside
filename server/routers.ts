@@ -1,7 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { parse as parseCookie } from "cookie";
-import { COOKIE_NAME } from "@shared/const";
 import {
   appendReservationAuditEvent,
   cancelOwnerBlock,
@@ -24,15 +22,25 @@ import {
   setBalanceReminderScheduleTaskUid,
   updateBookingSettings,
 } from "./booking";
-import { getSessionCookieOptions } from "./_core/cookies";
 import { authenticateWebsiteAdmin, clearLoginAttempts, clearWebsiteAdminSession, ensureLoginAllowed, recordFailedLogin, setWebsiteAdminSession } from "./websiteAdminAuth";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { chargeSavedBalanceOffSession, createReservationCheckoutSession } from "./stripe";
-import { resendBalanceReminderForOwner, sendBookingConfirmation, sendOwnerPaymentLink } from "./email";
+import { resendBalanceReminderForOwner, sendBookingConfirmation, sendMemberMagicLinkEmail, sendOwnerPaymentLink } from "./email";
 import { createHeartbeatJob, updateHeartbeatJob } from "./_core/heartbeat";
 import { getChannelSyncReadiness, listChannelSyncEvents } from "./channelSync";
 import { activateWebsiteAdminInvitation, createWebsiteAdminInvitation, getPublicWebsiteAdminInvitation, listWebsiteAdminAccess, revokeWebsiteAdminInvitation, revokeWebsiteAdministrator, websiteAdminIdForUser } from "./websiteAdminAccess";
+import {
+  authenticateWithPassword,
+  clearAuthRateLimit,
+  clearSessionCookie,
+  createMagicLink,
+  enforceAuthRateLimit,
+  invalidateMagicLinks,
+  registerWithPassword,
+  setSessionCookie,
+} from "./auth";
+import { getUserByEmail } from "./db";
 
 const stayInput = z.object({
   checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a YYYY-MM-DD check-in date."),
@@ -61,11 +69,6 @@ function requestOrigin(req: { protocol?: string; get?: (name: string) => string 
   return `${protocol}://${host}`;
 }
 
-function getSessionToken(req: { headers: { cookie?: string | string[] | undefined } }) {
-  const rawCookie = typeof req.headers.cookie === "string" ? req.headers.cookie : "";
-  return parseCookie(rawCookie)[COOKIE_NAME] ?? "";
-}
-
 function bookingError(error: unknown): never {
   if (error instanceof TRPCError) throw error;
   const message = error instanceof Error ? error.message : "We could not complete that booking step.";
@@ -76,6 +79,76 @@ export const appRouter = router({
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    register: publicProcedure
+      .input(z.object({
+        name: z.string().trim().min(2).max(180),
+        email: z.string().trim().email().max(320),
+        password: z.string().min(12).max(256),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        try {
+          enforceAuthRateLimit(ctx.req, "register", input.email);
+          const user = await registerWithPassword(input);
+          await setSessionCookie(ctx.req, ctx.res, user.id);
+          clearAuthRateLimit(ctx.req, "register", input.email);
+          return { success: true, user } as const;
+        } catch (error) {
+          if (error instanceof Error && error.message.startsWith("Too many")) {
+            throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: error.message });
+          }
+          if (error instanceof Error && error.message.includes("already exists")) {
+            throw new TRPCError({ code: "CONFLICT", message: error.message });
+          }
+          throw new TRPCError({ code: "BAD_REQUEST", message: "The account could not be created." });
+        }
+      }),
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().trim().email().max(320),
+        password: z.string().min(1).max(256),
+        rememberMe: z.boolean().optional().default(false),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        try {
+          enforceAuthRateLimit(ctx.req, "login", input.email);
+          const user = await authenticateWithPassword(input.email, input.password);
+          if (!user) throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password." });
+          await setSessionCookie(ctx.req, ctx.res, user.id, input.rememberMe);
+          clearAuthRateLimit(ctx.req, "login", input.email);
+          return { success: true, user } as const;
+        } catch (error) {
+          if (error instanceof TRPCError) throw error;
+          if (error instanceof Error && error.message.startsWith("Too many")) {
+            throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: error.message });
+          }
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password." });
+        }
+      }),
+    requestMagicLink: publicProcedure
+      .input(z.object({ email: z.string().trim().email().max(320) }))
+      .mutation(async ({ input, ctx }) => {
+        const genericResult = { success: true, message: "If an account exists for that email, a sign-in link is on its way." } as const;
+        try {
+          enforceAuthRateLimit(ctx.req, "magic-link", input.email);
+          const user = await getUserByEmail(input.email);
+          if (!user?.email) return genericResult;
+          const link = await createMagicLink(user.email);
+          const verifyUrl = `${requestOrigin(ctx.req)}/api/auth/magic-link/verify?token=${encodeURIComponent(link.token)}`;
+          try {
+            await sendMemberMagicLinkEmail({ email: user.email, name: user.name, magicLinkUrl: verifyUrl, magicLinkId: link.id });
+          } catch (error) {
+            await invalidateMagicLinks(user.email);
+            throw error;
+          }
+          return genericResult;
+        } catch (error) {
+          if (error instanceof Error && error.message.startsWith("Too many")) {
+            throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: error.message });
+          }
+          console.error("[Auth] Magic-link request failed:", error);
+          return genericResult;
+        }
+      }),
     innkeeperLogin: publicProcedure
       .input(z.object({ email: z.string().trim().email().max(320), password: z.string().min(1).max(256) }))
       .mutation(async ({ ctx, input }) => {
@@ -112,9 +185,8 @@ export const appRouter = router({
         }
       }),
     logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
       clearWebsiteAdminSession(ctx.res, ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      clearSessionCookie(ctx.req, ctx.res);
       return { success: true } as const;
     }),
   }),
@@ -192,7 +264,7 @@ export const appRouter = router({
         try {
           return await createWebsiteAdminInvitation({
             ...input,
-            createdByAdminId: websiteAdminIdForUser(ctx.user.openId) ?? 0,
+            createdByAdminId: websiteAdminIdForUser(ctx.user.id) ?? 0,
           });
         } catch (error) {
           return bookingError(error);
@@ -201,7 +273,7 @@ export const appRouter = router({
     revokeAdministrator: adminProcedure
       .input(z.object({ adminId: z.number().int().positive() }))
       .mutation(async ({ input, ctx }) => {
-        const ownAdminId = websiteAdminIdForUser(ctx.user.openId);
+        const ownAdminId = websiteAdminIdForUser(ctx.user.id);
         if (ownAdminId === input.adminId) throw new TRPCError({ code: "BAD_REQUEST", message: "You cannot revoke your own innkeeper access." });
         const revoked = await revokeWebsiteAdministrator(input.adminId);
         if (!revoked) throw new TRPCError({ code: "NOT_FOUND", message: "That administrator is already inactive or could not be found." });
@@ -386,31 +458,29 @@ export const appRouter = router({
       .input(z.object({ limit: z.number().int().min(1).max(100).optional() }).optional())
       .query(({ input }) => listChannelSyncEvents(input?.limit)),
     reminderSchedule: adminProcedure.query(async () => ({ taskUid: await getBalanceReminderScheduleTaskUid() })),
-    enableReminderSchedule: adminProcedure.mutation(async ({ ctx }) => {
-      const sessionToken = getSessionToken(ctx.req);
-      if (!sessionToken) throw new TRPCError({ code: "UNAUTHORIZED", message: "Sign in again to activate scheduled reminders." });
+    enableReminderSchedule: adminProcedure.mutation(async () => {
+      const scheduledTaskSecret = process.env.SCHEDULED_TASK_SECRET;
+      if (!scheduledTaskSecret) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "SCHEDULED_TASK_SECRET must be configured before enabling reminders." });
       const existingTaskUid = await getBalanceReminderScheduleTaskUid();
       const jobPatch = {
         cron: "0 0 * * * *",
         path: "/api/scheduled/balance-reminders",
         method: "POST" as const,
-        payload: {},
+        payload: { secret: scheduledTaskSecret },
         description: "Hourly delivery check for due Old Northside balance-payment reminders.",
       };
       if (existingTaskUid) {
-        const updated = await updateHeartbeatJob(existingTaskUid, { ...jobPatch, enable: true }, sessionToken);
+        const updated = await updateHeartbeatJob(existingTaskUid, { ...jobPatch, enable: true }, "");
         return { taskUid: existingTaskUid, action: "resumed" as const, nextExecutionAt: updated.nextExecutionAt ?? null };
       }
-      const created = await createHeartbeatJob({ name: "old-northside-balance-reminders", ...jobPatch }, sessionToken);
+      const created = await createHeartbeatJob({ name: "old-northside-balance-reminders", ...jobPatch }, "");
       await setBalanceReminderScheduleTaskUid(created.taskUid);
       return { taskUid: created.taskUid, action: "created" as const, nextExecutionAt: created.nextExecutionAt ?? null };
     }),
-    pauseReminderSchedule: adminProcedure.mutation(async ({ ctx }) => {
-      const sessionToken = getSessionToken(ctx.req);
+    pauseReminderSchedule: adminProcedure.mutation(async () => {
       const taskUid = await getBalanceReminderScheduleTaskUid();
       if (!taskUid) return { paused: false, taskUid: null } as const;
-      if (!sessionToken) throw new TRPCError({ code: "UNAUTHORIZED", message: "Sign in again to pause scheduled reminders." });
-      await updateHeartbeatJob(taskUid, { enable: false }, sessionToken);
+      await updateHeartbeatJob(taskUid, { enable: false }, "");
       return { paused: true, taskUid };
     }),
     resendBalanceReminder: adminProcedure

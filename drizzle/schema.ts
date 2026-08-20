@@ -10,23 +10,43 @@ import {
   varchar,
 } from "drizzle-orm/mysql-core";
 
-/**
- * Core user table backing the Manus OAuth flow.
- */
-export const users = mysqlTable("users", {
-  id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
-  name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
-});
+/** Member identities for password and passwordless sign-in. */
+export const users = mysqlTable(
+  "users",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    name: text("name"),
+    email: varchar("email", { length: 320 }),
+    passwordHash: varchar("password_hash", { length: 255 }),
+    role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+    lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  },
+  table => [uniqueIndex("users_email_unique").on(table.email)],
+);
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+
+/** One-time member sign-in links. Only a SHA-256 token digest is persisted. */
+export const magicLinks = mysqlTable(
+  "magic_links",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    email: varchar("email", { length: 320 }).notNull(),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    usedAt: timestamp("used_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  table => [
+    uniqueIndex("magic_links_token_hash_unique").on(table.tokenHash),
+    index("magic_links_email_created_idx").on(table.email, table.createdAt),
+  ],
+);
+
+export type MagicLink = typeof magicLinks.$inferSelect;
 
 /** Website-managed innkeeper identities. Passwords are stored only as salted scrypt hashes. */
 export const websiteAdmins = mysqlTable(

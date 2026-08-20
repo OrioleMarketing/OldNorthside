@@ -4,16 +4,14 @@ import express from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
+import { registerAuthRoutes } from "../authRoutes";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { constructStripeEvent, processStripeEvent } from "../stripe";
 import { sendBookingConfirmation, sendDueBalanceReminders } from "../email";
-import { hasBalanceReminderScheduleTaskUid } from "../booking";
 import { applyInboundChannelInventoryEvent } from "../channelSync";
-import { sdk } from "./sdk";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -71,7 +69,7 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
-  registerOAuthRoutes(app);
+  registerAuthRoutes(app);
 
   app.post("/api/channel-sync/inbound", async (req, res) => {
     const configuredSecret = process.env.CHANNEL_SYNC_WEBHOOK_SECRET;
@@ -110,14 +108,12 @@ async function startServer() {
 
   app.post("/api/scheduled/balance-reminders", async (req, res) => {
     try {
-      const caller = await sdk.authenticateRequest(req);
-      if (!caller.isCron || !caller.taskUid) {
-        return res.status(403).json({ error: "This scheduled callback is not authorized." });
-      }
-      const isCurrentTask = await hasBalanceReminderScheduleTaskUid(caller.taskUid);
-      if (!isCurrentTask) {
-        return res.json({ ok: true, skipped: "orphaned reminder schedule" });
-      }
+      const expectedSecret = process.env.SCHEDULED_TASK_SECRET ?? "";
+      const suppliedSecret = typeof req.body?.secret === "string" ? req.body.secret : "";
+      const expected = Buffer.from(expectedSecret);
+      const supplied = Buffer.from(suppliedSecret);
+      const authorized = expected.length > 0 && expected.length === supplied.length && timingSafeEqual(expected, supplied);
+      if (!authorized) return res.status(403).json({ error: "This scheduled callback is not authorized." });
       const result = await sendDueBalanceReminders();
       return res.json({ ok: true, ...result });
     } catch (error) {

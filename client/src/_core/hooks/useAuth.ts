@@ -39,7 +39,6 @@ export function useAuth(options?: UseAuthOptions) {
       if (error instanceof TRPCClientError && error.data?.code === "UNAUTHORIZED") return;
       throw error;
     } finally {
-      try { sessionStorage.removeItem("manus-cookie"); } catch {}
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
     }

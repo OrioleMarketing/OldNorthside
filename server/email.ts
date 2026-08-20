@@ -347,3 +347,30 @@ export async function sendOwnerPaymentLink(input: {
   }
   return "sent";
 }
+
+export async function sendMemberMagicLinkEmail(input: {
+  email: string;
+  name?: string | null;
+  magicLinkUrl: string;
+  magicLinkId: number;
+}) {
+  const name = escapeHtml(input.name?.trim() || "there");
+  const url = escapeHtml(input.magicLinkUrl);
+  const body = `<p>Hello ${name},</p>
+    <p>Use the secure button below to sign in to your Old Northside account. The link expires in 15 minutes and can be used only once.</p>
+    <p style="margin:24px 0;"><a href="${url}" style="display:inline-block;padding:12px 18px;background:#2f493f;color:#fff9ed;text-decoration:none;font-weight:bold;">Sign in securely</a></p>
+    <p style="font-size:13px;color:#6a5a4b;">If you did not request this email, you can safely ignore it. Your password has not been changed.</p>`;
+  const resend = getResendClient();
+  const result = await resend.emails.send({
+    from: getFromAddress(),
+    to: input.email,
+    subject: "Your Old Northside secure sign-in link",
+    html: renderEmailLayout({ preheader: "Your secure sign-in link expires in 15 minutes.", title: "Your secure sign-in link", body }),
+    headers: { "Idempotency-Key": `old-northside-magic-link-${input.magicLinkId}` },
+  });
+  if (result.error) {
+    const reason = [result.error.name, result.error.message].filter(Boolean).join(": ");
+    throw new Error(`The transactional email provider rejected the sign-in message${reason ? ` (${reason})` : ""}.`);
+  }
+  return result.data?.id ?? null;
+}

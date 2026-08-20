@@ -32,7 +32,6 @@ configuredDescribe("configured initial innkeeper credential", () => {
 
     expect(user).toMatchObject({
       email: "bruce@oriolemarketing.com",
-      loginMethod: "website-password",
       role: "admin",
     });
     expect(cookies).toHaveLength(1);

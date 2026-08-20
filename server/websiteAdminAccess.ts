@@ -191,8 +191,7 @@ export async function revokeWebsiteAdminInvitation(inviteId: number) {
   return Boolean(result[0].affectedRows);
 }
 
-export function websiteAdminIdForUser(openId: string) {
-  const match = /^website-admin:(\d+)$/.exec(openId);
-  const id = Number(match?.[1]);
+export function websiteAdminIdForUser(userId: number) {
+  const id = -userId;
   return Number.isInteger(id) && id > 0 ? id : null;
 }

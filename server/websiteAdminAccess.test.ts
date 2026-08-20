@@ -14,11 +14,11 @@ describe("website administrator invitation safeguards", () => {
     expect(digest).not.toBe(hashWebsiteAdminInvitationToken("different-token"));
   });
 
-  it("maps only a valid website-admin identity to a revocation-safe administrator id", () => {
-    expect(websiteAdminIdForUser("website-admin:12")).toBe(12);
-    expect(websiteAdminIdForUser("website-admin:0")).toBeNull();
-    expect(websiteAdminIdForUser("website-admin:-3")).toBeNull();
-    expect(websiteAdminIdForUser("manus-user:12")).toBeNull();
+  it("maps only a negative innkeeper context-user id to a revocation-safe administrator id", () => {
+    expect(websiteAdminIdForUser(-12)).toBe(12);
+    expect(websiteAdminIdForUser(0)).toBeNull();
+    expect(websiteAdminIdForUser(3)).toBeNull();
+    expect(websiteAdminIdForUser(Number.NaN)).toBeNull();
   });
 
   it("exposes an authenticated management link and a one-time setup page", () => {

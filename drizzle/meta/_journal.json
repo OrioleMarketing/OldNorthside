@@ -120,6 +120,13 @@
       "when": 1786042776413,
       "tag": "0016_gray_hawkeye",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1787244080225,
+      "tag": "0017_replace_manus_oauth",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { User } from "../drizzle/schema";
+import type { AuthUser } from "./auth";
 import { clearWebsiteAdminSession, hashWebsiteAdminPassword, setWebsiteAdminSession, verifyWebsiteAdminPassword, WEBSITE_ADMIN_SESSION_COOKIE } from "./websiteAdminAuth";
 
 type CookieCall = { name: string; value?: string; options: Record<string, unknown> };
@@ -15,12 +15,10 @@ function responseStub(calls: CookieCall[]) {
   } as never;
 }
 
-const websiteAdminUser: User = {
+const websiteAdminUser: AuthUser = {
   id: -7,
-  openId: "website-admin:7",
   name: "Test Innkeeper",
   email: "innkeeper@example.com",
-  loginMethod: "website-password",
   role: "admin",
   createdAt: new Date(),
   updatedAt: new Date(),

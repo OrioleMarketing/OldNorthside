@@ -1,7 +1,8 @@
 import { createHmac, randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { eq } from "drizzle-orm";
 import type { Request, Response } from "express";
-import { websiteAdmins, type User, type WebsiteAdmin } from "../drizzle/schema";
+import { websiteAdmins, type WebsiteAdmin } from "../drizzle/schema";
+import type { AuthUser } from "./auth";
 import { getDb } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { ENV } from "./_core/env";
@@ -69,13 +70,11 @@ function parseSessionToken(token?: string): WebsiteAdminSession | null {
   }
 }
 
-function toContextUser(admin: WebsiteAdmin): User {
+function toContextUser(admin: WebsiteAdmin): AuthUser {
   return {
     id: -admin.id,
-    openId: `website-admin:${admin.id}`,
     name: admin.name,
     email: admin.email,
-    loginMethod: "website-password",
     role: "admin",
     createdAt: admin.createdAt,
     updatedAt: admin.updatedAt,
@@ -159,7 +158,7 @@ export async function verifyWebsiteAdminPassword(password: string, encoded: stri
   }
 }
 
-export async function getWebsiteAdminFromRequest(req: Request): Promise<User | null> {
+export async function getWebsiteAdminFromRequest(req: Request): Promise<AuthUser | null> {
   const session = parseSessionToken(cookieValue(req, SESSION_COOKIE));
   if (!session) return null;
   const db = await getDb();
@@ -170,7 +169,7 @@ export async function getWebsiteAdminFromRequest(req: Request): Promise<User | n
   return toContextUser(admin);
 }
 
-export async function authenticateWebsiteAdmin(email: string, password: string): Promise<User | null> {
+export async function authenticateWebsiteAdmin(email: string, password: string): Promise<AuthUser | null> {
   const db = await getDb();
   if (!db) throw new Error("Website administrator access is temporarily unavailable.");
   const results = await db.select().from(websiteAdmins).where(eq(websiteAdmins.email, normalizeEmail(email))).limit(1);
@@ -181,8 +180,8 @@ export async function authenticateWebsiteAdmin(email: string, password: string):
   return toContextUser({ ...admin, lastSignedIn: now });
 }
 
-export function setWebsiteAdminSession(res: Response, req: Request, user: User) {
-  const adminId = Number(user.openId.replace("website-admin:", ""));
+export function setWebsiteAdminSession(res: Response, req: Request, user: AuthUser) {
+  const adminId = -user.id;
   if (!Number.isInteger(adminId) || adminId <= 0) throw new Error("Website administrator session could not be created.");
   res.cookie(SESSION_COOKIE, sessionToken({ adminId, expiresAt: Date.now() + SESSION_MAX_AGE_MS }), {
     ...getSessionCookieOptions(req),
