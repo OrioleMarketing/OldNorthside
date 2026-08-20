@@ -4,26 +4,26 @@ import { ArrowRight, BedDouble, CalendarDays, CarFront, Coffee, ExternalLink, Fo
 import { Link } from "wouter";
 
 const HERO_IMAGES = {
-  desktop: "/manus-storage/hero-dewenter-1280_74dd3461.webp",
-  mobile: "/manus-storage/hero-dewenter-768_921ad6ea.webp",
+  desktop: "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/hero-dewenter-1280_74dd3461.webp",
+  mobile: "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/hero-dewenter-768_921ad6ea.webp",
 };
 
 const ROOM_IMAGES: Record<string, { desktop: string; mobile: string }> = {
   "bridal-room": {
-    desktop: "/manus-storage/room-bridal-960_79a564f7.webp",
-    mobile: "/manus-storage/room-bridal-640_93be8826.webp",
+    desktop: "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/room-bridal-960_79a564f7.webp",
+    mobile: "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/room-bridal-640_93be8826.webp",
   },
   "tiffany-room": {
-    desktop: "/manus-storage/room-tiffany-960_d940efd6.webp",
-    mobile: "/manus-storage/room-tiffany-640_4bae0166.webp",
+    desktop: "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/room-tiffany-960_d940efd6.webp",
+    mobile: "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/room-tiffany-640_4bae0166.webp",
   },
   "literary-room": {
-    desktop: "/manus-storage/room-literary-960_527011a2.webp",
-    mobile: "/manus-storage/room-literary-640_f72ea39d.webp",
+    desktop: "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/room-literary-960_527011a2.webp",
+    mobile: "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/room-literary-640_f72ea39d.webp",
   },
 };
 
-const ROOM_IMAGE_FALLBACK = "/manus-storage/dewenter-room-1_7072f519.jpg";
+const ROOM_IMAGE_FALLBACK = "https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/dewenter-room-1_7072f519.jpg";
 
 const amenities = [
   { icon: Coffee, title: "Breakfast on your schedule", body: "Enjoy a complete breakfast at the time that suits your morning." },
@@ -91,8 +91,8 @@ export default function Home() {
           </div>
           <div className="story-grid__image-wrap">
             <picture className="story-grid__image-media">
-              <source media="(max-width: 720px)" srcSet="/manus-storage/story-literary-640_85b174a5.webp" />
-              <img src="/manus-storage/story-literary-960_a9c686d7.webp" alt="The warm, historic interior of a guest room at Old Northside Bed and Breakfast" className="story-grid__image" width={960} height={640} loading="lazy" decoding="async" />
+              <source media="(max-width: 720px)" srcSet="https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/story-literary-640_85b174a5.webp" />
+              <img src="https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/story-literary-960_a9c686d7.webp" alt="The warm, historic interior of a guest room at Old Northside Bed and Breakfast" className="story-grid__image" width={960} height={640} loading="lazy" decoding="async" />
             </picture>
             <div className="story-grid__note"><Sparkles size={17} /> Seven private-bath rooms</div>
           </div>
@@ -101,7 +101,7 @@ export default function Home() {
 
       <section className="section owner-section" aria-labelledby="owner-heading">
         <div className="container owner-grid">
-          <div className="owner-portrait-wrap"><img src="/manus-storage/gary-hofmeister-portrait_bf2246de.jpg" alt="Gary Hofmeister, owner of Old Northside Bed and Breakfast" className="owner-portrait" width={356} height={365} loading="lazy" decoding="async" /></div>
+          <div className="owner-portrait-wrap"><img src="https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/gary-hofmeister-portrait_bf2246de.jpg" alt="Gary Hofmeister, owner of Old Northside Bed and Breakfast" className="owner-portrait" width={356} height={365} loading="lazy" decoding="async" /></div>
           <div className="owner-copy">
             <p className="eyebrow eyebrow--gold">A message from Gary Hofmeister</p>
             <h2 id="owner-heading" className="font-display">Gary Hofmeister, Renaissance Man.</h2>
@@ -142,7 +142,7 @@ export default function Home() {
 
       <section id="availability" className="section section--paper"><div className="container"><BookingWidget /></div></section>
 
-      <section className="section neighborhood-section"><div className="container neighborhood-grid"><div className="neighborhood-grid__visual"><picture><source media="(max-width: 720px)" srcSet="/manus-storage/offstreet-parking-720_4661aec3.webp" /><img src="/manus-storage/offstreet-parking-1120_d36080ac.webp" alt="Off-street guest parking at Old Northside Bed and Breakfast" className="neighborhood-grid__image" width={1120} height={724} loading="lazy" decoding="async" /></picture></div><div><p className="eyebrow eyebrow--gold">Old Northside</p><h2 className="font-display">Park once. Explore Indianapolis on foot.</h2><p>Free off-street parking is a practical benefit in Indianapolis. Leave the car at the inn, then enjoy tree-lined Old Northside streets and many downtown restaurants, cultural destinations, and city features within walking distance.</p><p>When you return, you come back to the quiet character of a historic home rather than a downtown parking search.</p><Link href="/about" className="inn-button inn-button--dark">Plan your stay <CalendarDays size={17} /></Link></div></div></section>
+      <section className="section neighborhood-section"><div className="container neighborhood-grid"><div className="neighborhood-grid__visual"><picture><source media="(max-width: 720px)" srcSet="https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/offstreet-parking-720_4661aec3.webp" /><img src="https://oldnorthside.s3.us-east-2.amazonaws.com/manus-storage/offstreet-parking-1120_d36080ac.webp" alt="Off-street guest parking at Old Northside Bed and Breakfast" className="neighborhood-grid__image" width={1120} height={724} loading="lazy" decoding="async" /></picture></div><div><p className="eyebrow eyebrow--gold">Old Northside</p><h2 className="font-display">Park once. Explore Indianapolis on foot.</h2><p>Free off-street parking is a practical benefit in Indianapolis. Leave the car at the inn, then enjoy tree-lined Old Northside streets and many downtown restaurants, cultural destinations, and city features within walking distance.</p><p>When you return, you come back to the quiet character of a historic home rather than a downtown parking search.</p><Link href="/about" className="inn-button inn-button--dark">Plan your stay <CalendarDays size={17} /></Link></div></div></section>
 
       <section className="section indy-section" aria-labelledby="indy-heading">
         <div className="container">
